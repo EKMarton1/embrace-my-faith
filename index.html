@@ -989,10 +989,10 @@ async function speakText(text, voiceId, onDone) {
     isPlaying = false;
   }
   try {
-    var resp = await fetch('https://embrace-my-faith.vercel.app/api/v1/text-to-speech/' + voiceId + '/stream', {
+    var resp = await fetch('/api/speak', {
       method: 'POST',
       headers: {
-        'xi-api-key': EL_KEY,
+        
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
