@@ -6,6 +6,10 @@
       "dest": "/api/speak.js"
     },
     {
+      "src": "/api/claude",
+      "dest": "/api/claude.js"
+    },
+    {
       "src": "/(.*)",
       "dest": "/index.html"
     }
