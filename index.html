@@ -99,9 +99,12 @@ body{background:#1a1a1a;display:flex;justify-content:center;align-items:flex-sta
   border:1.5px solid rgba(30,15,0,0.3);
   color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:16px;
   border-radius:50px;cursor:pointer;letter-spacing:0.5px;
-  box-shadow:0 4px 20px rgba(0,0,0,0.2);
+  box-shadow:0 4px 20px rgba(0,0,0,0.2);transition:transform 0.2s ease;
 }
+.generate-btn:hover{transform:scale(1.1);}
 .generate-btn:disabled{opacity:0.5;cursor:not-allowed;}
+#prayerScreen .form-label{font-size:14.4px;}
+#prayerScreen .form-input,#prayerScreen .form-textarea,#prayerScreen .form-select{background:rgba(255,255,255,0.3);font-size:16.5px;font-weight:700;}
 .prayers-remaining{text-align:center;margin-top:12px;font-size:12px;color:rgba(0,0,0,0.65);}
 .prayers-remaining span{text-decoration:underline;cursor:pointer;color:#111111;}
 .loading-wrap{display:none;text-align:center;padding:40px 20px;}
@@ -313,15 +316,15 @@ input[type=range]{flex:1;accent-color:#f5c830;}
 <div class="screen" id="prayerScreen">
 <div class="screen-top">
   <img src="images/EMF_logo.png" alt="Embrace My Faith" onclick="showScreen('homeScreen')" class="screen-top-logo"/>
-  <div class="screen-title">Prayer</div>
+  <div class="screen-title">Personal Prayer</div>
 </div>
   <div class="screen-body">
-    <div class="section-label">Lift Your Heart</div>
-    <div class="section-sub">Share who you&rsquo;re praying for and let us craft a personal prayer just for you.</div>
+    <div class="section-label" style="font-size:26.4px;">Lift Your Heart</div>
+    <div class="section-sub">Share details of what&rsquo;s on your mind and a personalized prayer will be crafted for you</div>
     <label class="form-label">Who is this prayer for?</label>
-    <input class="form-input" id="prayerFor" type="text" placeholder="Who is this prayer for?"/>
+    <input class="form-input" id="prayerFor" type="text" placeholder="Name"/>
     <label class="form-label">What&rsquo;s on your heart?</label>
-    <textarea class="form-textarea" id="prayerSituation" placeholder="What's on your heart? Be specific — the more you share, the more personal your prayer will be."></textarea>
+    <textarea class="form-textarea" id="prayerSituation" placeholder="Be specific, the more you share the more personal your prayer will be" maxlength="100"></textarea>
     <label class="form-label">Prayer tone</label>
     <select class="form-select" id="prayerTone" onchange="onToneChange()">
       <option value="hopeful and uplifting">Hopeful &amp; Uplifting</option>
