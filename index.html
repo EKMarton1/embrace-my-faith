@@ -60,7 +60,8 @@ body{background:#1a1a1a;display:flex;justify-content:center;align-items:flex-sta
 
 /* ========== HOME ========== */
 #homeScreen{padding:0;}
-.home-header{padding:52px 28px 16px;text-align:center;}
+.settings-cog{position:absolute;top:20px;right:20px;background:rgba(255,255,255,0.35);border:1px solid rgba(0,0,0,0.15);border-radius:50%;width:32px;height:32px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;}
+.home-header{padding:72px 28px 16px;text-align:center;}
 .home-logo{margin-bottom:8px;line-height:0;}
 .trial-bar{font-size:11px;color:rgba(0,0,0,0.62);cursor:pointer;margin-bottom:20px;}
 .home-greeting{font-size:34px;font-weight:700;color:rgba(0,0,0,0.75);letter-spacing:0.5px;margin-bottom:4px;}
@@ -74,7 +75,7 @@ body{background:#1a1a1a;display:flex;justify-content:center;align-items:flex-sta
 .card-desc{display:none;}
 
 /* ========== GENERIC SCREEN HEADER ========== */
-.screen-top{display:flex;flex-direction:column;align-items:center;text-align:center;padding:52px 20px 8px;}
+.screen-top{display:flex;flex-direction:column;align-items:center;text-align:center;padding:72px 20px 8px;}
 .screen-top-logo{height:60px;object-fit:contain;margin-bottom:8px;cursor:pointer;}
 .screen-title{font-family:'Lato',sans-serif;font-size:34px;font-weight:700;color:rgba(0,0,0,0.75);letter-spacing:0.5px;margin-bottom:4px;}
 .screen-body{padding:20px 20px 40px;flex:1;}
@@ -273,9 +274,9 @@ input[type=range]{flex:1;accent-color:#f5c830;}
 
 <!-- HOME -->
 <div class="screen" id="homeScreen">
+  <button class="settings-cog" onclick="showScreen('settingsScreen')">&#9881;</button>
   <div class="home-header">
     <div class="home-logo"><img src="images/EMF_logo.png" alt="Embrace My Faith" style="height:60px;object-fit:contain;"/></div>
-    <div style="display:flex;justify-content:flex-end;margin-bottom:4px;"><button onclick="showScreen('settingsScreen')" style="background:rgba(255,255,255,0.35);border:1px solid rgba(0,0,0,0.15);border-radius:50%;width:32px;height:32px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;">&#9881;</button></div>
     <div class="home-greeting" id="timeGreeting">Good Morning,</div>
     <div class="home-name" id="homeName">Friend</div>
     <div class="daily-verse" id="dailyVerse">&ldquo;Be still, and know that I am God.&rdquo; &#8212; Psalm 46:10</div>
