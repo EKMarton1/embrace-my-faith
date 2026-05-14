@@ -74,9 +74,9 @@ body{background:#1a1a1a;display:flex;justify-content:center;align-items:flex-sta
 .card-desc{display:none;}
 
 /* ========== GENERIC SCREEN HEADER ========== */
-.screen-header{display:flex;align-items:center;justify-content:space-between;padding:52px 20px 16px;position:sticky;top:0;z-index:10;background:rgba(230,176,32,0.88);backdrop-filter:blur(12px);}
-.back-btn{background:rgba(255,255,255,0.35);border:1px solid rgba(61,31,0,0.25);color:#111111;font-family:'Lato',sans-serif;font-size:13px;padding:8px 14px;border-radius:20px;cursor:pointer;}
-.screen-title{font-family:'Playfair Display',serif;font-size:20px;color:#111111;font-weight:700;}
+.screen-top{display:flex;flex-direction:column;align-items:center;text-align:center;padding:52px 20px 8px;}
+.screen-top-logo{height:60px;object-fit:contain;margin-bottom:8px;cursor:pointer;}
+.screen-title{font-family:'Playfair Display',serif;font-size:20px;color:#111111;font-weight:700;margin-bottom:4px;}
 .screen-body{padding:20px 20px 40px;flex:1;}
 
 /* ========== PRAYER ========== */
@@ -310,11 +310,10 @@ input[type=range]{flex:1;accent-color:#f5c830;}
 
 <!-- PRAYER -->
 <div class="screen" id="prayerScreen">
-  <div class="screen-header">
-    <button class="back-btn" onclick="showScreen('homeScreen')">&#8592; Home</button>
-    <div class="screen-title">&#128591; Prayer</div>
-    <div style="width:60px;"></div>
-  </div>
+<div class="screen-top">
+  <img src="images/EMF_logo.png" alt="Embrace My Faith" onclick="showScreen('homeScreen')" class="screen-top-logo"/>
+  <div class="screen-title">Prayer</div>
+</div>
   <div class="screen-body">
     <div class="section-label">Lift Your Heart</div>
     <div class="section-sub">Share who you&rsquo;re praying for and let us craft a personal prayer just for you.</div>
@@ -357,11 +356,10 @@ input[type=range]{flex:1;accent-color:#f5c830;}
 
 <!-- RISE -->
 <div class="screen" id="riseScreen">
-  <div class="screen-header">
-    <button class="back-btn" onclick="showScreen('homeScreen')">&#8592; Home</button>
-    <div class="screen-title">Rise</div>
-    <div style="width:60px;"></div>
-  </div>
+<div class="screen-top">
+  <img src="images/EMF_logo.png" alt="Embrace My Faith" onclick="showScreen('homeScreen')" class="screen-top-logo"/>
+  <div class="screen-title">Rise</div>
+</div>
   <div class="screen-body">
     <div class="section-label">Rise with Purpose</div>
     <div class="section-sub">Wake each morning anchored in His Word. Set your alarm, choose your voice, and begin the day lifted.</div>
@@ -404,11 +402,10 @@ input[type=range]{flex:1;accent-color:#f5c830;}
 
 <!-- REST -->
 <div class="screen" id="restScreen">
-  <div class="screen-header">
-    <button class="back-btn" onclick="showScreen('homeScreen')">&#8592; Home</button>
-    <div class="screen-title">Rest</div>
-    <div style="width:60px;"></div>
-  </div>
+<div class="screen-top">
+  <img src="images/EMF_logo.png" alt="Embrace My Faith" onclick="showScreen('homeScreen')" class="screen-top-logo"/>
+  <div class="screen-title">Rest</div>
+</div>
   <div class="screen-body">
     <div class="section-label">Rest in His Peace</div>
     <div class="section-sub">Let scripture carry you to sleep. Choose your content, your voice, and drift off in His presence.</div>
@@ -459,11 +456,10 @@ input[type=range]{flex:1;accent-color:#f5c830;}
 
 <!-- CONNECT -->
 <div class="screen" id="connectScreen">
-  <div class="screen-header">
-    <button class="back-btn" onclick="showScreen('homeScreen')">&#8592; Home</button>
-    <div class="screen-title">&#128140; Send &amp; Request</div>
-    <div style="width:60px;"></div>
-  </div>
+<div class="screen-top">
+  <img src="images/EMF_logo.png" alt="Embrace My Faith" onclick="showScreen('homeScreen')" class="screen-top-logo"/>
+  <div class="screen-title">Send &amp; Request</div>
+</div>
   <div class="screen-body">
     <div class="section-label">Share Your Prayer</div>
     <div class="section-sub">Let someone know they&rsquo;re being lifted up. Send a personal prayer to someone you love.</div>
@@ -508,11 +504,10 @@ input[type=range]{flex:1;accent-color:#f5c830;}
 
 <!-- MOMENTS -->
 <div class="screen" id="momentsScreen">
-  <div class="screen-header">
-    <button class="back-btn" onclick="showScreen('homeScreen')">&#8592; Home</button>
-    <div class="screen-title">&#10024; Moments</div>
-    <div style="width:60px;"></div>
-  </div>
+<div class="screen-top">
+  <img src="images/EMF_logo.png" alt="Embrace My Faith" onclick="showScreen('homeScreen')" class="screen-top-logo"/>
+  <div class="screen-title">Moments</div>
+</div>
   <div class="screen-body">
     <div class="section-label">Life Moments</div>
     <div class="section-sub">Add the people and milestones that matter. Tap &ldquo;Pray&rdquo; to lift them up anytime.</div>
@@ -579,11 +574,10 @@ input[type=range]{flex:1;accent-color:#f5c830;}
 
 <!-- SEND A PRAYER -->
 <div class="screen" id="sendPrayerScreen">
-  <div class="screen-header">
-    <button class="back-btn" onclick="showScreen('homeScreen')">&#8592; Home</button>
-    <div class="screen-title">&#128140; Send Prayer</div>
-    <div style="width:60px;"></div>
-  </div>
+<div class="screen-top">
+  <img src="images/EMF_logo.png" alt="Embrace My Faith" onclick="showScreen('homeScreen')" class="screen-top-logo"/>
+  <div class="screen-title">Send Prayer</div>
+</div>
   <div class="screen-body">
     <div class="section-label">Lift Someone Up</div>
     <div class="section-sub">Write a prayer for someone you love and send it straight to their heart.</div>
@@ -625,11 +619,10 @@ input[type=range]{flex:1;accent-color:#f5c830;}
 
 <!-- REQUEST PRAYER -->
 <div class="screen" id="requestPrayerScreen">
-  <div class="screen-header">
-    <button class="back-btn" onclick="showScreen('homeScreen')">&#8592; Home</button>
-    <div class="screen-title">&#128591; Request Prayer</div>
-    <div style="width:60px;"></div>
-  </div>
+<div class="screen-top">
+  <img src="images/EMF_logo.png" alt="Embrace My Faith" onclick="showScreen('homeScreen')" class="screen-top-logo"/>
+  <div class="screen-title">Request Prayer</div>
+</div>
   <div class="screen-body">
     <div class="section-label">Ask for Prayer</div>
     <div class="section-sub">You were not made to carry this alone. Share your heart and let your circle stand with you.</div>
@@ -664,11 +657,10 @@ input[type=range]{flex:1;accent-color:#f5c830;}
 
 <!-- MY CIRCLE -->
 <div class="screen" id="circleScreen">
-  <div class="screen-header">
-    <button class="back-btn" onclick="showScreen('homeScreen')">&#8592; Home</button>
-    <div class="screen-title">&#129464; My Circle</div>
-    <div style="width:60px;"></div>
-  </div>
+<div class="screen-top">
+  <img src="images/EMF_logo.png" alt="Embrace My Faith" onclick="showScreen('homeScreen')" class="screen-top-logo"/>
+  <div class="screen-title">My Circle</div>
+</div>
   <div class="screen-body">
     <div class="section-label">Your Prayer Circle</div>
     <div class="section-sub">Your circle is the people you trust to pray with and for. Search for friends and family who have Embrace My Faith and invite them in.</div>
@@ -716,11 +708,10 @@ input[type=range]{flex:1;accent-color:#f5c830;}
 
 <!-- SETTINGS -->
 <div class="screen" id="settingsScreen">
-  <div class="screen-header">
-    <button class="back-btn" onclick="showScreen('homeScreen')">&#8592; Home</button>
-    <div class="screen-title">&#9881; Settings</div>
-    <div style="width:60px;"></div>
-  </div>
+<div class="screen-top">
+  <img src="images/EMF_logo.png" alt="Embrace My Faith" onclick="showScreen('homeScreen')" class="screen-top-logo"/>
+  <div class="screen-title">Settings</div>
+</div>
   <div class="screen-body">
     <div class="section-label">Your Preferences</div>
     <div class="section-sub">Personalize your Embrace My Faith experience.</div>
@@ -762,11 +753,10 @@ input[type=range]{flex:1;accent-color:#f5c830;}
 
 <!-- SAVED PRAYERS -->
 <div class="screen" id="savedScreen">
-  <div class="screen-header">
-    <button class="back-btn" onclick="showScreen('homeScreen')">&#8592; Home</button>
-    <div class="screen-title">&#128218; Saved Prayers</div>
-    <div style="width:60px;"></div>
-  </div>
+<div class="screen-top">
+  <img src="images/EMF_logo.png" alt="Embrace My Faith" onclick="showScreen('homeScreen')" class="screen-top-logo"/>
+  <div class="screen-title">Saved Prayers</div>
+</div>
   <div class="screen-body">
     <div id="savedList">
       <div class="empty-state">&ldquo;Your prayers are treasured here,<br/>as they are in Heaven.&rdquo;</div>
@@ -776,11 +766,10 @@ input[type=range]{flex:1;accent-color:#f5c830;}
 
 <!-- PRICING -->
 <div class="screen" id="pricingScreen">
-  <div class="screen-header">
-    <button class="back-btn" onclick="showScreen('homeScreen')">&#8592; Home</button>
-    <div class="screen-title">&#10024; Begin Your Journey</div>
-    <div style="width:60px;"></div>
-  </div>
+<div class="screen-top">
+  <img src="images/EMF_logo.png" alt="Embrace My Faith" onclick="showScreen('homeScreen')" class="screen-top-logo"/>
+  <div class="screen-title">Begin Your Journey</div>
+</div>
   <div class="screen-body">
     <div style="background:rgba(255,255,255,0.55);border-radius:24px;padding:28px 24px;margin-bottom:16px;text-align:center;">
       <div style="font-size:48px;margin-bottom:12px;">&#129464;</div>
