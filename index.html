@@ -901,15 +901,19 @@ function onToneChange() {
   selectedVoiceId = getVoiceForTone(tone, g);
 }
 
-var verses = [
-  '\u201cThis is the day the Lord has made; let us rejoice and be glad in it.\u201d \u2014 Psalm 118:24',
-  '\u201cI can do all things through Christ who strengtheneth me.\u201d \u2014 Philippians 4:13',
-  '\u201cThe Lord is my shepherd; I shall not want.\u201d \u2014 Psalm 23:1',
-  '\u201cTrust in the Lord with all thine heart.\u201d \u2014 Proverbs 3:5',
-  '\u201cBe still, and know that I am God.\u201d \u2014 Psalm 46:10',
-  '\u201cShe is clothed with strength and dignity.\u201d \u2014 Proverbs 31:25',
-  '\u201cFor I know the plans I have for you, declares the Lord.\u201d \u2014 Jeremiah 29:11'
-];
+var verseWindows = {
+  morning:   { greeting: 'Good Morning',   theme: 'new beginnings, purpose, and energy for the day' },
+  afternoon: { greeting: 'Good Afternoon', theme: 'perseverance, strength, and staying focused' },
+  evening:   { greeting: 'Good Evening',   theme: 'gratitude, reflection, and peace' },
+  night:     { greeting: 'Good Night',     theme: 'rest, comfort, and trust in God\'s protection' }
+};
+
+function getVerseWindow(h) {
+  if (h >= 5  && h < 12) return 'morning';
+  if (h >= 12 && h < 17) return 'afternoon';
+  if (h >= 17 && h < 21) return 'evening';
+  return 'night';
+}
 
 // ========== NAVIGATION ==========
 function showScreen(id) {
@@ -937,11 +941,36 @@ function saveName() {
   showScreen('notifyScreen');
 }
 
-function setTimeGreeting() {
+async function setTimeGreeting() {
   var h = new Date().getHours();
-  var greeting = h < 12 ? 'Good Morning' : h < 17 ? 'Good Afternoon' : 'Good Evening';
-  document.getElementById('timeGreeting').textContent = greeting;
-  document.getElementById('dailyVerse').textContent = verses[Math.floor(Math.random() * verses.length)];
+  var win = getVerseWindow(h);
+  var cfg = verseWindows[win];
+  document.getElementById('timeGreeting').textContent = cfg.greeting;
+
+  var d = new Date();
+  var dateStr = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+  var cacheKey = 'emf_verse_' + win + '_' + dateStr;
+  var cached = localStorage.getItem(cacheKey);
+  if (cached) { document.getElementById('dailyVerse').textContent = cached; return; }
+
+  document.getElementById('dailyVerse').textContent = '“Be still, and know that I am God.” — Psalm 46:10';
+  try {
+    var resp = await fetch('/api/claude', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        system: 'You are a scripture selector for a Christian devotional app. Return ONLY a single Bible verse in this exact format: “[verse text]” — [Book Chapter:Verse]. No extra text, no explanation.',
+        messages: [{ role: 'user', content: 'Choose a fitting Bible scripture about ' + cfg.theme + '.' }],
+        max_tokens: 120
+      })
+    });
+    var data = await resp.json();
+    var verse = (data.content && data.content[0] && data.content[0].text) ? data.content[0].text.trim() : '';
+    if (verse) {
+      document.getElementById('dailyVerse').textContent = verse;
+      localStorage.setItem(cacheKey, verse);
+    }
+  } catch(e) { /* keep fallback */ }
 }
 
 // ========== PRAYER GENERATION ==========
