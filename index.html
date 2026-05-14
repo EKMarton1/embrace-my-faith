@@ -324,7 +324,8 @@ input[type=range]{flex:1;accent-color:#f5c830;}
     <label class="form-label">Who is this prayer for?</label>
     <input class="form-input" id="prayerFor" type="text" placeholder="Name"/>
     <label class="form-label">What&rsquo;s on your heart?</label>
-    <textarea class="form-textarea" id="prayerSituation" placeholder="Be specific, the more you share the more personal your prayer will be" maxlength="100"></textarea>
+    <textarea class="form-textarea" id="prayerSituation" placeholder="Share what your personal prayer is about" maxlength="150" oninput="document.getElementById('prayerCharCount').textContent=this.value.length+'/150'"></textarea>
+    <div id="prayerCharCount" style="text-align:right;font-size:12px;color:rgba(0,0,0,0.5);margin-top:4px;font-family:'Lato',sans-serif;">0/150</div>
     <label class="form-label">Prayer tone</label>
     <select class="form-select" id="prayerTone" onchange="onToneChange()">
       <option value="hopeful and uplifting">Hopeful &amp; Uplifting</option>
