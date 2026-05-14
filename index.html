@@ -63,7 +63,7 @@ body{background:#1a1a1a;display:flex;justify-content:center;align-items:flex-sta
 .home-header{padding:52px 28px 16px;text-align:center;}
 .home-logo{margin-bottom:8px;line-height:0;}
 .trial-bar{font-size:11px;color:rgba(0,0,0,0.62);cursor:pointer;margin-bottom:20px;}
-.home-greeting{font-size:17px;font-weight:700;color:rgba(0,0,0,0.75);letter-spacing:0.5px;margin-bottom:4px;}
+.home-greeting{font-size:34px;font-weight:700;color:rgba(0,0,0,0.75);letter-spacing:0.5px;margin-bottom:4px;}
 .home-name{font-family:'Playfair Display',serif;font-size:36px;color:#111111;font-weight:700;margin-bottom:10px;}
 .daily-verse{font-family:'Playfair Display',serif;font-style:italic;font-size:16px;font-weight:600;color:#111111;line-height:1.6;max-width:300px;margin:0 auto;text-shadow:0 1px 3px rgba(255,255,255,0.6);}
 .home-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:8px 20px 32px;}
@@ -76,7 +76,7 @@ body{background:#1a1a1a;display:flex;justify-content:center;align-items:flex-sta
 /* ========== GENERIC SCREEN HEADER ========== */
 .screen-top{display:flex;flex-direction:column;align-items:center;text-align:center;padding:52px 20px 8px;}
 .screen-top-logo{height:60px;object-fit:contain;margin-bottom:8px;cursor:pointer;}
-.screen-title{font-family:'Playfair Display',serif;font-size:20px;color:#111111;font-weight:700;margin-bottom:4px;}
+.screen-title{font-family:'Lato',sans-serif;font-size:34px;font-weight:700;color:rgba(0,0,0,0.75);letter-spacing:0.5px;margin-bottom:4px;}
 .screen-body{padding:20px 20px 40px;flex:1;}
 
 /* ========== PRAYER ========== */
@@ -274,7 +274,7 @@ input[type=range]{flex:1;accent-color:#f5c830;}
 <!-- HOME -->
 <div class="screen" id="homeScreen">
   <div class="home-header">
-    <div class="home-logo" style="padding:4px 0;"><img src="images/EMF_logo.png" alt="Embrace My Faith" style="height:60px;object-fit:contain;"/></div>
+    <div class="home-logo"><img src="images/EMF_logo.png" alt="Embrace My Faith" style="height:60px;object-fit:contain;"/></div>
     <div style="display:flex;justify-content:flex-end;margin-bottom:4px;"><button onclick="showScreen('settingsScreen')" style="background:rgba(255,255,255,0.35);border:1px solid rgba(0,0,0,0.15);border-radius:50%;width:32px;height:32px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;">&#9881;</button></div>
     <div class="home-greeting" id="timeGreeting">Good Morning,</div>
     <div class="home-name" id="homeName">Friend</div>
