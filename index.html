@@ -54,15 +54,9 @@ body{background:#1a1a1a;display:flex;justify-content:center;align-items:flex-sta
 .notify-icon{font-size:52px;margin-bottom:24px;}
 .notify-title{font-family:'Playfair Display',serif;font-size:30px;color:#111111;font-weight:600;margin-bottom:12px;}
 .notify-sub{font-size:14px;color:rgba(0,0,0,0.72);margin-bottom:40px;line-height:1.6;max-width:280px;}
-.notify-yes{background:linear-gradient(135deg,#f5c830,#c8900a);color:#111111;font-family:'Lato',sans-serif;font-weight:700;font-size:16px;border:none;padding:16px;border-radius:50px;cursor:pointer;width:100%;margin-bottom:12px;}
+.notify-yes{background:rgba(61,31,0,0.85);color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:16px;letter-spacing:1px;border:none;padding:16px 48px;border-radius:50px;cursor:pointer;box-shadow:0 6px 24px rgba(200,144,10,0.5);transition:transform 0.2s ease;margin-bottom:12px;}.notify-yes:hover{transform:scale(1.1);}
 .notify-no{background:transparent;color:rgba(0,0,0,0.58);font-family:'Lato',sans-serif;font-size:16px;border:none;cursor:pointer;padding:12px;}
 
-#welcomeScreen{background:url('images/EMF_BG.jpg') center top/cover no-repeat;align-items:center;justify-content:flex-start;padding:180px 40px 60px;text-align:center;}
-.welcome-cross{font-size:60px;margin-bottom:20px;filter:drop-shadow(0 4px 16px rgba(255,200,0,0.6));}
-.welcome-title{font-family:'Playfair Display',serif;font-size:34px;color:#111111;font-weight:600;margin-bottom:8px;}
-.welcome-name{font-family:'Playfair Display',serif;font-size:44px;color:#111111;font-weight:600;margin-bottom:24px;}
-.welcome-verse{font-family:'Playfair Display',serif;font-style:italic;font-size:14px;color:rgba(0,0,0,0.78);line-height:1.7;margin-bottom:48px;max-width:280px;}
-.welcome-btn{background:rgba(61,31,0,0.8);backdrop-filter:blur(10px);border:1.5px solid rgba(61,31,0,0.3);color:#f5c830;font-family:'Lato',sans-serif;font-weight:600;font-size:16px;padding:16px 48px;border-radius:50px;cursor:pointer;width:100%;}
 
 /* ========== HOME ========== */
 #homeScreen{padding:0;}
@@ -273,17 +267,8 @@ input[type=range]{flex:1;accent-color:#f5c830;}
   <img src="images/EMF_logo.png" alt="Embrace My Faith" style="height:60px;object-fit:contain;margin-bottom:16px;"/>
   <div class="notify-title" id="notifyTitle">Good to meet you!</div>
   <div class="notify-sub">May we send you prayer reminders and updates to keep your spirit anchored throughout the day?</div>
-  <button class="notify-yes" onclick="showScreen('welcomeScreen')">Yes Please</button>
-  <button class="notify-no" onclick="showScreen('welcomeScreen')">Not right now</button>
-</div>
-
-<!-- WELCOME -->
-<div class="screen" id="welcomeScreen">
-  <img src="images/EMF_logo.png" alt="Embrace My Faith" style="height:60px;object-fit:contain;margin-bottom:16px;"/>
-  <div class="welcome-title">Welcome Home</div>
-  <div class="welcome-name" id="welcomeName">Friend</div>
-  <div class="welcome-verse">&ldquo;For I know the plans I have for you, declares the Lord, plans to prosper you and not to harm you, plans to give you hope and a future.&rdquo;<br/>&#8212; Jeremiah 29:11</div>
-  <button class="welcome-btn" onclick="showScreen('homeScreen')">Enter Your Faith Home &#10003;</button>
+  <button class="notify-yes" onclick="showScreen('homeScreen')">Yes Please</button>
+  <button class="notify-no" onclick="showScreen('homeScreen')">Not right now</button>
 </div>
 
 <!-- HOME -->
@@ -958,7 +943,6 @@ function saveName() {
   if (!val) { alert('Please enter your name to continue.'); return; }
   userName = val;
   document.getElementById('notifyTitle').textContent = 'Welcome ' + userName + '!';
-  document.getElementById('welcomeName').textContent = userName;
   document.getElementById('homeName').textContent = userName;
   showScreen('notifyScreen');
 }
