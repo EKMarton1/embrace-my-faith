@@ -55,7 +55,7 @@ body{background:#1a1a1a;display:flex;justify-content:center;align-items:flex-sta
 .notify-title{font-family:'Playfair Display',serif;font-size:30px;color:#111111;font-weight:600;margin-bottom:12px;}
 .notify-sub{font-size:14px;color:rgba(0,0,0,0.72);margin-bottom:40px;line-height:1.6;max-width:280px;}
 .notify-yes{background:linear-gradient(135deg,#f5c830,#c8900a);color:#111111;font-family:'Lato',sans-serif;font-weight:700;font-size:16px;border:none;padding:16px;border-radius:50px;cursor:pointer;width:100%;margin-bottom:12px;}
-.notify-no{background:transparent;color:rgba(0,0,0,0.58);font-family:'Lato',sans-serif;font-size:14px;border:none;cursor:pointer;padding:12px;}
+.notify-no{background:transparent;color:rgba(0,0,0,0.58);font-family:'Lato',sans-serif;font-size:16px;border:none;cursor:pointer;padding:12px;}
 
 #welcomeScreen{background:url('images/EMF_BG.jpg') center top/cover no-repeat;align-items:center;justify-content:center;padding:60px 40px;text-align:center;}
 .welcome-cross{font-size:60px;margin-bottom:20px;filter:drop-shadow(0 4px 16px rgba(255,200,0,0.6));}
@@ -270,10 +270,10 @@ input[type=range]{flex:1;accent-color:#f5c830;}
 
 <!-- NOTIFICATIONS -->
 <div class="screen" id="notifyScreen">
-  <div class="notify-icon">&#128276;</div>
+  <img src="images/EMF_logo.png" alt="Embrace My Faith" style="height:60px;object-fit:contain;margin-bottom:16px;"/>
   <div class="notify-title" id="notifyTitle">Good to meet you!</div>
   <div class="notify-sub">May we send you prayer reminders and updates to keep your spirit anchored throughout the day?</div>
-  <button class="notify-yes" onclick="showScreen('welcomeScreen')">Yes, please! &#127775;</button>
+  <button class="notify-yes" onclick="showScreen('welcomeScreen')">Yes Please</button>
   <button class="notify-no" onclick="showScreen('welcomeScreen')">Not right now</button>
 </div>
 
@@ -957,7 +957,7 @@ function saveName() {
   var val = document.getElementById('userNameInput').value.trim();
   if (!val) { alert('Please enter your name to continue.'); return; }
   userName = val;
-  document.getElementById('notifyTitle').textContent = 'Welcome, ' + userName + '!';
+  document.getElementById('notifyTitle').textContent = 'Welcome ' + userName + '!';
   document.getElementById('welcomeName').textContent = userName;
   document.getElementById('homeName').textContent = userName;
   showScreen('notifyScreen');
