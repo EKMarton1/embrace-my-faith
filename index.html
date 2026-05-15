@@ -103,8 +103,8 @@ body{background:#1a1a1a;display:flex;justify-content:center;align-items:flex-sta
 }
 .generate-btn:hover{transform:scale(1.05);}
 .generate-btn:disabled{opacity:0.5;cursor:not-allowed;}
-#prayerScreen .form-label,#requestPrayerScreen .form-label{font-size:14.4px;}
-#prayerScreen .form-input,#prayerScreen .form-textarea,#prayerScreen .form-select,#requestPrayerScreen .form-input,#requestPrayerScreen .form-textarea,#requestPrayerScreen .form-select{background:rgba(255,255,255,0.3);font-size:16.5px;font-weight:700;}
+#prayerScreen .form-label,#requestPrayerScreen .form-label,#sendPrayerScreen .form-label{font-size:14.4px;}
+#prayerScreen .form-input,#prayerScreen .form-textarea,#prayerScreen .form-select,#requestPrayerScreen .form-input,#requestPrayerScreen .form-textarea,#requestPrayerScreen .form-select,#sendPrayerScreen .form-input,#sendPrayerScreen .form-textarea{background:rgba(255,255,255,0.3);font-size:16.5px;font-weight:700;}
 .prayers-remaining{text-align:center;margin-top:12px;font-size:12px;color:rgba(0,0,0,0.65);}
 .prayers-remaining span{text-decoration:underline;cursor:pointer;color:#111111;}
 .loading-wrap{display:none;text-align:center;padding:40px 20px;}
@@ -585,41 +585,15 @@ input[type=range]{flex:1;accent-color:#f5c830;}
   <div class="screen-title">Send Prayer</div>
 </div>
   <div class="screen-body">
-    <div class="section-label">Lift Someone Up</div>
-    <div class="section-sub">Write a prayer for someone you love and send it straight to their heart.</div>
+    <div class="section-label" style="font-size:26.4px;">Pray for Someone</div>
+    <div class="section-sub">Enter who you&rsquo;re praying for and what&rsquo;s on their heart &mdash; we&rsquo;ll take you to craft a personal prayer to send to them.</div>
     <label class="form-label">Who are you praying for?</label>
-    <input class="form-input" id="sendPrayerFor" type="text" placeholder="Their name"/>
+    <input class="form-input" id="sendPrayerFor" type="text" placeholder="Name"/>
     <label class="form-label">What do you want to pray over them?</label>
-    <textarea class="form-textarea" id="sendPrayerSituation" placeholder="Their situation, need, or a blessing you want to speak over them..."></textarea>
-    <label class="form-label">Prayer tone</label>
-    <select class="form-select" id="sendPrayerTone">
-      <option value="hopeful and uplifting">Hopeful &amp; Uplifting</option>
-      <option value="comforting and peaceful">Comforting &amp; Peaceful</option>
-      <option value="bold and courageous">Bold &amp; Courageous</option>
-      <option value="grateful and thankful">Grateful &amp; Thankful</option>
-      <option value="healing and restoration">Healing &amp; Restoration</option>
-    </select>
-    <button class="generate-btn" id="sendGenerateBtn" onclick="generateSendPrayer()">Generate Prayer to Send &#10022;</button>
-    <button onclick="showScreen('circleScreen')" style="width:100%;margin-top:10px;padding:14px;background:rgba(255,255,255,0.45);border:1.5px solid rgba(0,0,0,0.15);color:#111111;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;">&#129464; My Circle</button>
-    <div class="loading-wrap" id="sendLoadingWrap">
-      <div style="font-size:36px;margin-bottom:12px;">&#128140;</div>
-      <div class="loading-dots">Crafting a prayer for them...</div>
-    </div>
-    <div class="prayer-result" id="sendPrayerResult">
-      <div class="result-label">Personal Prayer</div>
-      <div class="prayer-text" id="sendPrayerText"></div>
-      <div style="display:flex;gap:10px;margin-bottom:10px;align-items:center;">
-        <span style="font-size:12px;font-weight:700;color:rgba(0,0,0,0.6);letter-spacing:1px;text-transform:uppercase;">Voice:</span>
-        <button class="action-btn" id="svbFemale" onclick="selectSendGender('female')" style="background:rgba(30,15,0,0.75);color:#f5c830;flex:1;padding:10px;font-size:14px;font-weight:700;">Female</button>
-        <button class="action-btn" id="svbMale" onclick="selectSendGender('male')" style="background:rgba(255,255,255,0.4);color:#111;flex:1;padding:10px;font-size:14px;font-weight:700;">Male</button>
-      </div>
-      <div class="prayer-actions">
-        <button class="action-btn" onclick="shareSendPrayer('text')">&#128172; Text</button>
-        <button class="action-btn" onclick="shareSendPrayer('email')">&#128139; Email</button>
-        <button class="action-btn listen-btn" id="sendListenBtn" onclick="toggleSendListen()">&#127925; Listen</button>
-        <button class="action-btn" onclick="shareSendPrayer('share')">&#8679; Share</button>
-      </div>
-    </div>
+    <textarea class="form-textarea" id="sendPrayerSituation" placeholder="Their situation, need, or a blessing you want to speak over them..." maxlength="150" oninput="document.getElementById('sendCharCount').textContent=this.value.length+'/150'"></textarea>
+    <div id="sendCharCount" style="text-align:right;font-size:12px;color:rgba(0,0,0,0.5);margin-top:4px;font-family:'Lato',sans-serif;">0/150</div>
+    <div id="sendPrayersRemaining" style="text-align:center;margin-top:16px;font-size:13px;color:rgba(0,0,0,0.65);"></div>
+    <button class="generate-btn" onclick="openSendPrayer()" style="margin-top:12px;">Craft Their Prayer</button>
   </div>
 </div>
 
@@ -853,7 +827,6 @@ var ELIJAH_ID = SHANE_ID;
 
 // Default voices per context
 var selectedVoiceId  = TRACY_ID;   // My Prayer default — female warm
-var sendVoiceId      = TRACY_ID;   // Send Prayer default
 var riseVoiceId      = TESS_ID;    // Rise default — uplifting
 var restVoiceId      = TRACY_ID;   // Rest default — soothing
 
@@ -925,8 +898,11 @@ function showScreen(id) {
   if (id === 'settingsScreen') {
     var sn = document.getElementById('settingsName');
     if (sn) sn.textContent = userName;
-    // Reflect current gender preference
     saveGenderPref(defaultGender);
+  }
+  if (id === 'sendPrayerScreen') {
+    var el = document.getElementById('sendPrayersRemaining');
+    if (el) el.textContent = prayersLeft + ' of 10 prayers remaining today';
   }
   var screens = document.querySelectorAll('.screen');
   for (var i = 0; i < screens.length; i++) screens[i].classList.remove('active');
@@ -1405,86 +1381,15 @@ function renderSavedPrayers() {
 
 
 // ── SEND A PRAYER JS ─────────────────────────────────────────────────────────
-var sendVoiceId = '21m00Tcm4TlvDq8ikWAM';
-var sendAudio = null;
-var sendPlaying = false;
-
-function selectSendGender(g) {
-  var tone = document.getElementById('sendPrayerTone') ? document.getElementById('sendPrayerTone').value : 'hopeful and uplifting';
-  sendVoiceId = getVoiceForTone(tone, g);
-  var fm = document.getElementById('svbFemale');
-  var mm = document.getElementById('svbMale');
-  if (fm) { fm.style.background = g === 'female' ? 'rgba(30,15,0,0.75)' : 'rgba(255,255,255,0.4)'; fm.style.color = g === 'female' ? '#f5c830' : '#111'; }
-  if (mm) { mm.style.background = g === 'male' ? 'rgba(30,15,0,0.75)' : 'rgba(255,255,255,0.4)'; mm.style.color = g === 'male' ? '#f5c830' : '#111'; }
-}
-
-async function generateSendPrayer() {
-  var forWho = document.getElementById('sendPrayerFor').value.trim();
-  var situation = document.getElementById('sendPrayerSituation').value.trim();
-  var tone = document.getElementById('sendPrayerTone').value;
-  if (!forWho) { alert('Please enter who you are praying for.'); return; }
-  if (!situation) { alert('Please share what you want to pray over them.'); return; }
-  document.getElementById('sendGenerateBtn').disabled = true;
-  document.getElementById('sendPrayerResult').classList.remove('visible');
-  document.getElementById('sendLoadingWrap').classList.add('visible');
-  var systemMsg = "You are a compassionate Christian prayer minister. You write deeply personal, heartfelt prayers that feel written specifically for one person and one moment.";
-  var userMsg = "Write a deeply personal prayer as a gift from one person to another. " +
-    "PERSON BEING PRAYED FOR: " + forWho + ". " +
-    "SITUATION: " + situation + ". " +
-    "TONE: " + tone + ". " +
-    "Requirements: mention " + forWho + " by name 3+ times, reference the specific situation explicitly, 5-7 warm intimate sentences ending with Amen. This prayer is a loving gift. " +
-    "Respond ONLY with the prayer text - no JSON, no scripture, no labels, just the prayer starting with Heavenly Father or Dear Lord";
-    try {
-    var resp = await fetch('/api/claude', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ system: systemMsg, messages: [{ role: 'user', content: userMsg }], max_tokens: 1000 })
-    });
-    var data = await resp.json();
-    var prayerOnly = (data.content[0].text || '').trim();
-    document.getElementById('sendPrayerText').textContent = prayerOnly;
-  } catch(e) {
-    document.getElementById('sendPrayerText').textContent = 'Heavenly Father, we lift up ' + forWho + ' today and bring ' + situation + ' into Your presence. Surround them with Your peace, guide their steps, and let them feel Your love in this moment. In Jesus’ name, Amen.';
-  }
-  document.getElementById('sendLoadingWrap').classList.remove('visible');
-  document.getElementById('sendPrayerResult').classList.add('visible');
-  document.getElementById('sendGenerateBtn').disabled = false;
-}
-
-async function toggleSendListen() {
-  if (sendPlaying) {
-    if (sendAudio) { sendAudio.pause(); sendAudio = null; }
-    sendPlaying = false;
-    document.getElementById('sendListenBtn').innerHTML = '&#127925; Listen';
-    return;
-  }
-  var prayer = document.getElementById('sendPrayerText').textContent;
-  if (!prayer) { alert('Generate a prayer first!'); return; }
-  document.getElementById('sendListenBtn').innerHTML = '&#9646;&#9646; Stop';
-  sendPlaying = true;
-  try {
-    var resp = await fetch('/api/speak', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: prayer, voiceId: sendVoiceId }) });
-    var blob = await resp.blob();
-    var url = URL.createObjectURL(blob);
-    sendAudio = new Audio(url);
-    sendAudio.play();
-    sendAudio.onended = function() { sendPlaying = false; document.getElementById('sendListenBtn').innerHTML = '&#127925; Listen'; URL.revokeObjectURL(url); };
-  } catch(e) {
-    sendPlaying = false;
-    document.getElementById('sendListenBtn').innerHTML = '&#127925; Listen';
-    alert('Voice available on the live app.');
-  }
-}
-
-function shareSendPrayer(method) {
-  var scripture = document.getElementById('sendScriptureText').textContent;
-  var prayer = document.getElementById('sendPrayerText').textContent;
-  var name = document.getElementById('sendPrayerFor').value.trim() || 'you';
-  var text = 'A prayer just for you, ' + name + ':\n\n' + scripture + '\n\n' + prayer + '\n\nSent with love via Embrace My Faith';
-    if (method === 'text') { window.open('sms:?body=' + encodeURIComponent(text)); }
-  else if (method === 'email') { window.open('mailto:?subject=A Prayer Just for You&body=' + encodeURIComponent(text)); }
-  else if (method === 'share' && navigator.share) { navigator.share({ title: 'A Prayer for ' + name, text: text }); }
-  else { navigator.clipboard && navigator.clipboard.writeText(text).then(function(){ alert('Prayer copied! Paste anywhere to share.'); }); }
+function openSendPrayer() {
+  var forWho = document.getElementById(‘sendPrayerFor’).value.trim();
+  var situation = document.getElementById(‘sendPrayerSituation’).value.trim();
+  if (!forWho) { alert(‘Please enter who you are praying for.’); return; }
+  if (!situation) { alert(‘Please share what you want to pray over them.’); return; }
+  document.getElementById(‘prayerFor’).value = forWho;
+  document.getElementById(‘prayerSituation’).value = situation;
+  document.getElementById(‘prayerCharCount’).textContent = situation.length + ‘/150’;
+  showScreen(‘prayerScreen’);
 }
 
 // ── REQUEST PRAYER JS ─────────────────────────────────────────────────────────
