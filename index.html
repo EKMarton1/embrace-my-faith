@@ -1119,6 +1119,7 @@ function restAudioSrc() {
 function restLoadAudio() {
   var audio = document.getElementById('storyAudio');
   audio.src = restAudioSrc();
+  audio.load();
   document.getElementById('storyElapsed').textContent = '0:00';
   document.getElementById('storyDuration').textContent = '0:00';
   document.getElementById('storySeek').value = 0;
@@ -1197,11 +1198,15 @@ function startRest() {
   document.getElementById('restPlayBtn').style.display = 'none';
   document.getElementById('restInlinePlayer').style.display = 'block';
   var audio = document.getElementById('storyAudio');
-  audio.addEventListener('canplay', function() {
-    audio.play();
-    document.getElementById('storyPlayPause').textContent = 'Pause';
-    storyInterval = setInterval(storyUpdateProgress, 500);
-  }, { once: true });
+  var playPromise = audio.play();
+  document.getElementById('storyPlayPause').textContent = 'Pause';
+  storyInterval = setInterval(storyUpdateProgress, 500);
+  if (playPromise !== undefined) {
+    playPromise.catch(function() {
+      document.getElementById('storyPlayPause').textContent = 'Play';
+      clearInterval(storyInterval);
+    });
+  }
 }
 
 function restStopAndReset() {
