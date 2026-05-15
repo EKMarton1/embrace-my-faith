@@ -433,7 +433,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
     <div class="section-sub">Let scripture carry you to sleep. Choose your content, your voice, and drift off in His presence.</div>
     <label class="form-label">Tonight&rsquo;s reading</label>
     <div class="rise-options" id="restOptions">
-      <div class="option-card selected" onclick="selectRest(this,'Evening Prayer')">
+      <div class="option-card" onclick="selectRest(this,'Evening Prayer')">
         <div class="option-card-title">Evening Prayer</div>
         <div class="option-card-sub">A calming prayer to release your day to God</div>
       </div>
@@ -444,18 +444,6 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
       <div class="option-card" onclick="selectRest(this,'Psalms')">
         <div class="option-card-title">Psalms</div>
         <div class="option-card-sub">The soothing poetry of the Psalms read softly</div>
-      </div>
-    </div>
-    <div id="storyPlayer" class="story-player" style="display:none;">
-      <audio id="storyAudio" preload="none"></audio>
-      <div class="story-player-controls">
-        <button class="story-play-btn" id="storyPlayPause" onclick="storyTogglePlay()">Play</button>
-        <button class="story-stop-btn" onclick="storyStop()">Stop</button>
-      </div>
-      <div class="story-player-time">
-        <span class="story-time" id="storyElapsed">0:00</span>
-        <input type="range" class="story-seek" id="storySeek" min="0" max="100" value="0" step="0.1" oninput="storyScrub(this.value)"/>
-        <span class="story-time" id="storyDuration">0:00</span>
       </div>
     </div>
     <label class="form-label">Voice</label>
@@ -479,7 +467,21 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
       <label>Ambient volume</label>
       <input type="range" min="0" max="100" value="35" id="restAmbientVol"/>
     </div>
-    <button class="awake-btn" id="restPlayBtn" onclick="startRest()">Begin Tonight&rsquo;s Rest</button>
+    <audio id="storyAudio" preload="none"></audio>
+    <div id="restPlayerWrap">
+      <button class="awake-btn" id="restPlayBtn" onclick="startRest()">Begin Tonight&rsquo;s Rest</button>
+      <div id="restInlinePlayer" class="story-player" style="display:none;">
+        <div class="story-player-controls">
+          <button class="story-play-btn" id="storyPlayPause" onclick="storyTogglePlay()">Pause</button>
+          <button class="story-stop-btn" onclick="restStopAndReset()">Stop</button>
+        </div>
+        <div class="story-player-time">
+          <span class="story-time" id="storyElapsed">0:00</span>
+          <input type="range" class="story-seek" id="storySeek" min="0" max="100" value="0" step="0.1" oninput="storyScrub(this.value)"/>
+          <span class="story-time" id="storyDuration">0:00</span>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1120,7 +1122,6 @@ function restLoadAudio() {
   document.getElementById('storyElapsed').textContent = '0:00';
   document.getElementById('storyDuration').textContent = '0:00';
   document.getElementById('storySeek').value = 0;
-  document.getElementById('storyPlayPause').textContent = 'Play';
   clearInterval(storyInterval);
   audio.addEventListener('loadedmetadata', function() {
     document.getElementById('storyDuration').textContent = storyFmtTime(audio.duration);
@@ -1131,9 +1132,9 @@ function selectRest(el, label) {
   var cards = document.querySelectorAll('#restOptions .option-card');
   for (var i = 0; i < cards.length; i++) cards[i].classList.remove('selected');
   el.classList.add('selected');
-  storyStop();
-  restLoadAudio();
-  document.getElementById('storyPlayer').style.display = 'block';
+  if (document.getElementById('restInlinePlayer').style.display !== 'none') {
+    restStopAndReset();
+  }
 }
 
 var storyInterval = null;
@@ -1190,12 +1191,28 @@ function storyFmtTime(s) {
 }
 
 function startRest() {
-  document.getElementById('storyPlayer').style.display = 'block';
+  var selected = document.querySelector('#restOptions .option-card.selected');
+  if (!selected) { alert('Please select a reading option first.'); return; }
   restLoadAudio();
+  document.getElementById('restPlayBtn').style.display = 'none';
+  document.getElementById('restInlinePlayer').style.display = 'block';
   var audio = document.getElementById('storyAudio');
   audio.addEventListener('canplay', function() {
-    storyTogglePlay();
+    audio.play();
+    document.getElementById('storyPlayPause').textContent = 'Pause';
+    storyInterval = setInterval(storyUpdateProgress, 500);
   }, { once: true });
+}
+
+function restStopAndReset() {
+  var audio = document.getElementById('storyAudio');
+  audio.pause();
+  audio.currentTime = 0;
+  clearInterval(storyInterval);
+  document.getElementById('restInlinePlayer').style.display = 'none';
+  document.getElementById('restPlayBtn').style.display = '';
+  document.getElementById('storyElapsed').textContent = '0:00';
+  document.getElementById('storySeek').value = 0;
 }
 
 // ========== THE WORD ==========
@@ -1624,9 +1641,8 @@ function selectRestGender(g) {
   var mm = document.getElementById('restMale');
   if (fm) { fm.style.background = g === 'female' ? 'rgba(30,15,0,0.75)' : 'rgba(255,255,255,0.4)'; fm.style.color = g === 'female' ? '#f5c830' : '#111'; }
   if (mm) { mm.style.background = g === 'male' ? 'rgba(30,15,0,0.75)' : 'rgba(255,255,255,0.4)'; mm.style.color = g === 'male' ? '#f5c830' : '#111'; }
-  if (document.getElementById('storyPlayer').style.display !== 'none') {
-    storyStop();
-    restLoadAudio();
+  if (document.getElementById('restInlinePlayer').style.display !== 'none') {
+    restStopAndReset();
   }
 }
 
