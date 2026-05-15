@@ -171,11 +171,13 @@ input[type=range]{flex:1;accent-color:#f5c830;}
 .add-moment-top-btn{display:block;width:100%;margin-bottom:14px;padding:13px;background:rgba(30,15,0,0.8);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;transition:transform 0.2s ease;}
 .add-moment-top-btn:hover{transform:scale(1.05);}
 .moment-item{display:flex;align-items:center;background:rgba(255,255,255,0.35);border-radius:14px;padding:12px 14px;margin-bottom:8px;}
-.moment-item-row{flex:1;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
-.moment-item-date{font-size:13px;color:rgba(0,0,0,0.6);white-space:nowrap;min-width:52px;}
-.moment-item-name{font-weight:700;color:#111111;font-size:15px;text-transform:uppercase;letter-spacing:0.5px;}
-.moment-item-years{font-size:14px;font-weight:600;color:rgba(0,0,0,0.75);}
-.moment-badge{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;background:rgba(30,15,0,0.75);color:#f5c830;white-space:nowrap;}
+.moment-item-body{flex:1;}
+.moment-item-row{display:flex;align-items:center;gap:10px;}
+.moment-item-row2{margin-top:5px;}
+.moment-item-date{font-size:16px;font-weight:700;color:rgba(0,0,0,0.7);white-space:nowrap;}
+.moment-item-name{font-weight:700;color:#111111;font-size:16px;text-transform:uppercase;letter-spacing:0.5px;}
+.moment-item-years{font-size:15px;font-weight:600;color:rgba(0,0,0,0.75);}
+.moment-badge{display:inline-flex;align-items:center;gap:3px;font-size:12px;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(30,15,0,0.75);color:#f5c830;white-space:nowrap;}
 .moment-empty{text-align:center;font-family:'Playfair Display',serif;font-style:italic;font-size:14px;color:rgba(0,0,0,0.5);padding:30px 0;}
 .pray-for-btn{background:rgba(30,15,0,0.75);border:1px solid rgba(30,15,0,0.2);color:#f5c830;font-size:13px;font-weight:700;padding:8px 14px;border-radius:20px;cursor:pointer;white-space:nowrap;margin-left:8px;transition:transform 0.2s ease;}
 .pray-for-btn:hover{transform:scale(1.05);}
@@ -1384,11 +1386,13 @@ function renderMoments() {
     }
     var years = calcYears(m.date, m.category);
     var icon = catIcons[m.category] || '';
-    el.innerHTML += '<div class="moment-item"><div class="moment-item-row">' +
+    el.innerHTML += '<div class="moment-item"><div class="moment-item-body">' +
+      '<div class="moment-item-row">' +
       (dateLabel ? '<span class="moment-item-date">' + dateLabel + '</span>' : '') +
       '<span class="moment-item-name">' + m.name + '</span>' +
       (years !== '' ? '<span class="moment-item-years">' + years + '</span>' : '') +
-      '<span class="moment-badge">' + icon + ' ' + m.category + '</span>' +
+      '</div>' +
+      '<div class="moment-item-row2"><span class="moment-badge">' + icon + ' ' + m.category + '</span></div>' +
       '</div><button class="pray-for-btn" onclick="prayForMoment(' + origIdx + ')">Pray</button></div>';
   });
 }
