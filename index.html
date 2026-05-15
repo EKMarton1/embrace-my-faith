@@ -156,16 +156,23 @@ body{background:#1a1a1a;display:flex;justify-content:center;align-items:flex-sta
 .slider-row label{font-size:12px;color:rgba(255,255,255,0.6);min-width:70px;}
 input[type=range]{flex:1;accent-color:#f5c830;}
 .awake-btn{width:100%;padding:16px;background:rgba(30,15,0,0.85);color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:16px;border:none;border-radius:50px;cursor:pointer;margin-top:16px;}
-.time-picker{position:relative;display:flex;align-items:center;border-radius:16px;background:rgba(255,255,255,0.35);border:1.5px solid rgba(255,255,255,0.5);margin:12px 0 20px;overflow:hidden;height:150px;}
-.picker-col{flex:1;height:150px;overflow-y:scroll;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;text-align:center;}
-.picker-col::-webkit-scrollbar{display:none;}
-.picker-col-ampm{flex:0.7;}
-.picker-item{height:30px;line-height:30px;scroll-snap-align:center;font-family:'Lato',sans-serif;font-size:19px;font-weight:600;color:rgba(0,0,0,0.45);}
-.picker-sep{font-family:'Lato',sans-serif;font-size:22px;font-weight:700;color:#111;padding:0 2px;flex:0 0 auto;}
-.picker-highlight{position:absolute;left:8px;right:8px;top:50%;transform:translateY(-50%);height:30px;background:rgba(245,200,48,0.15);border-radius:8px;border-top:1.5px solid rgba(200,144,10,0.5);border-bottom:1.5px solid rgba(200,144,10,0.5);pointer-events:none;z-index:2;}
-.picker-fade-top,.picker-fade-bottom{position:absolute;left:0;right:0;height:60px;pointer-events:none;z-index:1;}
-.picker-fade-top{top:0;background:linear-gradient(to bottom,rgba(255,245,220,0.92) 0%,transparent 100%);}
-.picker-fade-bottom{bottom:0;background:linear-gradient(to top,rgba(255,245,220,0.92) 0%,transparent 100%);}
+.time-bar{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.35);border:1.5px solid rgba(255,255,255,0.5);border-radius:16px;padding:14px 20px;cursor:pointer;margin:12px 0 8px;transition:background 0.2s;}
+.time-bar:hover{background:rgba(255,255,255,0.45);}
+.time-bar-value{font-family:'Playfair Display',serif;font-size:28px;font-weight:600;color:#111;}
+.time-bar-hint{font-size:12px;color:rgba(0,0,0,0.5);font-family:'Lato',sans-serif;letter-spacing:0.5px;}
+.time-dropdowns{background:rgba(255,255,255,0.35);border:1.5px solid rgba(255,255,255,0.5);border-radius:16px;padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.time-select{background:rgba(30,15,0,0.8);color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:16px;border:none;border-radius:10px;padding:8px 10px;cursor:pointer;outline:none;flex:1;}
+.time-select-ampm{flex:0.7;}
+.time-sep{font-family:'Lato',sans-serif;font-size:20px;font-weight:700;color:#111;padding:0 2px;}
+.time-confirm-btn{background:rgba(30,15,0,0.85);color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:13px;padding:8px 18px;border:none;border-radius:50px;cursor:pointer;white-space:nowrap;transition:background 0.2s;}
+.time-confirm-btn:hover{background:rgba(30,15,0,0.95);}
+.song-list{display:flex;flex-direction:column;gap:8px;margin-bottom:8px;}
+.song-item{display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.35);border:1.5px solid rgba(30,15,0,0.15);border-radius:12px;padding:12px 16px;cursor:pointer;transition:background 0.2s;}
+.song-item:hover{background:rgba(255,255,255,0.45);}
+.song-item.selected{background:rgba(255,255,255,0.45);border:2px solid rgba(200,144,10,0.85);box-shadow:0 0 0 1px rgba(200,144,10,0.3);}
+.song-name{font-family:'Lato',sans-serif;font-weight:600;font-size:14px;color:#111;}
+.song-preview-btn{background:rgba(30,15,0,0.7);color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:12px;padding:6px 14px;border:none;border-radius:50px;cursor:pointer;transition:background 0.2s;flex-shrink:0;}
+.song-preview-btn:hover{background:rgba(30,15,0,0.9);}
 
 /* ========== THE WORD ========== */
 .word-tabs{display:flex;gap:8px;margin-bottom:20px;}
@@ -398,14 +405,19 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
     <div class="section-label">Rise with Purpose</div>
     <div class="section-sub">Wake each morning anchored in His Word. Set your alarm, choose your voice, and begin the day lifted.</div>
     <label class="form-label">Wake at</label>
-    <div class="time-picker" id="timePicker">
-      <div class="picker-fade-top"></div>
-      <div class="picker-fade-bottom"></div>
-      <div class="picker-highlight"></div>
-      <div class="picker-col" id="pickerHour"></div>
-      <div class="picker-sep">:</div>
-      <div class="picker-col" id="pickerMin"></div>
-      <div class="picker-col picker-col-ampm" id="pickerAmPm"></div>
+    <div class="time-bar" id="timeBar" onclick="toggleTimeDropdowns()">
+      <span class="time-bar-value" id="timeDisplay">6:30 AM</span>
+      <span class="time-bar-hint">tap to change</span>
+    </div>
+    <div class="time-dropdowns" id="timeDropdowns" style="display:none;">
+      <select class="time-select" id="timeHour"></select>
+      <span class="time-sep">:</span>
+      <select class="time-select" id="timeMin"></select>
+      <select class="time-select time-select-ampm" id="timeAmPm">
+        <option>AM</option>
+        <option>PM</option>
+      </select>
+      <button class="time-confirm-btn" onclick="confirmTime()">Set</button>
     </div>
     <label class="form-label">Wake with</label>
     <div class="rise-options" id="riseOptions">
@@ -422,6 +434,40 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
         <div class="option-card-sub">Open with praise and worship to set the tone</div>
       </div>
     </div>
+    <div id="worshipSongList" style="display:none;">
+      <label class="form-label">Choose your wake track</label>
+      <div class="song-list">
+        <div class="song-item" data-song="Devotional" onclick="selectSong('Devotional','Audio/Devotional.mp3')">
+          <span class="song-name">Devotional</span>
+          <button class="song-preview-btn" onclick="previewSong(event,'Audio/Devotional.mp3')">Preview</button>
+        </div>
+        <div class="song-item" data-song="Hymns" onclick="selectSong('Hymns','Audio/Hymns.mp3')">
+          <span class="song-name">Hymns</span>
+          <button class="song-preview-btn" onclick="previewSong(event,'Audio/Hymns.mp3')">Preview</button>
+        </div>
+        <div class="song-item" data-song="Give Thanks" onclick="selectSong('Give Thanks','Audio/GiveThanks.mp3')">
+          <span class="song-name">Give Thanks</span>
+          <button class="song-preview-btn" onclick="previewSong(event,'Audio/GiveThanks.mp3')">Preview</button>
+        </div>
+        <div class="song-item" data-song="Praise" onclick="selectSong('Praise','Audio/Praise.mp3')">
+          <span class="song-name">Praise</span>
+          <button class="song-preview-btn" onclick="previewSong(event,'Audio/Praise.mp3')">Preview</button>
+        </div>
+        <div class="song-item" data-song="Praise The Lord" onclick="selectSong('Praise The Lord','Audio/PraiseTheLord.mp3')">
+          <span class="song-name">Praise The Lord</span>
+          <button class="song-preview-btn" onclick="previewSong(event,'Audio/PraiseTheLord.mp3')">Preview</button>
+        </div>
+        <div class="song-item" data-song="Present" onclick="selectSong('Present','Audio/Present.mp3')">
+          <span class="song-name">Present</span>
+          <button class="song-preview-btn" onclick="previewSong(event,'Audio/Present.mp3')">Preview</button>
+        </div>
+        <div class="song-item" data-song="Rise" onclick="selectSong('Rise','Audio/Rise.mp3')">
+          <span class="song-name">Rise</span>
+          <button class="song-preview-btn" onclick="previewSong(event,'Audio/Rise.mp3')">Preview</button>
+        </div>
+      </div>
+    </div>
+    <audio id="previewAudio" preload="none"></audio>
     <label class="form-label">Voice</label>
     <div style="display:flex;gap:10px;">
       <button class="action-btn" id="riseFemale" onclick="selectRiseGender('female')" style="background:rgba(30,15,0,0.75);color:#f5c830;flex:1;padding:12px;font-size:14px;font-weight:700;">Female</button>
@@ -1125,45 +1171,80 @@ function stopAudio() {
 }
 
 // ========== RISE ==========
+var selectedWorshipSong = null;
+var previewTimer = null;
+var previewAudioEl = null;
+
 function selectRise(el, label) {
   var cards = document.querySelectorAll('#riseOptions .option-card');
   for (var i = 0; i < cards.length; i++) cards[i].classList.remove('selected');
   el.classList.add('selected');
-  if (document.getElementById('riseInlinePlayer').style.display !== 'none') {
-    riseStopAndReset();
+  document.getElementById('worshipSongList').style.display = label === 'Worship Music' ? 'block' : 'none';
+  if (label !== 'Worship Music') stopPreview();
+  if (document.getElementById('riseInlinePlayer').style.display !== 'none') riseStopAndReset();
+}
+
+function selectSong(name, src) {
+  selectedWorshipSong = { name: name, src: src };
+  var items = document.querySelectorAll('.song-item');
+  for (var i = 0; i < items.length; i++) {
+    items[i].classList.toggle('selected', items[i].dataset.song === name);
   }
 }
 
-function initTimePicker() {
-  var hours = ['1','2','3','4','5','6','7','8','9','10','11','12'];
-  var minutes = [];
-  for (var i = 0; i < 60; i++) minutes.push(i < 10 ? '0'+i : ''+i);
-  var ampm = ['AM','PM'];
-  fillPickerCol('pickerHour', hours);
-  fillPickerCol('pickerMin', minutes);
-  fillPickerCol('pickerAmPm', ampm);
-  setTimeout(function() {
-    document.getElementById('pickerHour').scrollTop = 5 * 30;
-    document.getElementById('pickerMin').scrollTop = 30 * 30;
-    document.getElementById('pickerAmPm').scrollTop = 0;
-  }, 50);
+function stopPreview() {
+  clearTimeout(previewTimer);
+  if (previewAudioEl) { previewAudioEl.pause(); previewAudioEl.currentTime = 0; previewAudioEl = null; }
+  var btns = document.querySelectorAll('.song-preview-btn');
+  for (var i = 0; i < btns.length; i++) btns[i].textContent = 'Preview';
 }
 
-function fillPickerCol(id, items) {
-  var col = document.getElementById(id);
-  var html = '<div style="height:60px"></div>';
-  items.forEach(function(item) { html += '<div class="picker-item">' + item + '</div>'; });
-  html += '<div style="height:60px"></div>';
-  col.innerHTML = html;
+function previewSong(event, src) {
+  event.stopPropagation();
+  var btn = event.target;
+  if (previewAudioEl && !previewAudioEl.paused && previewAudioEl.currentSrc.indexOf(src.split('/').pop()) !== -1) {
+    stopPreview();
+    return;
+  }
+  stopPreview();
+  previewAudioEl = new Audio(src);
+  previewAudioEl.play();
+  btn.textContent = 'Stop';
+  previewTimer = setTimeout(function() { stopPreview(); }, 15000);
+}
+
+function initTimeSelects() {
+  var hEl = document.getElementById('timeHour');
+  var mEl = document.getElementById('timeMin');
+  for (var h = 1; h <= 12; h++) {
+    var o = document.createElement('option');
+    o.value = o.textContent = h;
+    if (h === 6) o.selected = true;
+    hEl.appendChild(o);
+  }
+  for (var m = 0; m < 60; m += 5) {
+    var o2 = document.createElement('option');
+    o2.value = o2.textContent = m < 10 ? '0'+m : ''+m;
+    if (m === 30) o2.selected = true;
+    mEl.appendChild(o2);
+  }
+}
+
+function toggleTimeDropdowns() {
+  var d = document.getElementById('timeDropdowns');
+  d.style.display = d.style.display === 'none' ? 'flex' : 'none';
+}
+
+function confirmTime() {
+  var h = document.getElementById('timeHour').value;
+  var m = document.getElementById('timeMin').value;
+  var a = document.getElementById('timeAmPm').value;
+  document.getElementById('timeDisplay').textContent = h + ':' + m + ' ' + a;
+  document.getElementById('timeDropdowns').style.display = 'none';
 }
 
 function getRiseTime() {
-  var hours = ['1','2','3','4','5','6','7','8','9','10','11','12'];
-  var ampm = ['AM','PM'];
-  var h = hours[Math.min(Math.round(document.getElementById('pickerHour').scrollTop / 30), 11)];
-  var m = Math.min(Math.round(document.getElementById('pickerMin').scrollTop / 30), 59);
-  var a = ampm[Math.min(Math.round(document.getElementById('pickerAmPm').scrollTop / 30), 1)];
-  return h + ':' + (m < 10 ? '0'+m : m) + ' ' + a;
+  return document.getElementById('timeDisplay').textContent;
 }
 
 // ========== REST ==========
@@ -1667,8 +1748,8 @@ function riseAudioSrc() {
   var selected = document.querySelector('#riseOptions .option-card.selected');
   var label = selected ? selected.querySelector('.option-card-title').textContent.trim() : '';
   var isMale = riseVoiceId === ERIC_ID;
-  if (label === 'Worship Music')    return 'Audio/Rise01.mp3';
-  if (label === 'Morning Prayer')   return 'Audio/MorningPrayer01_' + (isMale ? 'M' : 'F') + '.mp3';
+  if (label === 'Worship Music') return selectedWorshipSong ? selectedWorshipSong.src : 'Audio/Rise01.mp3';
+  if (label === 'Morning Prayer') return 'Audio/MorningPrayer01_' + (isMale ? 'M' : 'F') + '.mp3';
   return 'Audio/RiseScripture01_' + (isMale ? 'M' : 'F') + '.mp3';
 }
 
@@ -1811,7 +1892,7 @@ function hidePrayerOverlay() {
 // ========== INIT ==========
 setTimeGreeting();
 initDateDropdowns();
-initTimePicker();
+initTimeSelects();
 </script>
 </body>
 </html>
