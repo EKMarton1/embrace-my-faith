@@ -132,11 +132,11 @@ body{background:#1a1a1a;display:flex;justify-content:center;align-items:flex-sta
 .result-label{font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#111111;margin-bottom:8px;}
 
 .prayer-text{font-size:15px;color:#111111;line-height:1.8;font-weight:600;background:rgba(255,255,255,0.6);padding:16px;border-radius:16px;margin-bottom:16px;}
-.prayer-actions{display:flex;gap:10px;flex-wrap:wrap;}
-.action-btn{flex:1;min-width:80px;padding:12px 8px;background:rgba(255,255,255,0.35);border:1px solid rgba(61,31,0,0.2);color:#111111;font-family:'Lato',sans-serif;font-weight:600;font-size:13px;border-radius:50px;cursor:pointer;}
+.prayer-actions{display:flex;gap:8px;width:100%;}
+.prayer-action-btn{flex:1;padding:13px 4px;background:rgba(30,15,0,0.75);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:12px;letter-spacing:1.5px;border-radius:12px;cursor:pointer;transition:background 0.15s;}
+.prayer-action-btn:hover{background:rgba(30,15,0,0.65);}
 .aud-btn{background:rgba(255,255,255,0.4);color:#111111;transition:background 0.2s ease;}.aud-btn:hover{background:rgba(255,255,255,0.6);}.aud-btn.selected{background:rgba(255,255,255,0.65);font-weight:700;}
-.listen-btn{background:linear-gradient(135deg,rgba(255,255,255,0.25),rgba(255,255,255,0.1));border:1.5px solid rgba(255,255,255,0.5);}
-.listen-btn.playing{background:linear-gradient(135deg,rgba(255,200,80,0.4),rgba(200,144,10,0.3));}
+.action-btn{flex:1;min-width:80px;padding:12px 8px;background:rgba(255,255,255,0.35);border:1px solid rgba(61,31,0,0.2);color:#111111;font-family:'Lato',sans-serif;font-weight:600;font-size:13px;border-radius:50px;cursor:pointer;}
 
 /* ========== COMING SOON / FEATURE SCREEN ========== */
 .coming-soon{padding:32px 24px;text-align:center;}
@@ -232,26 +232,17 @@ input[type=range]{flex:1;accent-color:#f5c830;}
 .modal-date-row .modal-input{flex:1;margin-bottom:12px;}
 .modal-date-row select.modal-input{flex:1.6;}
 
-/* PRAYER LISTENING OVERLAY */
-.prayer-overlay{
-  display:none;position:fixed;top:0;left:0;right:0;bottom:0;
-  width:100%;height:100%;z-index:9999;
-  background:linear-gradient(160deg,rgba(200,144,10,0.98) 0%,rgba(61,31,0,0.98) 100%);
-  flex-direction:column;align-items:center;justify-content:center;
-  text-align:center;padding:40px;
-}
-.prayer-overlay.active{display:flex;}
-.overlay-phrase{
-  font-family:'Playfair Display',serif;
-  font-size:36px;font-weight:600;color:#fff;
-  opacity:0;transform:translateY(20px);
-  transition:opacity 0.8s ease, transform 0.8s ease;
-  margin-bottom:16px;letter-spacing:1px;
-  text-shadow:0 2px 20px rgba(0,0,0,0.3);
-}
-.overlay-phrase.visible{opacity:1;transform:translateY(0);}
-.overlay-cross{font-size:48px;margin-bottom:32px;opacity:0;transition:opacity 1s ease;}
-.overlay-cross.visible{opacity:1;}
+/* PRAYER LISTEN BUTTON */
+.listen-full-btn{width:100%;background:rgba(30,15,0,0.75);border:none;color:#f5c830;font-family:'Playfair Display',serif;font-weight:700;font-size:16px;letter-spacing:2px;border-radius:14px;padding:18px 16px;cursor:pointer;transition:transform 0.15s ease;display:block;margin-bottom:10px;text-align:center;}
+.listen-full-btn:hover{transform:scale(1.05);}
+.listen-full-btn:disabled{cursor:default;transform:none;}
+.listen-btn-main{display:block;}
+.listen-btn-sub{display:block;font-size:13px;opacity:0;transition:opacity 0.5s ease;margin-top:5px;letter-spacing:1px;color:rgba(245,200,48,0.85);}
+.listen-player-bar{width:100%;background:rgba(30,15,0,0.75);border-radius:14px;padding:13px 16px;display:flex;align-items:center;gap:10px;margin-bottom:10px;box-sizing:border-box;}
+.listen-player-btn{background:transparent;border:1px solid rgba(245,200,48,0.5);color:#f5c830;border-radius:8px;padding:7px 16px;font-size:13px;font-weight:700;font-family:'Lato',sans-serif;letter-spacing:1px;cursor:pointer;transition:background 0.15s;white-space:nowrap;}
+.listen-player-btn:hover{background:rgba(245,200,48,0.1);}
+.listen-progress-wrap{flex:1;height:4px;background:rgba(255,255,255,0.2);border-radius:2px;overflow:hidden;}
+.listen-progress-fill{height:100%;background:#f5c830;width:0%;transition:width 0.4s linear;}
 
 
 /* MODAL */
@@ -395,17 +386,27 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
     <div class="prayer-result" id="prayerResult">
       <div class="result-label">Your Personal Prayer</div>
       <div class="prayer-text" id="prayerText"></div>
-      <div style="display:flex;gap:10px;margin-bottom:12px;align-items:center;">
+      <div style="display:flex;gap:10px;margin-bottom:14px;align-items:center;">
         <span style="font-size:12px;font-weight:700;color:rgba(0,0,0,0.6);letter-spacing:1px;text-transform:uppercase;">Voice:</span>
         <button class="action-btn" id="vbFemale" onclick="selectVoiceGender('female')" style="background:rgba(30,15,0,0.75);color:#f5c830;flex:unset;padding:10px 24px;font-size:14px;">Female</button>
         <button class="action-btn" id="vbMale" onclick="selectVoiceGender('male')" style="background:rgba(255,255,255,0.4);color:#111;flex:unset;padding:10px 24px;font-size:14px;">Male</button>
       </div>
-      <div class="prayer-actions">
-        <button class="action-btn" onclick="copyPrayer()">Copy</button>
-        <button class="action-btn listen-btn" id="listenBtn" onclick="toggleListen()">&#127925; Listen</button>
-        <button class="action-btn" onclick="savePrayer()">Save</button>
-        <button class="action-btn" onclick="showScreen('connectScreen')">Share</button>
-        <button class="action-btn" onclick="newPrayer()">New</button>
+      <button class="listen-full-btn" id="listenBtn" onclick="toggleListen()">
+        <span class="listen-btn-main" id="listenBtnMain">LISTEN</span>
+        <span class="listen-btn-sub" id="listenBtnSub">I HEAR YOU</span>
+      </button>
+      <div id="prayerAudioBar" class="listen-player-bar" style="display:none;">
+        <button class="listen-player-btn" id="prayerPauseBtn" onclick="pauseResumePrayer()">Pause</button>
+        <div class="listen-progress-wrap">
+          <div class="listen-progress-fill" id="prayerProgressFill"></div>
+        </div>
+        <button class="listen-player-btn" onclick="stopPrayer()">Stop</button>
+      </div>
+      <div class="prayer-actions" id="prayerActions">
+        <button class="prayer-action-btn" onclick="copyPrayer()">COPY</button>
+        <button class="prayer-action-btn" onclick="savePrayer()">SAVE</button>
+        <button class="prayer-action-btn" onclick="showScreen('connectScreen')">SHARE</button>
+        <button class="prayer-action-btn" onclick="newPrayer()">NEW</button>
       </div>
     </div>
   </div>
@@ -901,14 +902,6 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
   </div>
 </div>
 
-<!-- PRAYER LISTENING OVERLAY - outside app for proper fixed positioning -->
-<div class="prayer-overlay" id="prayerOverlay">
-  <div class="overlay-cross" id="overlayCross">&#9768;</div>
-  <div class="overlay-phrase" id="overlayPhrase1">I See You</div>
-  <div class="overlay-phrase" id="overlayPhrase2">I Hear You</div>
-  <div class="overlay-phrase" id="overlayPhrase3">Give Me a Moment</div>
-</div>
-
 <script>
 // ========== STATE ==========
 var userName = 'Friend';
@@ -1175,13 +1168,14 @@ function newPrayer() {
 }
 
 // ========== LISTEN / TTS ==========
+var prayerProgressInterval = null;
+
 async function toggleListen() {
   if (isPlaying || currentAudio) {
     stopAudio();
     isPlaying = false;
-    hidePrayerOverlay();
-    document.getElementById('listenBtn').innerHTML = '&#127925; Listen';
-    document.getElementById('listenBtn').classList.remove('playing');
+    hidePrayerAudioBar();
+    resetListenButton();
     return;
   }
   var prayer = document.getElementById('prayerText').textContent;
@@ -1189,16 +1183,33 @@ async function toggleListen() {
   var tone = document.getElementById('prayerTone') ? document.getElementById('prayerTone').value : 'hopeful and uplifting';
   var gender = (document.getElementById('vbMale') && document.getElementById('vbMale').style.color === 'rgb(245, 200, 48)') ? 'male' : 'female';
   selectedVoiceId = getVoiceForTone(tone, gender);
-  document.getElementById('listenBtn').innerHTML = '&#9646;&#9646; Stop';
-  document.getElementById('listenBtn').classList.add('playing');
   isPlaying = true;
-  showPrayerOverlay();
+
+  // Inline button animation while TTS loads
+  var btn = document.getElementById('listenBtn');
+  var mainEl = document.getElementById('listenBtnMain');
+  var subEl = document.getElementById('listenBtnSub');
+  btn.disabled = true;
+  mainEl.textContent = 'I SEE YOU';
+  setTimeout(function() { subEl.style.opacity = '1'; }, 700);
+  setTimeout(function() { subEl.style.opacity = '0'; }, 1800);
+  setTimeout(function() { mainEl.textContent = 'YOUR PRAYER IS BEING CREATED'; }, 2300);
+
   await speakText(prayer, selectedVoiceId, function() {
     isPlaying = false;
-    hidePrayerOverlay();
-    document.getElementById('listenBtn').innerHTML = '&#127925; Listen';
-    document.getElementById('listenBtn').classList.remove('playing');
+    hidePrayerAudioBar();
+    resetListenButton();
   });
+}
+
+function resetListenButton() {
+  var btn = document.getElementById('listenBtn');
+  var mainEl = document.getElementById('listenBtnMain');
+  var subEl = document.getElementById('listenBtnSub');
+  if (btn) btn.disabled = false;
+  if (mainEl) mainEl.textContent = 'LISTEN';
+  if (subEl) { subEl.style.opacity = '0'; }
+  stopProgressBar();
 }
 
 async function speakText(text, voiceId, onDone) {
@@ -1218,15 +1229,18 @@ async function speakText(text, voiceId, onDone) {
     currentAudio.onended = function() {
       isPlaying = false;
       URL.revokeObjectURL(url);
+      stopProgressBar();
+      hidePrayerAudioBar();
       if (onDone) onDone();
     };
     currentAudio.play();
+    showPrayerAudioBar();
+    startProgressBar();
     return currentAudio;
   } catch(e) {
     console.error('TTS error:', e);
     isPlaying = false;
-    document.getElementById('listenBtn').innerHTML = '&#127925; Listen';
-    document.getElementById('listenBtn').classList.remove('playing');
+    resetListenButton();
     alert('Voice is resting. Please try again in a moment.');
   }
 }
@@ -1239,6 +1253,52 @@ function stopAudio() {
     currentAudio = null;
   }
   isPlaying = false;
+}
+
+function showPrayerAudioBar() {
+  document.getElementById('listenBtn').style.display = 'none';
+  document.getElementById('prayerAudioBar').style.display = 'flex';
+  document.getElementById('prayerPauseBtn').textContent = 'Pause';
+}
+
+function hidePrayerAudioBar() {
+  document.getElementById('prayerAudioBar').style.display = 'none';
+  document.getElementById('listenBtn').style.display = '';
+}
+
+function pauseResumePrayer() {
+  if (!currentAudio) return;
+  var btn = document.getElementById('prayerPauseBtn');
+  if (currentAudio.paused) {
+    currentAudio.play();
+    btn.textContent = 'Pause';
+  } else {
+    currentAudio.pause();
+    btn.textContent = 'Resume';
+  }
+}
+
+function stopPrayer() {
+  stopAudio();
+  stopProgressBar();
+  hidePrayerAudioBar();
+  resetListenButton();
+}
+
+function startProgressBar() {
+  stopProgressBar();
+  prayerProgressInterval = setInterval(function() {
+    if (!currentAudio || !currentAudio.duration) return;
+    var pct = (currentAudio.currentTime / currentAudio.duration) * 100;
+    var fill = document.getElementById('prayerProgressFill');
+    if (fill) fill.style.width = pct + '%';
+  }, 400);
+}
+
+function stopProgressBar() {
+  if (prayerProgressInterval) { clearInterval(prayerProgressInterval); prayerProgressInterval = null; }
+  var fill = document.getElementById('prayerProgressFill');
+  if (fill) fill.style.width = '0%';
 }
 
 // ========== RISE ==========
@@ -1923,42 +1983,6 @@ function selectRestGender(g) {
 }
 
 
-// ── PRAYER LISTENING OVERLAY ──────────────────────────────────────────────────
-var overlayTimer = null;
-
-function showPrayerOverlay() {
-  var overlay = document.getElementById('prayerOverlay');
-  if (!overlay) return;
-  overlay.classList.add('active');
-  // Reset all
-  ['overlayCross','overlayPhrase1','overlayPhrase2','overlayPhrase3','overlaySub'].forEach(function(id) {
-    var el = document.getElementById(id);
-    if (el) el.classList.remove('visible');
-  });
-  // Animate in sequence
-  setTimeout(function() {
-    var el = document.getElementById('overlayCross');
-    if (el) el.classList.add('visible');
-  }, 300);
-  setTimeout(function() {
-    var el = document.getElementById('overlayPhrase1');
-    if (el) el.classList.add('visible');
-  }, 1000);
-  setTimeout(function() {
-    var el = document.getElementById('overlayPhrase2');
-    if (el) el.classList.add('visible');
-  }, 3000);
-  setTimeout(function() {
-    var el = document.getElementById('overlayPhrase3');
-    if (el) el.classList.add('visible');
-  }, 5000);
-
-}
-
-function hidePrayerOverlay() {
-  var overlay = document.getElementById('prayerOverlay');
-  if (overlay) overlay.classList.remove('active');
-}
 
 // ========== INIT ==========
 setTimeGreeting();
