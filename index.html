@@ -172,12 +172,13 @@ input[type=range]{flex:1;accent-color:#f5c830;}
 .add-moment-top-btn:hover{transform:scale(1.05);}
 .moment-item{display:flex;align-items:flex-start;background:rgba(255,255,255,0.35);border-radius:14px;padding:14px;margin-bottom:10px;}
 .moment-item-body{flex:1;}
-.moment-item-name{font-weight:700;color:#111111;font-size:15px;}
-.moment-item-date{font-size:12px;color:rgba(0,0,0,0.62);margin-top:2px;}
-.moment-item-note{font-size:12px;color:rgba(0,0,0,0.72);margin-top:4px;}
-.moment-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(30,15,0,0.75);color:#f5c830;margin-top:4px;letter-spacing:0.3px;}
+.moment-item-name{font-weight:700;color:#111111;font-size:17px;}
+.moment-item-date{font-size:14px;color:rgba(0,0,0,0.62);margin-top:3px;}
+.moment-item-note{font-size:13px;color:rgba(0,0,0,0.72);margin-top:5px;}
+.moment-badge{display:inline-block;font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;background:rgba(30,15,0,0.75);color:#f5c830;margin-left:6px;letter-spacing:0.3px;vertical-align:middle;}
 .moment-empty{text-align:center;font-family:'Playfair Display',serif;font-style:italic;font-size:14px;color:rgba(0,0,0,0.5);padding:30px 0;}
-.pray-for-btn{background:rgba(30,15,0,0.75);border:1px solid rgba(30,15,0,0.2);color:#f5c830;font-size:11px;padding:6px 12px;border-radius:20px;cursor:pointer;white-space:nowrap;margin-left:8px;}
+.pray-for-btn{background:rgba(30,15,0,0.75);border:1px solid rgba(30,15,0,0.2);color:#f5c830;font-size:13px;font-weight:700;padding:8px 14px;border-radius:20px;cursor:pointer;white-space:nowrap;margin-left:8px;transition:transform 0.2s ease;}
+.pray-for-btn:hover{transform:scale(1.05);}
 
 /* PRAYER LISTENING OVERLAY */
 .prayer-overlay{
@@ -1320,7 +1321,7 @@ function renderMoments() {
   sorted.forEach(function(m, i) {
     var origIdx = moments.indexOf(m);
     var d = m.date ? new Date(m.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric' }) : '';
-    el.innerHTML += '<div class="moment-item"><div class="moment-item-body"><div class="moment-item-name">' + m.name + ' <span class="moment-badge">' + m.category + '</span></div>' + (d ? '<div class="moment-item-date">' + d + '</div>' : '') + (m.note ? '<div class="moment-item-note">' + m.note + '</div>' : '') + '</div><button class="pray-for-btn" onclick="prayForMoment(' + origIdx + ')">Pray &#128591;</button></div>';
+    el.innerHTML += '<div class="moment-item"><div class="moment-item-body"><div class="moment-item-name">' + m.name + ' <span class="moment-badge">' + m.category + '</span></div>' + (d ? '<div class="moment-item-date">' + d + '</div>' : '') + (m.note ? '<div class="moment-item-note">' + m.note + '</div>' : '') + '</div><button class="pray-for-btn" onclick="prayForMoment(' + origIdx + ')">Pray</button></div>';
   });
 }
 
