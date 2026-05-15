@@ -1382,14 +1382,14 @@ function renderSavedPrayers() {
 
 // ── SEND A PRAYER JS ─────────────────────────────────────────────────────────
 function openSendPrayer() {
-  var forWho = document.getElementById(‘sendPrayerFor’).value.trim();
-  var situation = document.getElementById(‘sendPrayerSituation’).value.trim();
-  if (!forWho) { alert(‘Please enter who you are praying for.’); return; }
-  if (!situation) { alert(‘Please share what you want to pray over them.’); return; }
-  document.getElementById(‘prayerFor’).value = forWho;
-  document.getElementById(‘prayerSituation’).value = situation;
-  document.getElementById(‘prayerCharCount’).textContent = situation.length + ‘/150’;
-  showScreen(‘prayerScreen’);
+  var forWho = document.getElementById('sendPrayerFor').value.trim();
+  var situation = document.getElementById('sendPrayerSituation').value.trim();
+  if (!forWho) { alert('Please enter who you are praying for.'); return; }
+  if (!situation) { alert('Please share what you want to pray over them.'); return; }
+  document.getElementById('prayerFor').value = forWho;
+  document.getElementById('prayerSituation').value = situation;
+  document.getElementById('prayerCharCount').textContent = situation.length + '/150';
+  showScreen('prayerScreen');
 }
 
 // ── REQUEST PRAYER JS ─────────────────────────────────────────────────────────
