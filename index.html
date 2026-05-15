@@ -174,6 +174,22 @@ input[type=range]{flex:1;accent-color:#f5c830;}
 .song-preview-btn{background:rgba(30,15,0,0.7);color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:12px;padding:6px 14px;border:none;border-radius:50px;cursor:pointer;transition:background 0.2s;flex-shrink:0;}
 .song-preview-btn:hover{background:rgba(30,15,0,0.9);}
 
+/* ========== SETTINGS ========== */
+.settings-card{background:rgba(255,255,255,0.45);border-radius:20px;padding:20px;margin-bottom:16px;}
+.settings-card-title{font-size:13px;font-weight:800;color:#111;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
+.settings-card-sub{font-size:13px;color:rgba(0,0,0,0.6);margin-bottom:14px;line-height:1.5;}
+.settings-toggle-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid rgba(0,0,0,0.08);}
+.settings-toggle-row:last-child{border-bottom:none;padding-bottom:0;}
+.settings-toggle-label{font-size:14px;font-weight:600;color:#111;margin-bottom:2px;}
+.settings-toggle-sub{font-size:12px;color:rgba(0,0,0,0.5);}
+.toggle-wrap{position:relative;width:48px;height:26px;flex-shrink:0;}
+.toggle-wrap input{opacity:0;width:0;height:0;position:absolute;}
+.toggle-track{display:block;width:48px;height:26px;background:rgba(0,0,0,0.2);border-radius:13px;cursor:pointer;transition:background 0.3s;position:relative;}
+.toggle-track::after{content:'';position:absolute;width:22px;height:22px;border-radius:50%;background:#fff;top:2px;left:2px;transition:left 0.3s;box-shadow:0 1px 3px rgba(0,0,0,0.3);}
+.toggle-wrap input:checked+.toggle-track{background:#c8900a;}
+.toggle-wrap input:checked+.toggle-track::after{left:24px;}
+.prayer-bar-track{background:rgba(0,0,0,0.1);border-radius:4px;height:6px;margin-top:10px;}
+.prayer-bar-fill{background:linear-gradient(90deg,#c8900a,#f5c830);height:6px;border-radius:4px;transition:width 0.4s;}
 /* ========== THE WORD ========== */
 .word-tabs{display:flex;gap:8px;margin-bottom:20px;}
 .word-tab{flex:1;padding:10px;background:rgba(255,255,255,0.3);border:1px solid rgba(30,15,0,0.15);border-radius:20px;color:rgba(0,0,0,0.68);font-size:13px;font-weight:600;cursor:pointer;text-align:center;}
@@ -744,18 +760,68 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
     <div class="section-label">Your Preferences</div>
     <div class="section-sub">Personalize your Embrace My Faith experience.</div>
 
-    <div style="background:rgba(255,255,255,0.45);border-radius:20px;padding:20px;margin-bottom:16px;">
-      <div style="font-size:13px;font-weight:800;color:#111;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Default Prayer Voice</div>
-      <div style="font-size:13px;color:rgba(0,0,0,0.6);margin-bottom:14px;">The voice that reads all your prayers by default. You can always change it per prayer.</div>
+    <div class="settings-card">
+      <div class="settings-card-title">Default Prayer Voice</div>
+      <div class="settings-card-sub">The voice that reads your prayers. Change per prayer anytime.</div>
       <div style="display:flex;gap:10px;">
-        <button id="settingsFemale" onclick="saveGenderPref('female')" style="flex:1;padding:14px;background:rgba(30,15,0,0.75);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:15px;border-radius:50px;cursor:pointer;">Female</button>
-        <button id="settingsMale" onclick="saveGenderPref('male')" style="flex:1;padding:14px;background:rgba(255,255,255,0.4);border:1.5px solid rgba(0,0,0,0.15);color:#111;font-family:'Lato',sans-serif;font-weight:700;font-size:15px;border-radius:50px;cursor:pointer;">Male</button>
+        <button id="settingsFemale" onclick="saveGenderPref('female')" style="flex:1;padding:14px;background:rgba(30,15,0,0.75);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:15px;border-radius:50px;cursor:pointer;transition:background 0.2s;">Female</button>
+        <button id="settingsMale" onclick="saveGenderPref('male')" style="flex:1;padding:14px;background:rgba(255,255,255,0.4);border:1.5px solid rgba(0,0,0,0.15);color:#111;font-family:'Lato',sans-serif;font-weight:700;font-size:15px;border-radius:50px;cursor:pointer;transition:background 0.2s;">Male</button>
       </div>
     </div>
 
-    <div style="background:rgba(255,255,255,0.45);border-radius:20px;padding:20px;margin-bottom:16px;">
-      <div style="font-size:13px;font-weight:800;color:#111;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Voice by Prayer Tone</div>
-      <div style="font-size:13px;color:rgba(0,0,0,0.6);margin-bottom:10px;">Each tone is paired with a voice that matches its spirit.</div>
+    <div class="settings-card">
+      <div class="settings-card-title">Prayers Today</div>
+      <div style="font-size:15px;font-weight:600;color:#111;" id="settingsPrayerCount">0 of 10 prayers used today</div>
+      <div class="prayer-bar-track"><div class="prayer-bar-fill" id="settingsPrayerBar" style="width:0%;"></div></div>
+    </div>
+
+    <div class="settings-card">
+      <div class="settings-card-title">Notifications</div>
+      <div class="settings-toggle-row">
+        <div>
+          <div class="settings-toggle-label">Daily Scripture</div>
+          <div class="settings-toggle-sub">Receive a verse each morning</div>
+        </div>
+        <div class="toggle-wrap">
+          <input type="checkbox" id="notifScripture" onchange="saveNotifPref('scripture',this.checked)"/>
+          <label class="toggle-track" for="notifScripture"></label>
+        </div>
+      </div>
+      <div class="settings-toggle-row">
+        <div>
+          <div class="settings-toggle-label">Moments Reminders</div>
+          <div class="settings-toggle-sub">Reminders for upcoming moments</div>
+        </div>
+        <div class="toggle-wrap">
+          <input type="checkbox" id="notifMoments" onchange="saveNotifPref('moments',this.checked)"/>
+          <label class="toggle-track" for="notifMoments"></label>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-card">
+      <div class="settings-card-title">Account</div>
+      <div style="font-size:13px;color:rgba(0,0,0,0.6);margin-bottom:12px;">Signed in as <strong id="settingsName">Friend</strong></div>
+      <div id="settingsNameView">
+        <button onclick="showSettingsNameEdit()" style="width:100%;padding:13px;background:rgba(255,255,255,0.4);border:1.5px solid rgba(0,0,0,0.15);color:#111;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;transition:background 0.2s;">Edit Name</button>
+      </div>
+      <div id="settingsNameEdit" style="display:none;margin-top:12px;">
+        <input id="settingsNameInput" class="form-input" type="text" placeholder="Enter your name" style="margin-bottom:10px;"/>
+        <div style="display:flex;gap:10px;">
+          <button onclick="saveSettingsName()" style="flex:1;padding:12px;background:rgba(30,15,0,0.85);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;">Save</button>
+          <button onclick="cancelSettingsNameEdit()" style="flex:1;padding:12px;background:rgba(255,255,255,0.4);border:1.5px solid rgba(0,0,0,0.15);color:#111;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-card">
+      <div class="settings-card-title">Subscription</div>
+      <div class="settings-card-sub">10-day free trial &#8212; then $9.99/month</div>
+    </div>
+
+    <div class="settings-card">
+      <div class="settings-card-title">Voice by Prayer Tone</div>
+      <div class="settings-card-sub">Each tone is paired with a voice that matches its spirit.</div>
       <div style="font-size:13px;color:#111;padding:8px 0;border-bottom:1px solid rgba(0,0,0,0.08);">Hopeful &amp; Uplifting &#8212; <strong>Energetic &amp; Joyful</strong></div>
       <div style="font-size:13px;color:#111;padding:8px 0;border-bottom:1px solid rgba(0,0,0,0.08);">Bold &amp; Courageous &#8212; <strong>Energetic &amp; Joyful</strong></div>
       <div style="font-size:13px;color:#111;padding:8px 0;border-bottom:1px solid rgba(0,0,0,0.08);">Comforting &amp; Peaceful &#8212; <strong>Warm &amp; Soothing</strong></div>
@@ -763,19 +829,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
       <div style="font-size:13px;color:#111;padding:8px 0;">Grateful &amp; Thankful &#8212; <strong>Cool &amp; Confident</strong></div>
     </div>
 
-    <div style="background:rgba(255,255,255,0.45);border-radius:20px;padding:20px;margin-bottom:16px;">
-      <div style="font-size:13px;font-weight:800;color:#111;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Subscription</div>
-      <div style="font-size:13px;color:rgba(0,0,0,0.6);margin-bottom:14px;">10-day free trial &#8212; then $4.99/month</div>
-      <button onclick="showScreen('pricingScreen')" style="width:100%;padding:13px;background:rgba(30,15,0,0.8);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;">View Plan &#8250;</button>
-    </div>
-
-    <div style="background:rgba(255,255,255,0.45);border-radius:20px;padding:20px;margin-bottom:16px;">
-      <div style="font-size:13px;font-weight:800;color:#111;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Account</div>
-      <div style="font-size:13px;color:rgba(0,0,0,0.6);margin-bottom:14px;">Signed in as <strong id="settingsName">Friend</strong></div>
-      <button onclick="alert('Account management coming in the full app!')" style="width:100%;padding:13px;background:rgba(255,255,255,0.4);border:1.5px solid rgba(0,0,0,0.15);color:#111;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;">Manage Account</button>
-    </div>
-
-    <div style="text-align:center;margin-top:8px;font-size:11px;color:rgba(0,0,0,0.4);">Embrace My Faith v1.0 &#8212; Built with faith &amp; love</div>
+    <div style="text-align:center;margin-top:8px;font-size:11px;color:rgba(0,0,0,0.4);">Embrace My Faith v1.1 &#8212; Built with faith &amp; love</div>
   </div>
 </div>
 
@@ -921,12 +975,35 @@ function getVoiceForTone(tone, gender) {
 function saveGenderPref(g) {
   defaultGender = g;
   localStorage.setItem('emf_gender', g);
-  // Update settings UI
   var fm = document.getElementById('settingsFemale');
   var mm = document.getElementById('settingsMale');
-  if (fm) { fm.style.background = g === 'female' ? 'rgba(30,15,0,0.75)' : 'rgba(255,255,255,0.4)'; fm.style.color = g === 'female' ? '#f5c830' : '#111'; }
-  if (mm) { mm.style.background = g === 'male' ? 'rgba(30,15,0,0.75)' : 'rgba(255,255,255,0.4)'; mm.style.color = g === 'male' ? '#f5c830' : '#111'; }
-  alert('Voice preference saved! All your prayers will now use a ' + g + ' voice by default.');
+  if (fm) { fm.style.background = g === 'female' ? 'rgba(30,15,0,0.75)' : 'rgba(255,255,255,0.4)'; fm.style.color = g === 'female' ? '#f5c830' : '#111'; fm.style.border = g === 'female' ? 'none' : '1.5px solid rgba(0,0,0,0.15)'; }
+  if (mm) { mm.style.background = g === 'male' ? 'rgba(30,15,0,0.75)' : 'rgba(255,255,255,0.4)'; mm.style.color = g === 'male' ? '#f5c830' : '#111'; mm.style.border = g === 'male' ? 'none' : '1.5px solid rgba(0,0,0,0.15)'; }
+}
+
+function saveNotifPref(key, val) {
+  localStorage.setItem('emf_notif_' + key, val ? '1' : '0');
+}
+
+function showSettingsNameEdit() {
+  document.getElementById('settingsNameInput').value = userName;
+  document.getElementById('settingsNameView').style.display = 'none';
+  document.getElementById('settingsNameEdit').style.display = 'block';
+}
+
+function cancelSettingsNameEdit() {
+  document.getElementById('settingsNameEdit').style.display = 'none';
+  document.getElementById('settingsNameView').style.display = 'block';
+}
+
+function saveSettingsName() {
+  var val = document.getElementById('settingsNameInput').value.trim();
+  if (!val) { alert('Please enter a name.'); return; }
+  userName = val;
+  localStorage.setItem('emf_userName', val);
+  document.getElementById('settingsName').textContent = val;
+  document.getElementById('homeName').textContent = val;
+  cancelSettingsNameEdit();
 }
 
 function selectVoiceGender(g) {
@@ -962,9 +1039,13 @@ function getVerseWindow(h) {
 // ========== NAVIGATION ==========
 function showScreen(id) {
   if (id === 'settingsScreen') {
-    var sn = document.getElementById('settingsName');
-    if (sn) sn.textContent = userName;
+    document.getElementById('settingsName').textContent = userName;
     saveGenderPref(defaultGender);
+    var used = 10 - prayersLeft;
+    document.getElementById('settingsPrayerCount').textContent = used + ' of 10 prayers used today';
+    document.getElementById('settingsPrayerBar').style.width = (used * 10) + '%';
+    document.getElementById('notifScripture').checked = localStorage.getItem('emf_notif_scripture') !== '0';
+    document.getElementById('notifMoments').checked = localStorage.getItem('emf_notif_moments') === '1';
   }
   if (id === 'sendPrayerScreen') {
     var el = document.getElementById('sendPrayersRemaining');
