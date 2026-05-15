@@ -103,7 +103,12 @@ body{background:#1a1a1a;display:flex;justify-content:center;align-items:flex-sta
 }
 .generate-btn:hover{transform:scale(1.05);}
 .generate-btn:disabled{opacity:0.5;cursor:not-allowed;}
-#prayerScreen .form-label,#requestPrayerScreen .form-label,#sendPrayerScreen .form-label{font-size:14.4px;}
+#prayerScreen .form-label,#requestPrayerScreen .form-label,#sendPrayerScreen .form-label,#restScreen .form-label{font-size:14.4px;}
+#restScreen .slider-row label{font-size:12px;color:rgba(0,0,0,0.75);font-weight:600;letter-spacing:1px;text-transform:uppercase;min-width:90px;}
+#restScreen .option-card:hover{background:rgba(255,255,255,0.45);}
+#restScreen #restFemale:hover{background:rgba(30,15,0,0.85)!important;}
+#restScreen #restMale:hover{background:rgba(255,255,255,0.5)!important;}
+#restScreen .awake-btn:hover{background:rgba(30,15,0,0.95);}
 #prayerScreen .form-input,#prayerScreen .form-textarea,#prayerScreen .form-select,#requestPrayerScreen .form-input,#requestPrayerScreen .form-textarea,#requestPrayerScreen .form-select,#sendPrayerScreen .form-input,#sendPrayerScreen .form-textarea{background:rgba(255,255,255,0.3);font-size:16.5px;font-weight:700;}
 .prayers-remaining{text-align:center;margin-top:12px;font-size:12px;color:rgba(0,0,0,0.65);}
 .prayers-remaining span{text-decoration:underline;cursor:pointer;color:#111111;}
@@ -416,15 +421,15 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
     <label class="form-label">Tonight&rsquo;s reading</label>
     <div class="rise-options" id="restOptions">
       <div class="option-card selected" onclick="selectRest(this,'Evening Prayer')">
-        <div class="option-card-title">&#128591; Evening Prayer</div>
+        <div class="option-card-title">Evening Prayer</div>
         <div class="option-card-sub">A calming prayer to release your day to God</div>
       </div>
       <div class="option-card" onclick="selectRest(this,'Bible Story')">
-        <div class="option-card-title">&#128218; Bible Story</div>
+        <div class="option-card-title">Bible Story</div>
         <div class="option-card-sub">Gentle narration of a scripture story</div>
       </div>
       <div class="option-card" onclick="selectRest(this,'Psalms')">
-        <div class="option-card-title">&#129718; Psalms</div>
+        <div class="option-card-title">Psalms</div>
         <div class="option-card-sub">The soothing poetry of the Psalms read softly</div>
       </div>
     </div>
@@ -449,7 +454,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
       <label>Ambient volume</label>
       <input type="range" min="0" max="100" value="35" id="restAmbientVol"/>
     </div>
-    <button class="awake-btn" id="restPlayBtn" onclick="startRest()">&#9654; Begin Tonight&rsquo;s Rest</button>
+    <button class="awake-btn" id="restPlayBtn" onclick="startRest()">Begin Tonight&rsquo;s Rest</button>
   </div>
 </div>
 
