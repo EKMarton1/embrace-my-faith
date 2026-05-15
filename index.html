@@ -117,7 +117,7 @@ body{background:#1a1a1a;display:flex;justify-content:center;align-items:flex-sta
 .prayer-text{font-size:15px;color:#111111;line-height:1.8;font-weight:600;background:rgba(255,255,255,0.6);padding:16px;border-radius:16px;margin-bottom:16px;}
 .prayer-actions{display:flex;gap:10px;flex-wrap:wrap;}
 .action-btn{flex:1;min-width:80px;padding:12px 8px;background:rgba(255,255,255,0.35);border:1px solid rgba(61,31,0,0.2);color:#111111;font-family:'Lato',sans-serif;font-weight:600;font-size:13px;border-radius:50px;cursor:pointer;}
-.aud-btn{background:rgba(255,255,255,0.4);color:#111111;transition:background 0.2s ease;}.aud-btn:hover{background:rgba(255,255,255,0.5);}.aud-btn.selected{background:rgba(255,255,255,0.65);font-weight:700;}
+.aud-btn{background:rgba(255,255,255,0.4);color:#111111;transition:background 0.2s ease;}.aud-btn:hover{background:rgba(255,255,255,0.6);}.aud-btn.selected{background:rgba(255,255,255,0.65);font-weight:700;}
 .listen-btn{background:linear-gradient(135deg,rgba(255,255,255,0.25),rgba(255,255,255,0.1));border:1.5px solid rgba(255,255,255,0.5);}
 .listen-btn.playing{background:linear-gradient(135deg,rgba(255,200,80,0.4),rgba(200,144,10,0.3));}
 
@@ -636,7 +636,7 @@ input[type=range]{flex:1;accent-color:#f5c830;}
     <textarea class="form-textarea" id="requestPrayerText" style="height:110px;" placeholder="Share openly... your circle will lift this up before God."></textarea>
     <label class="form-label">Send request to</label>
     <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;">
-      <button class="action-btn aud-btn" id="audAll" onclick="selectAudience('all')">Circle</button>
+      <button class="action-btn aud-btn" id="audAll" onclick="selectAudience('all')">All</button>
       <button class="action-btn aud-btn" id="audFamily" onclick="selectAudience('family')">Family</button>
       <button class="action-btn aud-btn" id="audFriends" onclick="selectAudience('friends')">Friends</button>
     </div>
