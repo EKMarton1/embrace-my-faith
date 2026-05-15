@@ -117,6 +117,7 @@ body{background:#1a1a1a;display:flex;justify-content:center;align-items:flex-sta
 .prayer-text{font-size:15px;color:#111111;line-height:1.8;font-weight:600;background:rgba(255,255,255,0.6);padding:16px;border-radius:16px;margin-bottom:16px;}
 .prayer-actions{display:flex;gap:10px;flex-wrap:wrap;}
 .action-btn{flex:1;min-width:80px;padding:12px 8px;background:rgba(255,255,255,0.35);border:1px solid rgba(61,31,0,0.2);color:#111111;font-family:'Lato',sans-serif;font-weight:600;font-size:13px;border-radius:50px;cursor:pointer;}
+.aud-btn{background:rgba(255,255,255,0.4);color:#111111;transition:background 0.2s ease;}.aud-btn:hover{background:rgba(255,255,255,0.5);}.aud-btn.selected{background:rgba(255,255,255,0.65);font-weight:700;}
 .listen-btn{background:linear-gradient(135deg,rgba(255,255,255,0.25),rgba(255,255,255,0.1));border:1.5px solid rgba(255,255,255,0.5);}
 .listen-btn.playing{background:linear-gradient(135deg,rgba(255,200,80,0.4),rgba(200,144,10,0.3));}
 
@@ -635,23 +636,23 @@ input[type=range]{flex:1;accent-color:#f5c830;}
     <textarea class="form-textarea" id="requestPrayerText" style="height:110px;" placeholder="Share openly... your circle will lift this up before God."></textarea>
     <label class="form-label">Send request to</label>
     <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;">
-      <button class="action-btn" id="audAll" onclick="selectAudience('all')" style="background:rgba(30,15,0,0.75);color:#f5c830;">My Whole Circle</button>
-      <button class="action-btn" id="audFamily" onclick="selectAudience('family')" style="background:rgba(255,255,255,0.4);color:#111;">Family</button>
-      <button class="action-btn" id="audFriends" onclick="selectAudience('friends')" style="background:rgba(255,255,255,0.4);color:#111;">Friends</button>
+      <button class="action-btn aud-btn" id="audAll" onclick="selectAudience('all')">Circle</button>
+      <button class="action-btn aud-btn" id="audFamily" onclick="selectAudience('family')">Family</button>
+      <button class="action-btn aud-btn" id="audFriends" onclick="selectAudience('friends')">Friends</button>
     </div>
     <button class="generate-btn" onclick="submitPrayerRequest()" style="margin-top:4px;">&#128591; Send My Prayer Request</button>
     <button onclick="showScreen('circleScreen')" style="width:100%;margin-top:10px;padding:14px;background:rgba(255,255,255,0.45);border:1.5px solid rgba(0,0,0,0.15);color:#111111;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;">&#129464; Manage My Circle</button>
     <div style="margin-top:28px;">
       <div class="result-label" style="margin-bottom:12px;">Recent Requests from My Circle</div>
       <div style="background:rgba(255,255,255,0.45);border-radius:16px;padding:16px;margin-bottom:10px;">
-        <div style="font-weight:700;color:#111;font-size:14px;">Sarah M. is asking for prayer</div>
+        <div style="font-weight:700;color:#111;font-size:14px;">Maddie H. is asking for prayer</div>
         <div style="font-size:13px;color:#333;margin-top:4px;margin-bottom:10px;">Please pray for my mother's surgery this Thursday.</div>
-        <button class="action-btn" style="width:100%;" onclick="prayForRequest('Sarah','mother surgery Thursday')">&#128591; Pray for Sarah</button>
+        <button class="action-btn" style="width:100%;" onclick="prayForRequest('Maddie','mother surgery Thursday')">&#128591; Pray for Maddie</button>
       </div>
       <div style="background:rgba(255,255,255,0.45);border-radius:16px;padding:16px;margin-bottom:10px;">
-        <div style="font-weight:700;color:#111;font-size:14px;">James T. is asking for prayer</div>
+        <div style="font-weight:700;color:#111;font-size:14px;">Shane F. is asking for prayer</div>
         <div style="font-size:13px;color:#333;margin-top:4px;margin-bottom:10px;">Going through a difficult season at work. Need strength.</div>
-        <button class="action-btn" style="width:100%;" onclick="prayForRequest('James','difficult season at work needing strength')">&#128591; Pray for James</button>
+        <button class="action-btn" style="width:100%;" onclick="prayForRequest('Shane','difficult season at work needing strength')">&#128591; Pray for Shane</button>
       </div>
       <div style="font-size:12px;font-style:italic;color:rgba(0,0,0,0.45);text-align:center;margin-top:8px;">Live requests from your circle coming in the full app.</div>
     </div>
@@ -1494,8 +1495,7 @@ function selectAudience(aud) {
   ['All','Family','Friends'].forEach(function(a) {
     var btn = document.getElementById('aud' + a);
     if (!btn) return;
-    btn.style.background = a.toLowerCase() === aud ? 'rgba(30,15,0,0.75)' : 'rgba(255,255,255,0.4)';
-    btn.style.color = a.toLowerCase() === aud ? '#f5c830' : '#111';
+    btn.classList.toggle('selected', a.toLowerCase() === aud);
   });
 }
 
