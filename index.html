@@ -103,10 +103,10 @@ body{background:#1a1a1a;display:flex;justify-content:center;align-items:flex-sta
 }
 .generate-btn:hover{transform:scale(1.05);}
 .generate-btn:disabled{opacity:0.5;cursor:not-allowed;}
-#prayerScreen .form-label,#requestPrayerScreen .form-label,#sendPrayerScreen .form-label,#restScreen .form-label{font-size:14.4px;}
-#restScreen .slider-row label{font-size:12px;color:rgba(0,0,0,0.75);font-weight:600;letter-spacing:1px;text-transform:uppercase;min-width:90px;}
-#restScreen .option-card:hover{background:rgba(255,255,255,0.45);}
-#restScreen .option-card.selected{background:rgba(255,255,255,0.45);border:2px solid rgba(200,144,10,0.85);box-shadow:0 0 0 1px rgba(200,144,10,0.3);}
+#prayerScreen .form-label,#requestPrayerScreen .form-label,#sendPrayerScreen .form-label,#restScreen .form-label,#riseScreen .form-label{font-size:14.4px;}
+#restScreen .slider-row label,#riseScreen .slider-row label{font-size:12px;color:rgba(0,0,0,0.75);font-weight:600;letter-spacing:1px;text-transform:uppercase;min-width:90px;}
+#restScreen .option-card:hover,#riseScreen .option-card:hover{background:rgba(255,255,255,0.45);}
+#restScreen .option-card.selected,#riseScreen .option-card.selected{background:rgba(255,255,255,0.45);border:2px solid rgba(200,144,10,0.85);box-shadow:0 0 0 1px rgba(200,144,10,0.3);}
 .story-player{background:rgba(30,15,0,0.75);border-radius:16px;padding:16px 20px;margin-bottom:16px;}
 .story-player-controls{display:flex;gap:10px;margin-bottom:12px;}
 .story-play-btn{background:rgba(245,200,48,0.15);border:1.5px solid rgba(245,200,48,0.5);color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;padding:10px 24px;border-radius:50px;cursor:pointer;transition:background 0.2s;}
@@ -118,9 +118,9 @@ body{background:#1a1a1a;display:flex;justify-content:center;align-items:flex-sta
 .story-seek{flex:1;-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:rgba(255,255,255,0.2);outline:none;cursor:pointer;}
 .story-seek::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:#f5c830;cursor:pointer;box-shadow:0 0 4px rgba(245,200,48,0.6);}
 .story-seek::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:#f5c830;cursor:pointer;border:none;}
-#restScreen #restFemale:hover{background:rgba(30,15,0,0.85)!important;}
-#restScreen #restMale:hover{background:rgba(255,255,255,0.5)!important;}
-#restScreen .awake-btn:hover{background:rgba(30,15,0,0.95);}
+#restScreen #restFemale:hover,#riseScreen #riseFemale:hover{background:rgba(30,15,0,0.85)!important;}
+#restScreen #restMale:hover,#riseScreen #riseMale:hover{background:rgba(255,255,255,0.5)!important;}
+#restScreen .awake-btn:hover,#riseScreen .awake-btn:hover{background:rgba(30,15,0,0.95);}
 #prayerScreen .form-input,#prayerScreen .form-textarea,#prayerScreen .form-select,#requestPrayerScreen .form-input,#requestPrayerScreen .form-textarea,#requestPrayerScreen .form-select,#sendPrayerScreen .form-input,#sendPrayerScreen .form-textarea{background:rgba(255,255,255,0.3);font-size:16.5px;font-weight:700;}
 .prayers-remaining{text-align:center;margin-top:12px;font-size:12px;color:rgba(0,0,0,0.65);}
 .prayers-remaining span{text-decoration:underline;cursor:pointer;color:#111111;}
@@ -155,8 +155,17 @@ body{background:#1a1a1a;display:flex;justify-content:center;align-items:flex-sta
 .slider-row{display:flex;align-items:center;gap:12px;margin:12px 0;}
 .slider-row label{font-size:12px;color:rgba(255,255,255,0.6);min-width:70px;}
 input[type=range]{flex:1;accent-color:#f5c830;}
-.time-display{font-family:'Playfair Display',serif;font-size:48px;color:#fff;text-align:center;margin:20px 0;cursor:pointer;}
 .awake-btn{width:100%;padding:16px;background:rgba(30,15,0,0.85);color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:16px;border:none;border-radius:50px;cursor:pointer;margin-top:16px;}
+.time-picker{position:relative;display:flex;align-items:center;border-radius:16px;background:rgba(255,255,255,0.35);border:1.5px solid rgba(255,255,255,0.5);margin:12px 0 20px;overflow:hidden;height:150px;}
+.picker-col{flex:1;height:150px;overflow-y:scroll;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;text-align:center;}
+.picker-col::-webkit-scrollbar{display:none;}
+.picker-col-ampm{flex:0.7;}
+.picker-item{height:30px;line-height:30px;scroll-snap-align:center;font-family:'Lato',sans-serif;font-size:19px;font-weight:600;color:rgba(0,0,0,0.45);}
+.picker-sep{font-family:'Lato',sans-serif;font-size:22px;font-weight:700;color:#111;padding:0 2px;flex:0 0 auto;}
+.picker-highlight{position:absolute;left:8px;right:8px;top:50%;transform:translateY(-50%);height:30px;background:rgba(245,200,48,0.15);border-radius:8px;border-top:1.5px solid rgba(200,144,10,0.5);border-bottom:1.5px solid rgba(200,144,10,0.5);pointer-events:none;z-index:2;}
+.picker-fade-top,.picker-fade-bottom{position:absolute;left:0;right:0;height:60px;pointer-events:none;z-index:1;}
+.picker-fade-top{top:0;background:linear-gradient(to bottom,rgba(255,245,220,0.92) 0%,transparent 100%);}
+.picker-fade-bottom{bottom:0;background:linear-gradient(to top,rgba(255,245,220,0.92) 0%,transparent 100%);}
 
 /* ========== THE WORD ========== */
 .word-tabs{display:flex;gap:8px;margin-bottom:20px;}
@@ -388,19 +397,28 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
   <div class="screen-body">
     <div class="section-label">Rise with Purpose</div>
     <div class="section-sub">Wake each morning anchored in His Word. Set your alarm, choose your voice, and begin the day lifted.</div>
-    <div class="time-display" id="riseTime" onclick="editRiseTime()">6:30 AM</div>
+    <label class="form-label">Wake at</label>
+    <div class="time-picker" id="timePicker">
+      <div class="picker-fade-top"></div>
+      <div class="picker-fade-bottom"></div>
+      <div class="picker-highlight"></div>
+      <div class="picker-col" id="pickerHour"></div>
+      <div class="picker-sep">:</div>
+      <div class="picker-col" id="pickerMin"></div>
+      <div class="picker-col picker-col-ampm" id="pickerAmPm"></div>
+    </div>
     <label class="form-label">Wake with</label>
     <div class="rise-options" id="riseOptions">
-      <div class="option-card selected" onclick="selectRise(this,'Daily Scripture')">
-        <div class="option-card-title">&#128214; Daily Scripture</div>
+      <div class="option-card" onclick="selectRise(this,'Daily Scripture')">
+        <div class="option-card-title">Daily Scripture</div>
         <div class="option-card-sub">A verse read aloud to start your day in the Word</div>
       </div>
       <div class="option-card" onclick="selectRise(this,'Morning Prayer')">
-        <div class="option-card-title">&#128591; Morning Prayer</div>
+        <div class="option-card-title">Morning Prayer</div>
         <div class="option-card-sub">A personal morning prayer spoken over you</div>
       </div>
       <div class="option-card" onclick="selectRise(this,'Worship Music')">
-        <div class="option-card-title">&#127925; Worship Music</div>
+        <div class="option-card-title">Worship Music</div>
         <div class="option-card-sub">Open with praise and worship to set the tone</div>
       </div>
     </div>
@@ -418,7 +436,20 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
       <input type="range" min="0" max="100" value="30" id="riseMusicVol"/>
     </div>
     <audio id="riseAudio" preload="none"></audio>
-    <button class="awake-btn" id="riseAlarmBtn" onclick="startRisePreview()">&#9654; Preview &amp; Save Rise Alarm</button>
+    <div id="risePlayerWrap">
+      <button class="awake-btn" id="riseBeginBtn" onclick="startRise()">Begin My Rise</button>
+      <div id="riseInlinePlayer" class="story-player" style="display:none;">
+        <div class="story-player-controls">
+          <button class="story-play-btn" id="risePlayPause" onclick="riseTogglePlay()">Pause</button>
+          <button class="story-stop-btn" onclick="riseStopAndReset()">Stop</button>
+        </div>
+        <div class="story-player-time">
+          <span class="story-time" id="riseElapsed">0:00</span>
+          <input type="range" class="story-seek" id="riseSeek" min="0" max="100" value="0" step="0.1" oninput="riseScrub(this.value)"/>
+          <span class="story-time" id="riseDuration">0:00</span>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1098,11 +1129,41 @@ function selectRise(el, label) {
   var cards = document.querySelectorAll('#riseOptions .option-card');
   for (var i = 0; i < cards.length; i++) cards[i].classList.remove('selected');
   el.classList.add('selected');
+  if (document.getElementById('riseInlinePlayer').style.display !== 'none') {
+    riseStopAndReset();
+  }
 }
 
-function editRiseTime() {
-  var t = prompt('Set your rise time (e.g. 6:30 AM):', document.getElementById('riseTime').textContent);
-  if (t) document.getElementById('riseTime').textContent = t;
+function initTimePicker() {
+  var hours = ['1','2','3','4','5','6','7','8','9','10','11','12'];
+  var minutes = [];
+  for (var i = 0; i < 60; i++) minutes.push(i < 10 ? '0'+i : ''+i);
+  var ampm = ['AM','PM'];
+  fillPickerCol('pickerHour', hours);
+  fillPickerCol('pickerMin', minutes);
+  fillPickerCol('pickerAmPm', ampm);
+  setTimeout(function() {
+    document.getElementById('pickerHour').scrollTop = 5 * 30;
+    document.getElementById('pickerMin').scrollTop = 30 * 30;
+    document.getElementById('pickerAmPm').scrollTop = 0;
+  }, 50);
+}
+
+function fillPickerCol(id, items) {
+  var col = document.getElementById(id);
+  var html = '<div style="height:60px"></div>';
+  items.forEach(function(item) { html += '<div class="picker-item">' + item + '</div>'; });
+  html += '<div style="height:60px"></div>';
+  col.innerHTML = html;
+}
+
+function getRiseTime() {
+  var hours = ['1','2','3','4','5','6','7','8','9','10','11','12'];
+  var ampm = ['AM','PM'];
+  var h = hours[Math.min(Math.round(document.getElementById('pickerHour').scrollTop / 30), 11)];
+  var m = Math.min(Math.round(document.getElementById('pickerMin').scrollTop / 30), 59);
+  var a = ampm[Math.min(Math.round(document.getElementById('pickerAmPm').scrollTop / 30), 1)];
+  return h + ':' + (m < 10 ? '0'+m : m) + ' ' + a;
 }
 
 // ========== REST ==========
@@ -1602,33 +1663,88 @@ function sendToPerson(name) {
 }
 
 
-function startRisePreview() {
+function riseAudioSrc() {
   var selected = document.querySelector('#riseOptions .option-card.selected');
-  var label = selected ? selected.querySelector('.option-card-title').textContent.trim() : 'Daily Scripture';
+  var label = selected ? selected.querySelector('.option-card-title').textContent.trim() : '';
   var isMale = riseVoiceId === ERIC_ID;
-  var src;
-  if (label === 'Worship Music') {
-    src = 'Audio/Rise01.mp3';
-  } else if (label === 'Daily Scripture') {
-    src = 'Audio/RiseScripture01_' + (isMale ? 'M' : 'F') + '.mp3';
-  } else {
-    src = 'Audio/MorningPrayer01_' + (isMale ? 'M' : 'F') + '.mp3';
-  }
+  if (label === 'Worship Music')    return 'Audio/Rise01.mp3';
+  if (label === 'Morning Prayer')   return 'Audio/MorningPrayer01_' + (isMale ? 'M' : 'F') + '.mp3';
+  return 'Audio/RiseScripture01_' + (isMale ? 'M' : 'F') + '.mp3';
+}
+
+function riseLoadAudio() {
   var audio = document.getElementById('riseAudio');
-  var btn = document.getElementById('riseAlarmBtn');
-  if (!audio.paused) {
-    audio.pause();
-    audio.currentTime = 0;
-    if (btn) btn.innerHTML = '&#9654; Preview &amp; Save Rise Alarm';
-    return;
+  audio.src = riseAudioSrc();
+  audio.load();
+  document.getElementById('riseElapsed').textContent = '0:00';
+  document.getElementById('riseDuration').textContent = '0:00';
+  document.getElementById('riseSeek').value = 0;
+  clearInterval(riseInterval);
+  audio.addEventListener('loadedmetadata', function() {
+    document.getElementById('riseDuration').textContent = storyFmtTime(audio.duration);
+  }, { once: true });
+}
+
+function startRise() {
+  var selected = document.querySelector('#riseOptions .option-card.selected');
+  if (!selected) { alert('Please select a wake option first.'); return; }
+  riseLoadAudio();
+  document.getElementById('riseBeginBtn').style.display = 'none';
+  document.getElementById('riseInlinePlayer').style.display = 'block';
+  var audio = document.getElementById('riseAudio');
+  var playPromise = audio.play();
+  document.getElementById('risePlayPause').textContent = 'Pause';
+  riseInterval = setInterval(riseUpdateProgress, 500);
+  if (playPromise !== undefined) {
+    playPromise.catch(function() {
+      document.getElementById('risePlayPause').textContent = 'Play';
+      clearInterval(riseInterval);
+    });
   }
-  audio.src = src;
-  if (btn) btn.textContent = '... Playing Rise Preview';
-  audio.play();
-  audio.onended = function() {
-    if (btn) btn.innerHTML = '&#9654; Preview &amp; Save Rise Alarm';
-    alert('Rise alarm set for ' + document.getElementById('riseTime').textContent + '! We will speak over you tomorrow morning.');
-  };
+}
+
+function riseStopAndReset() {
+  var audio = document.getElementById('riseAudio');
+  audio.pause();
+  audio.currentTime = 0;
+  clearInterval(riseInterval);
+  document.getElementById('riseInlinePlayer').style.display = 'none';
+  document.getElementById('riseBeginBtn').style.display = '';
+  document.getElementById('riseElapsed').textContent = '0:00';
+  document.getElementById('riseSeek').value = 0;
+}
+
+var riseInterval = null;
+
+function riseTogglePlay() {
+  var audio = document.getElementById('riseAudio');
+  var btn = document.getElementById('risePlayPause');
+  if (audio.paused) {
+    audio.play();
+    btn.textContent = 'Pause';
+    riseInterval = setInterval(riseUpdateProgress, 500);
+  } else {
+    audio.pause();
+    btn.textContent = 'Play';
+    clearInterval(riseInterval);
+  }
+}
+
+function riseUpdateProgress() {
+  var audio = document.getElementById('riseAudio');
+  if (!audio || !audio.duration) return;
+  document.getElementById('riseSeek').value = (audio.currentTime / audio.duration) * 100;
+  document.getElementById('riseElapsed').textContent = storyFmtTime(audio.currentTime);
+  document.getElementById('riseDuration').textContent = storyFmtTime(audio.duration);
+  if (audio.ended) {
+    document.getElementById('risePlayPause').textContent = 'Play';
+    clearInterval(riseInterval);
+  }
+}
+
+function riseScrub(val) {
+  var audio = document.getElementById('riseAudio');
+  if (audio && audio.duration) audio.currentTime = (val / 100) * audio.duration;
 }
 
 
@@ -1638,6 +1754,9 @@ function selectRiseGender(g) {
   var mm = document.getElementById('riseMale');
   if (fm) { fm.style.background = g === 'female' ? 'rgba(30,15,0,0.75)' : 'rgba(255,255,255,0.4)'; fm.style.color = g === 'female' ? '#f5c830' : '#111'; }
   if (mm) { mm.style.background = g === 'male' ? 'rgba(30,15,0,0.75)' : 'rgba(255,255,255,0.4)'; mm.style.color = g === 'male' ? '#f5c830' : '#111'; }
+  if (document.getElementById('riseInlinePlayer').style.display !== 'none') {
+    riseStopAndReset();
+  }
 }
 
 function selectRestGender(g) {
@@ -1692,6 +1811,7 @@ function hidePrayerOverlay() {
 // ========== INIT ==========
 setTimeGreeting();
 initDateDropdowns();
+initTimePicker();
 </script>
 </body>
 </html>
