@@ -417,6 +417,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
       <label>Music volume</label>
       <input type="range" min="0" max="100" value="30" id="riseMusicVol"/>
     </div>
+    <audio id="riseAudio" preload="none"></audio>
     <button class="awake-btn" id="riseAlarmBtn" onclick="startRisePreview()">&#9654; Preview &amp; Save Rise Alarm</button>
   </div>
 </div>
@@ -446,7 +447,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
       </div>
     </div>
     <div id="storyPlayer" class="story-player" style="display:none;">
-      <audio id="storyAudio" src="Audio/Story01.mp3" preload="metadata"></audio>
+      <audio id="storyAudio" preload="none"></audio>
       <div class="story-player-controls">
         <button class="story-play-btn" id="storyPlayPause" onclick="storyTogglePlay()">Play</button>
         <button class="story-stop-btn" onclick="storyStop()">Stop</button>
@@ -1103,21 +1104,36 @@ function editRiseTime() {
 }
 
 // ========== REST ==========
+function restAudioSrc() {
+  var selected = document.querySelector('#restOptions .option-card.selected');
+  var label = selected ? selected.querySelector('.option-card-title').textContent.trim() : 'Evening Prayer';
+  var isMale = restVoiceId === SHANE_ID;
+  var suffix = isMale ? '_M' : '_F';
+  if (label === 'Bible Story') return 'Audio/Story01' + suffix + '.mp3';
+  if (label === 'Psalms')      return 'Audio/Psalm23' + suffix + '.mp3';
+  return 'Audio/EveningPrayer01' + suffix + '.mp3';
+}
+
+function restLoadAudio() {
+  var audio = document.getElementById('storyAudio');
+  audio.src = restAudioSrc();
+  document.getElementById('storyElapsed').textContent = '0:00';
+  document.getElementById('storyDuration').textContent = '0:00';
+  document.getElementById('storySeek').value = 0;
+  document.getElementById('storyPlayPause').textContent = 'Play';
+  clearInterval(storyInterval);
+  audio.addEventListener('loadedmetadata', function() {
+    document.getElementById('storyDuration').textContent = storyFmtTime(audio.duration);
+  }, { once: true });
+}
+
 function selectRest(el, label) {
   var cards = document.querySelectorAll('#restOptions .option-card');
   for (var i = 0; i < cards.length; i++) cards[i].classList.remove('selected');
   el.classList.add('selected');
-  var player = document.getElementById('storyPlayer');
-  if (label === 'Bible Story') {
-    player.style.display = 'block';
-    var audio = document.getElementById('storyAudio');
-    audio.addEventListener('loadedmetadata', function() {
-      document.getElementById('storyDuration').textContent = storyFmtTime(audio.duration);
-    });
-  } else {
-    storyStop();
-    player.style.display = 'none';
-  }
+  storyStop();
+  restLoadAudio();
+  document.getElementById('storyPlayer').style.display = 'block';
 }
 
 var storyInterval = null;
@@ -1174,14 +1190,12 @@ function storyFmtTime(s) {
 }
 
 function startRest() {
-  var selected = document.querySelector('#restOptions .option-card.selected');
-  var label = selected ? selected.querySelector('.option-card-title').textContent : 'Evening Prayer';
-  var voiceId = restVoiceId || TRACY_ID;
-  var text = 'Heavenly Father, as this day draws to a close, we lay it all at Your feet. Thank You for Your faithful presence through every hour. Quiet our minds, settle our hearts, and let Your perfect peace guard us through the night. We trust You with tomorrow. In Jesus\u2019 name, Amen.';
-  document.getElementById('restPlayBtn').textContent = '... Grace is preparing your rest';
-  speakText(text, voiceId, function() {
-    document.getElementById('restPlayBtn').innerHTML = '&#9654; Begin Tonight\u2019s Rest';
-  });
+  document.getElementById('storyPlayer').style.display = 'block';
+  restLoadAudio();
+  var audio = document.getElementById('storyAudio');
+  audio.addEventListener('canplay', function() {
+    storyTogglePlay();
+  }, { once: true });
 }
 
 // ========== THE WORD ==========
@@ -1568,20 +1582,31 @@ function sendToPerson(name) {
 
 function startRisePreview() {
   var selected = document.querySelector('#riseOptions .option-card.selected');
-  var label = selected ? selected.querySelector('.option-card-title').textContent : 'Daily Scripture';
-  var voiceId = riseVoiceId || TESS_ID;
-  var time = document.getElementById('riseTime').textContent;
-  var text = 'Good morning. Rise and shine, ' + userName + '. '
-    + 'This is your ' + label + ' for today. '
-    + 'The Lord is my shepherd, I shall not want. He maketh me to lie down in green pastures. He leadeth me beside the still waters. He restoreth my soul. '
-    + 'Go forward today with courage, clarity, and the knowledge that you are loved. '
-    + 'Have a blessed and purposeful day, ' + userName + '. Amen.';
+  var label = selected ? selected.querySelector('.option-card-title').textContent.trim() : 'Daily Scripture';
+  var isMale = riseVoiceId === ERIC_ID;
+  var src;
+  if (label === 'Worship Music') {
+    src = 'Audio/Rise01.mp3';
+  } else if (label === 'Daily Scripture') {
+    src = 'Audio/RiseScripture01_' + (isMale ? 'M' : 'F') + '.mp3';
+  } else {
+    src = 'Audio/MorningPrayer01_' + (isMale ? 'M' : 'F') + '.mp3';
+  }
+  var audio = document.getElementById('riseAudio');
   var btn = document.getElementById('riseAlarmBtn');
-  if (btn) btn.textContent = '... Speaking your Rise';
-  speakText(text, voiceId, function() {
-    if (btn) btn.textContent = 'Save My Rise Alarm';
-    alert('Rise alarm set for ' + time + '! We will speak over you tomorrow morning.');
-  });
+  if (!audio.paused) {
+    audio.pause();
+    audio.currentTime = 0;
+    if (btn) btn.innerHTML = '&#9654; Preview &amp; Save Rise Alarm';
+    return;
+  }
+  audio.src = src;
+  if (btn) btn.textContent = '... Playing Rise Preview';
+  audio.play();
+  audio.onended = function() {
+    if (btn) btn.innerHTML = '&#9654; Preview &amp; Save Rise Alarm';
+    alert('Rise alarm set for ' + document.getElementById('riseTime').textContent + '! We will speak over you tomorrow morning.');
+  };
 }
 
 
@@ -1599,6 +1624,10 @@ function selectRestGender(g) {
   var mm = document.getElementById('restMale');
   if (fm) { fm.style.background = g === 'female' ? 'rgba(30,15,0,0.75)' : 'rgba(255,255,255,0.4)'; fm.style.color = g === 'female' ? '#f5c830' : '#111'; }
   if (mm) { mm.style.background = g === 'male' ? 'rgba(30,15,0,0.75)' : 'rgba(255,255,255,0.4)'; mm.style.color = g === 'male' ? '#f5c830' : '#111'; }
+  if (document.getElementById('storyPlayer').style.display !== 'none') {
+    storyStop();
+    restLoadAudio();
+  }
 }
 
 
