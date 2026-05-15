@@ -215,7 +215,6 @@ input[type=range]{flex:1;accent-color:#f5c830;}
 .modal-input[type=date]{color-scheme:dark;}
 select.modal-input{background:rgba(30,15,0,0.85);color:#f5f0e8;}
 select.modal-input option{background:#1e0f00;color:#f5f0e8;}
-.modal-date-row input.modal-input{color:#f5f0e8;}
 .modal-btns{display:flex;gap:10px;margin-top:8px;}
 .modal-save{flex:1;padding:14px;background:rgba(255,255,255,0.2);border:1.5px solid rgba(255,255,255,0.4);color:#fff;font-family:'Lato',sans-serif;font-weight:700;font-size:15px;border-radius:50px;cursor:pointer;}
 .modal-cancel{padding:14px 20px;background:transparent;border:none;color:rgba(255,255,255,0.5);font-family:'Lato',sans-serif;font-size:14px;cursor:pointer;}
@@ -730,15 +729,15 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
     <div class="modal-title" id="modalTitle">Add Moment</div>
     <input class="modal-input" id="mName" type="text" placeholder="Name"/>
     <div class="modal-date-row">
-      <select class="modal-input" id="mMonth">
+      <select class="modal-input" id="mMonth" onchange="updateDays()">
         <option value="">Month</option>
         <option value="1">January</option><option value="2">February</option><option value="3">March</option>
         <option value="4">April</option><option value="5">May</option><option value="6">June</option>
         <option value="7">July</option><option value="8">August</option><option value="9">September</option>
         <option value="10">October</option><option value="11">November</option><option value="12">December</option>
       </select>
-      <input class="modal-input" id="mDay" type="number" min="1" max="31" placeholder="Day"/>
-      <input class="modal-input" id="mYear" type="number" min="1900" max="2099" placeholder="Year"/>
+      <select class="modal-input" id="mDay"><option value="">Day</option></select>
+      <select class="modal-input" id="mYear" onchange="updateDays()"><option value="">Year</option></select>
     </div>
     <select class="modal-input" id="mCategory">
       <option value="">Select a category</option>
@@ -1289,6 +1288,36 @@ function shareVia(method) {
 }
 
 // ========== MOMENTS ==========
+function initDateDropdowns() {
+  var yearSel = document.getElementById('mYear');
+  for (var y = 2026; y >= 1920; y--) {
+    var opt = document.createElement('option');
+    opt.value = y; opt.textContent = y;
+    yearSel.appendChild(opt);
+  }
+  updateDays();
+}
+
+function updateDays() {
+  var month = parseInt(document.getElementById('mMonth').value) || 0;
+  var year = parseInt(document.getElementById('mYear').value) || 2000;
+  var maxDay = 31;
+  if (month === 2) {
+    maxDay = (year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0)) ? 29 : 28;
+  } else if ([4, 6, 9, 11].indexOf(month) !== -1) {
+    maxDay = 30;
+  }
+  var daySel = document.getElementById('mDay');
+  var current = parseInt(daySel.value);
+  daySel.innerHTML = '<option value="">Day</option>';
+  for (var d = 1; d <= maxDay; d++) {
+    var o = document.createElement('option');
+    o.value = d; o.textContent = d;
+    daySel.appendChild(o);
+  }
+  if (current && current <= maxDay) daySel.value = current;
+}
+
 var catIcons = { 'Birthday': '\ud83c\udf82', 'Anniversary': '\ud83d\udc8d', 'Illness & Healing': '\ud83d\ude4f', 'Milestone': '\ud83c\udfc6', 'Grief & Loss': '\ud83d\udd4a\ufe0f', 'Gratitude': '\ud83d\ude4c' };
 
 function openModal() {
@@ -1525,6 +1554,7 @@ function hidePrayerOverlay() {
 
 // ========== INIT ==========
 setTimeGreeting();
+initDateDropdowns();
 </script>
 </body>
 </html>
