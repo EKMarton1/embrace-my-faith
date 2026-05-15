@@ -70,7 +70,7 @@ body{background:#1a1a1a;display:flex;justify-content:center;align-items:flex-sta
 .home-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:8px 20px 32px;}
 .grid-card{background:rgba(255,255,255,0.45);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.6);border-radius:20px;padding:28px 16px;display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer;transition:all 0.2s;}
 .grid-card:hover{background:rgba(255,255,255,0.65);}.grid-card:active{transform:scale(0.96);background:rgba(255,255,255,0.18);}
-.card-icon{display:flex;align-items:center;justify-content:center;}.card-icon img{object-fit:contain;background:transparent;}
+.card-icon{display:flex;align-items:center;justify-content:center;height:54px;}.card-icon img{object-fit:contain;background:transparent;}
 .card-label{font-family:'Lato',sans-serif;font-weight:800;font-size:16px;color:#111111;letter-spacing:0.3px;text-shadow:0 1px 2px rgba(255,255,255,0.5);}
 .card-desc{display:none;}
 
@@ -1389,6 +1389,8 @@ function openSendPrayer() {
   document.getElementById('prayerFor').value = forWho;
   document.getElementById('prayerSituation').value = situation;
   document.getElementById('prayerCharCount').textContent = situation.length + '/150';
+  document.getElementById('prayerResult').classList.remove('visible');
+  document.getElementById('loadingWrap').classList.remove('visible');
   showScreen('prayerScreen');
 }
 
