@@ -168,19 +168,15 @@ input[type=range]{flex:1;accent-color:#f5c830;}
 .news-date{font-size:11px;color:rgba(0,0,0,0.55);}
 
 /* ========== MOMENTS ========== */
-.moment-cat{background:rgba(255,255,255,0.35);border-radius:16px;padding:16px;margin-bottom:12px;}
-.moment-cat-header{display:flex;justify-content:space-between;align-items:center;cursor:pointer;}
-.moment-cat-icon{font-size:22px;}
-.moment-cat-info{flex:1;margin-left:12px;}
-.moment-cat-name{font-weight:600;color:#111111;font-size:15px;}
-.moment-cat-count{font-size:12px;color:rgba(0,0,0,0.62);margin-top:2px;}
-.add-moment-btn{background:rgba(30,15,0,0.75);border:1px solid rgba(30,15,0,0.3);color:#f5c830;font-size:12px;padding:8px 14px;border-radius:20px;cursor:pointer;}
-.moment-items{display:none;margin-top:12px;border-top:1px solid rgba(255,255,255,0.1);padding-top:12px;}
-.moment-items.open{display:block;}
-.moment-item{display:flex;align-items:flex-start;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.07);}
-.moment-item-name{font-weight:600;color:#111111;font-size:14px;}
-.moment-item-date{font-size:11px;color:rgba(0,0,0,0.62);}
-.moment-item-note{font-size:12px;color:rgba(0,0,0,0.72);margin-top:2px;}
+.add-moment-top-btn{display:block;width:100%;margin-bottom:14px;padding:13px;background:rgba(30,15,0,0.8);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;transition:transform 0.2s ease;}
+.add-moment-top-btn:hover{transform:scale(1.05);}
+.moment-item{display:flex;align-items:flex-start;background:rgba(255,255,255,0.35);border-radius:14px;padding:14px;margin-bottom:10px;}
+.moment-item-body{flex:1;}
+.moment-item-name{font-weight:700;color:#111111;font-size:15px;}
+.moment-item-date{font-size:12px;color:rgba(0,0,0,0.62);margin-top:2px;}
+.moment-item-note{font-size:12px;color:rgba(0,0,0,0.72);margin-top:4px;}
+.moment-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(30,15,0,0.75);color:#f5c830;margin-top:4px;letter-spacing:0.3px;}
+.moment-empty{text-align:center;font-family:'Playfair Display',serif;font-style:italic;font-size:14px;color:rgba(0,0,0,0.5);padding:30px 0;}
 .pray-for-btn{background:rgba(30,15,0,0.75);border:1px solid rgba(30,15,0,0.2);color:#f5c830;font-size:11px;padding:6px 12px;border-radius:20px;cursor:pointer;white-space:nowrap;margin-left:8px;}
 
 /* PRAYER LISTENING OVERLAY */
@@ -517,63 +513,8 @@ input[type=range]{flex:1;accent-color:#f5c830;}
   <div class="screen-body">
     <div class="section-label">Life Moments</div>
     <div class="section-sub">Add the people and milestones that matter. Tap &ldquo;Pray&rdquo; to lift them up anytime.</div>
-    <div id="momentsList">
-      <div class="moment-cat" id="cat-birthdays">
-        <div class="moment-cat-header">
-          <div class="moment-cat-icon">&#127874;</div>
-          <div class="moment-cat-info">
-            <div class="moment-cat-name">Birthdays</div>
-            <div class="moment-cat-count" id="cnt-birthdays">0 added</div>
-          </div>
-          <button class="add-moment-btn" onclick="openModal('birthdays','Birthday')">+ Add</button>
-        </div>
-        <div class="moment-items" id="items-birthdays"></div>
-      </div>
-      <div class="moment-cat" id="cat-illness">
-        <div class="moment-cat-header">
-          <div class="moment-cat-icon">&#129505;</div>
-          <div class="moment-cat-info">
-            <div class="moment-cat-name">Illness &amp; Healing</div>
-            <div class="moment-cat-count" id="cnt-illness">0 added</div>
-          </div>
-          <button class="add-moment-btn" onclick="openModal('illness','Illness & Healing')">+ Add</button>
-        </div>
-        <div class="moment-items" id="items-illness"></div>
-      </div>
-      <div class="moment-cat" id="cat-milestones">
-        <div class="moment-cat-header">
-          <div class="moment-cat-icon">&#127941;</div>
-          <div class="moment-cat-info">
-            <div class="moment-cat-name">Milestones</div>
-            <div class="moment-cat-count" id="cnt-milestones">0 added</div>
-          </div>
-          <button class="add-moment-btn" onclick="openModal('milestones','Milestone')">+ Add</button>
-        </div>
-        <div class="moment-items" id="items-milestones"></div>
-      </div>
-      <div class="moment-cat" id="cat-grief">
-        <div class="moment-cat-header">
-          <div class="moment-cat-icon">&#128150;</div>
-          <div class="moment-cat-info">
-            <div class="moment-cat-name">Grief &amp; Loss</div>
-            <div class="moment-cat-count" id="cnt-grief">0 added</div>
-          </div>
-          <button class="add-moment-btn" onclick="openModal('grief','Grief & Loss')">+ Add</button>
-        </div>
-        <div class="moment-items" id="items-grief"></div>
-      </div>
-      <div class="moment-cat" id="cat-gratitude">
-        <div class="moment-cat-header">
-          <div class="moment-cat-icon">&#128591;</div>
-          <div class="moment-cat-info">
-            <div class="moment-cat-name">Gratitude</div>
-            <div class="moment-cat-count" id="cnt-gratitude">0 added</div>
-          </div>
-          <button class="add-moment-btn" onclick="openModal('gratitude','Gratitude')">+ Add</button>
-        </div>
-        <div class="moment-items" id="items-gratitude"></div>
-      </div>
-    </div>
+    <button class="add-moment-top-btn" onclick="openModal()">+ Add Moment</button>
+    <div id="momentsList"></div>
   </div>
 </div>
 
@@ -782,6 +723,15 @@ input[type=range]{flex:1;accent-color:#f5c830;}
     <div class="modal-title" id="modalTitle">Add Moment</div>
     <input class="modal-input" id="mName" type="text" placeholder="Name"/>
     <input class="modal-input" id="mDate" type="date"/>
+    <select class="modal-input" id="mCategory">
+      <option value="">Select a category</option>
+      <option value="Birthday">Birthday</option>
+      <option value="Anniversary">Anniversary</option>
+      <option value="Illness & Healing">Illness &amp; Healing</option>
+      <option value="Milestone">Milestone</option>
+      <option value="Grief & Loss">Grief &amp; Loss</option>
+      <option value="Gratitude">Gratitude</option>
+    </select>
     <textarea class="modal-textarea" id="mNote" placeholder="A note or prayer intention (optional)"></textarea>
     <div class="modal-btns">
       <button class="modal-save" onclick="saveModal()">Save Moment</button>
@@ -802,9 +752,8 @@ input[type=range]{flex:1;accent-color:#f5c830;}
 // ========== STATE ==========
 var userName = 'Friend';
 var prayersLeft = 10;
-var currentCat = '';
-var currentModalLabel = '';
-var moments = {};
+
+var moments = [];
 var savedPrayers = [];
 var currentAudio = null;
 var isPlaying = false;
@@ -910,6 +859,7 @@ function showScreen(id) {
   document.getElementById('emfApp').scrollTop = 0;
   window.scrollTo(0, 0);
   if (id === 'savedScreen') renderSavedPrayers();
+  if (id === 'momentsScreen') renderMoments();
 }
 
 // ========== ONBOARDING ==========
@@ -1322,12 +1272,11 @@ function shareVia(method) {
 }
 
 // ========== MOMENTS ==========
-function openModal(cat, label) {
-  currentCat = cat;
-  currentModalLabel = label;
-  document.getElementById('modalTitle').textContent = 'Add to ' + label;
+function openModal() {
+  document.getElementById('modalTitle').textContent = 'Add Moment';
   document.getElementById('mName').value = '';
   document.getElementById('mDate').value = '';
+  document.getElementById('mCategory').value = '';
   document.getElementById('mNote').value = '';
   document.getElementById('modalOverlay').classList.add('open');
 }
@@ -1339,30 +1288,45 @@ function closeModal() {
 function saveModal() {
   var name = document.getElementById('mName').value.trim();
   if (!name) { alert('Please enter a name.'); return; }
-  if (!moments[currentCat]) moments[currentCat] = [];
-  moments[currentCat].push({ name: name, date: document.getElementById('mDate').value, note: document.getElementById('mNote').value.trim() });
-  renderMoments(currentCat);
+  var category = document.getElementById('mCategory').value;
+  if (!category) { alert('Please select a category.'); return; }
+  moments.push({ name: name, date: document.getElementById('mDate').value, category: category, note: document.getElementById('mNote').value.trim() });
+  renderMoments();
   closeModal();
 }
 
-function renderMoments(cat) {
-  var list = moments[cat] || [];
-  document.getElementById('cnt-' + cat).textContent = list.length + ' added';
-  var el = document.getElementById('items-' + cat);
-  el.innerHTML = '';
-  if (list.length > 0) {
-    el.classList.add('open');
-    list.forEach(function(m, i) {
-      var d = m.date ? new Date(m.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric' }) : '';
-      el.innerHTML += '<div class="moment-item"><div style="flex:1"><div class="moment-item-name">' + m.name + '</div>' + (d ? '<div class="moment-item-date">' + d + '</div>' : '') + (m.note ? '<div class="moment-item-note">' + m.note + '</div>' : '') + '</div><button class="pray-for-btn" onclick="prayForMoment(\'' + cat + '\',' + i + ')">Pray &#128591;</button></div>';
-    });
-  }
+function nextOccurrence(dateStr) {
+  if (!dateStr) return new Date(9999, 11, 31);
+  var parts = dateStr.split('-');
+  var today = new Date(); today.setHours(0,0,0,0);
+  var d = new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
+  var candidate = new Date(today.getFullYear(), d.getMonth(), d.getDate());
+  if (candidate < today) candidate.setFullYear(today.getFullYear() + 1);
+  return candidate;
 }
 
-function prayForMoment(cat, i) {
-  var m = moments[cat][i];
+function renderMoments() {
+  var el = document.getElementById('momentsList');
+  if (!moments.length) {
+    el.innerHTML = '<div class="moment-empty">&ldquo;Lift up the names on your heart.<br/>God hears every one.&rdquo;</div>';
+    return;
+  }
+  var sorted = moments.slice().sort(function(a, b) {
+    return nextOccurrence(a.date) - nextOccurrence(b.date);
+  });
+  el.innerHTML = '';
+  sorted.forEach(function(m, i) {
+    var origIdx = moments.indexOf(m);
+    var d = m.date ? new Date(m.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric' }) : '';
+    el.innerHTML += '<div class="moment-item"><div class="moment-item-body"><div class="moment-item-name">' + m.name + ' <span class="moment-badge">' + m.category + '</span></div>' + (d ? '<div class="moment-item-date">' + d + '</div>' : '') + (m.note ? '<div class="moment-item-note">' + m.note + '</div>' : '') + '</div><button class="pray-for-btn" onclick="prayForMoment(' + origIdx + ')">Pray &#128591;</button></div>';
+  });
+}
+
+function prayForMoment(i) {
+  var m = moments[i];
   document.getElementById('prayerFor').value = m.name;
-  document.getElementById('prayerSituation').value = cat + (m.date ? ' on ' + m.date : '') + (m.note ? ' \u2014 ' + m.note : '');
+  document.getElementById('prayerSituation').value = m.category + (m.date ? ' on ' + m.date : '') + (m.note ? ' \u2014 ' + m.note : '');
+  document.getElementById('prayerCharCount').textContent = document.getElementById('prayerSituation').value.length + '/150';
   showScreen('prayerScreen');
 }
 
