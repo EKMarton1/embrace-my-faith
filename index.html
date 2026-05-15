@@ -107,6 +107,17 @@ body{background:#1a1a1a;display:flex;justify-content:center;align-items:flex-sta
 #restScreen .slider-row label{font-size:12px;color:rgba(0,0,0,0.75);font-weight:600;letter-spacing:1px;text-transform:uppercase;min-width:90px;}
 #restScreen .option-card:hover{background:rgba(255,255,255,0.45);}
 #restScreen .option-card.selected{background:rgba(255,255,255,0.45);border:2px solid rgba(200,144,10,0.85);box-shadow:0 0 0 1px rgba(200,144,10,0.3);}
+.story-player{background:rgba(30,15,0,0.75);border-radius:16px;padding:16px 20px;margin-bottom:16px;}
+.story-player-controls{display:flex;gap:10px;margin-bottom:12px;}
+.story-play-btn{background:rgba(245,200,48,0.15);border:1.5px solid rgba(245,200,48,0.5);color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;padding:10px 24px;border-radius:50px;cursor:pointer;transition:background 0.2s;}
+.story-play-btn:hover{background:rgba(245,200,48,0.25);}
+.story-stop-btn{background:transparent;border:1.5px solid rgba(255,255,255,0.25);color:rgba(255,255,255,0.7);font-family:'Lato',sans-serif;font-weight:600;font-size:14px;padding:10px 20px;border-radius:50px;cursor:pointer;transition:background 0.2s;}
+.story-stop-btn:hover{background:rgba(255,255,255,0.1);}
+.story-player-time{display:flex;align-items:center;gap:10px;}
+.story-time{font-size:12px;color:rgba(245,200,48,0.8);font-family:'Lato',sans-serif;font-weight:600;min-width:36px;}
+.story-seek{flex:1;-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:rgba(255,255,255,0.2);outline:none;cursor:pointer;}
+.story-seek::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:#f5c830;cursor:pointer;box-shadow:0 0 4px rgba(245,200,48,0.6);}
+.story-seek::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:#f5c830;cursor:pointer;border:none;}
 #restScreen #restFemale:hover{background:rgba(30,15,0,0.85)!important;}
 #restScreen #restMale:hover{background:rgba(255,255,255,0.5)!important;}
 #restScreen .awake-btn:hover{background:rgba(30,15,0,0.95);}
@@ -432,6 +443,18 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
       <div class="option-card" onclick="selectRest(this,'Psalms')">
         <div class="option-card-title">Psalms</div>
         <div class="option-card-sub">The soothing poetry of the Psalms read softly</div>
+      </div>
+    </div>
+    <div id="storyPlayer" class="story-player" style="display:none;">
+      <audio id="storyAudio" src="Audio/Story01.mp3" preload="metadata"></audio>
+      <div class="story-player-controls">
+        <button class="story-play-btn" id="storyPlayPause" onclick="storyTogglePlay()">Play</button>
+        <button class="story-stop-btn" onclick="storyStop()">Stop</button>
+      </div>
+      <div class="story-player-time">
+        <span class="story-time" id="storyElapsed">0:00</span>
+        <input type="range" class="story-seek" id="storySeek" min="0" max="100" value="0" step="0.1" oninput="storyScrub(this.value)"/>
+        <span class="story-time" id="storyDuration">0:00</span>
       </div>
     </div>
     <label class="form-label">Voice</label>
@@ -1084,6 +1107,70 @@ function selectRest(el, label) {
   var cards = document.querySelectorAll('#restOptions .option-card');
   for (var i = 0; i < cards.length; i++) cards[i].classList.remove('selected');
   el.classList.add('selected');
+  var player = document.getElementById('storyPlayer');
+  if (label === 'Bible Story') {
+    player.style.display = 'block';
+    var audio = document.getElementById('storyAudio');
+    audio.addEventListener('loadedmetadata', function() {
+      document.getElementById('storyDuration').textContent = storyFmtTime(audio.duration);
+    });
+  } else {
+    storyStop();
+    player.style.display = 'none';
+  }
+}
+
+var storyInterval = null;
+
+function storyTogglePlay() {
+  var audio = document.getElementById('storyAudio');
+  var btn = document.getElementById('storyPlayPause');
+  if (audio.paused) {
+    audio.play();
+    btn.textContent = 'Pause';
+    storyInterval = setInterval(storyUpdateProgress, 500);
+  } else {
+    audio.pause();
+    btn.textContent = 'Play';
+    clearInterval(storyInterval);
+  }
+}
+
+function storyStop() {
+  var audio = document.getElementById('storyAudio');
+  if (!audio) return;
+  audio.pause();
+  audio.currentTime = 0;
+  var btn = document.getElementById('storyPlayPause');
+  if (btn) btn.textContent = 'Play';
+  var seek = document.getElementById('storySeek');
+  if (seek) seek.value = 0;
+  var elapsed = document.getElementById('storyElapsed');
+  if (elapsed) elapsed.textContent = '0:00';
+  clearInterval(storyInterval);
+}
+
+function storyUpdateProgress() {
+  var audio = document.getElementById('storyAudio');
+  if (!audio || !audio.duration) return;
+  document.getElementById('storySeek').value = (audio.currentTime / audio.duration) * 100;
+  document.getElementById('storyElapsed').textContent = storyFmtTime(audio.currentTime);
+  document.getElementById('storyDuration').textContent = storyFmtTime(audio.duration);
+  if (audio.ended) {
+    document.getElementById('storyPlayPause').textContent = 'Play';
+    clearInterval(storyInterval);
+  }
+}
+
+function storyScrub(val) {
+  var audio = document.getElementById('storyAudio');
+  if (audio && audio.duration) audio.currentTime = (val / 100) * audio.duration;
+}
+
+function storyFmtTime(s) {
+  var m = Math.floor(s / 60);
+  var sec = Math.floor(s % 60);
+  return m + ':' + (sec < 10 ? '0' : '') + sec;
 }
 
 function startRest() {
