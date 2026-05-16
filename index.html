@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Lato:wght@300;400;600&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 body{background:#1a1a1a;display:flex;justify-content:center;align-items:flex-start;min-height:100vh;font-family:'Lato',sans-serif;padding:20px 0;}
@@ -137,6 +138,23 @@ body{background:#1a1a1a;display:flex;justify-content:center;align-items:flex-sta
 .prayer-action-btn:hover{background:rgba(30,15,0,0.65);}
 .aud-btn{background:rgba(255,255,255,0.4);color:#111111;transition:background 0.2s ease;}.aud-btn:hover{background:rgba(255,255,255,0.6);}.aud-btn.selected{background:rgba(255,255,255,0.65);font-weight:700;}
 .action-btn{flex:1;min-width:80px;padding:12px 8px;background:rgba(255,255,255,0.35);border:1px solid rgba(61,31,0,0.2);color:#111111;font-family:'Lato',sans-serif;font-weight:600;font-size:13px;border-radius:50px;cursor:pointer;}
+
+/* ========== AUTH SCREENS ========== */
+.auth-screen{display:none;flex-direction:column;align-items:center;justify-content:center;padding:48px 28px 40px;}
+.auth-screen.active{display:flex;}
+.auth-logo{height:64px;object-fit:contain;margin-bottom:20px;}
+.auth-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:600;color:#111;margin-bottom:6px;text-align:center;}
+.auth-sub{font-size:14px;color:rgba(0,0,0,0.55);margin-bottom:28px;text-align:center;}
+.auth-input{width:100%;padding:14px 16px;border-radius:12px;background:rgba(255,255,255,0.65);border:1.5px solid rgba(0,0,0,0.12);font-family:'Lato',sans-serif;font-size:15px;color:#111;margin-bottom:12px;outline:none;box-sizing:border-box;}
+.auth-input:focus{border-color:rgba(30,15,0,0.35);}
+.auth-btn{width:100%;padding:16px;background:rgba(30,15,0,0.8);border:none;color:#f5c830;font-family:'Playfair Display',serif;font-weight:700;font-size:16px;letter-spacing:2px;border-radius:14px;cursor:pointer;margin-top:4px;margin-bottom:18px;transition:background 0.15s;}
+.auth-btn:hover{background:rgba(30,15,0,0.95);}
+.auth-btn:disabled{opacity:0.55;cursor:default;}
+.auth-error{color:#b03a2e;font-size:13px;text-align:center;margin-bottom:10px;display:none;line-height:1.4;}
+.auth-link{font-size:14px;color:rgba(0,0,0,0.55);text-align:center;}
+.auth-link span{color:#3d1f00;font-weight:700;cursor:pointer;text-decoration:underline;}
+.auth-signout-btn{width:100%;padding:13px;background:rgba(180,50,30,0.12);border:1.5px solid rgba(180,50,30,0.25);color:#8b2218;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;margin-top:8px;transition:background 0.15s;}
+.auth-signout-btn:hover{background:rgba(180,50,30,0.2);}
 
 /* ========== COMING SOON / FEATURE SCREEN ========== */
 .coming-soon{padding:32px 24px;text-align:center;}
@@ -295,7 +313,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
   <div class="splash-title" style="display:none;"></div>
   <div class="splash-sub">Walk in His Light</div>
   <div class="splash-verse">&ldquo;I have come that they may have life, and have it to the full.&rdquo;<br/>&#8212; John 10:10</div>
-  <button class="splash-btn" onclick="showScreen('nameScreen')">Begin My Journey</button>
+  <button class="splash-btn" onclick="showScreen('loginScreen')">Begin My Journey</button>
 </div>
 
 <!-- NAME ENTRY -->
@@ -314,6 +332,31 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
   <div class="notify-sub">May we send you prayer reminders and updates to keep your spirit anchored throughout the day?</div>
   <button class="notify-yes" onclick="showScreen('homeScreen')">Yes Please</button>
   <button class="notify-no" onclick="showScreen('homeScreen')">Not right now</button>
+</div>
+
+<!-- LOGIN -->
+<div class="screen auth-screen" id="loginScreen">
+  <img src="images/EMF_logo.png" alt="Embrace My Faith" class="auth-logo"/>
+  <div class="auth-title">Welcome Back</div>
+  <div class="auth-sub">Sign in to continue your journey</div>
+  <input class="auth-input" id="loginEmail" type="email" placeholder="Email address" autocomplete="email"/>
+  <input class="auth-input" id="loginPassword" type="password" placeholder="Password" autocomplete="current-password"/>
+  <div class="auth-error" id="loginError"></div>
+  <button class="auth-btn" id="loginBtn" onclick="authSignIn()">SIGN IN</button>
+  <div class="auth-link">New here? <span onclick="showScreen('signupScreen')">Create an account</span></div>
+</div>
+
+<!-- SIGNUP -->
+<div class="screen auth-screen" id="signupScreen">
+  <img src="images/EMF_logo.png" alt="Embrace My Faith" class="auth-logo"/>
+  <div class="auth-title">Create Your Account</div>
+  <div class="auth-sub">Begin your faith journey</div>
+  <input class="auth-input" id="signupName" type="text" placeholder="Your name" maxlength="30" autocomplete="name"/>
+  <input class="auth-input" id="signupEmail" type="email" placeholder="Email address" autocomplete="email"/>
+  <input class="auth-input" id="signupPassword" type="password" placeholder="Password (min 6 characters)" autocomplete="new-password"/>
+  <div class="auth-error" id="signupError"></div>
+  <button class="auth-btn" id="signupBtn" onclick="authSignUp()">CREATE ACCOUNT</button>
+  <div class="auth-link">Already have an account? <span onclick="showScreen('loginScreen')">Sign in</span></div>
 </div>
 
 <!-- HOME -->
@@ -797,7 +840,8 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
 
     <div class="settings-card">
       <div class="settings-card-title">Account</div>
-      <div style="font-size:13px;color:rgba(0,0,0,0.6);margin-bottom:12px;">Signed in as <strong id="settingsName">Friend</strong></div>
+      <div style="font-size:15px;font-weight:600;color:#111;margin-bottom:2px;" id="settingsName">Friend</div>
+      <div style="font-size:12px;color:rgba(0,0,0,0.5);margin-bottom:14px;" id="settingsEmail"></div>
       <div id="settingsNameView">
         <button onclick="showSettingsNameEdit()" style="width:100%;padding:13px;background:rgba(255,255,255,0.4);border:1.5px solid rgba(0,0,0,0.15);color:#111;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;transition:background 0.2s;">Edit Name</button>
       </div>
@@ -808,6 +852,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
           <button onclick="cancelSettingsNameEdit()" style="flex:1;padding:12px;background:rgba(255,255,255,0.4);border:1.5px solid rgba(0,0,0,0.15);color:#111;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;">Cancel</button>
         </div>
       </div>
+      <button class="auth-signout-btn" onclick="authSignOut()">Sign Out</button>
     </div>
 
     <div class="settings-card">
@@ -898,6 +943,166 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
 </div>
 
 <script>
+// ========== SUPABASE ==========
+var SUPA_URL = 'https://fubmjytqfucnudpupynw.supabase.co';
+var SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1Ym1qeXRxZnVjbnVkcHVweW53Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5Njk2NzEsImV4cCI6MjA5NDU0NTY3MX0.ajNVdUzA6sdcjWuMtPg-g3e93EDxQmRqpdziYQSoEF0';
+var supaClient = (window.supabase && window.supabase.createClient) ? window.supabase.createClient(SUPA_URL, SUPA_KEY) : null;
+var currentUser = null;
+
+if (supaClient) {
+  supaClient.auth.onAuthStateChange(async function(event, session) {
+    currentUser = (session && session.user) ? session.user : null;
+    if (currentUser) {
+      await loadUserData();
+      showScreen('homeScreen');
+    } else if (event === 'SIGNED_OUT') {
+      showScreen('loginScreen');
+    }
+  });
+}
+
+async function loadUserData() {
+  if (!supaClient || !currentUser) return;
+  try {
+    var { data: profile } = await supaClient.from('profiles').select('*').eq('id', currentUser.id).single();
+    if (profile) {
+      userName = profile.name || 'Friend';
+      defaultGender = profile.gender || 'female';
+      localStorage.setItem('emf_gender', defaultGender);
+    }
+    var hn = document.getElementById('homeName');
+    if (hn) hn.textContent = userName;
+    saveGenderPref(defaultGender);
+
+    var today = new Date().toISOString().slice(0, 10);
+    var { data: counter } = await supaClient.from('prayer_counters').select('*').eq('user_id', currentUser.id).single();
+    if (counter) {
+      if (counter.reset_date !== today) {
+        prayersLeft = 10;
+        await supaClient.from('prayer_counters').update({ count: 0, reset_date: today }).eq('user_id', currentUser.id);
+      } else {
+        prayersLeft = Math.max(0, 10 - counter.count);
+      }
+    } else {
+      prayersLeft = 10;
+      await supaClient.from('prayer_counters').insert({ user_id: currentUser.id, count: 0, reset_date: today });
+    }
+    updateCounterUI();
+
+    var { data: mData } = await supaClient.from('moments').select('*').eq('user_id', currentUser.id).order('created_at');
+    if (mData && mData.length) {
+      moments = mData.map(function(m) { return { id: m.id, name: m.name, date: m.date || '', category: m.category || '', note: m.note || '' }; });
+    }
+
+    var { data: pData } = await supaClient.from('prayers').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false });
+    if (pData && pData.length) {
+      savedPrayers = pData.map(function(p) { return { id: p.id, for: p.prayer_for || '', scripture: p.scripture || '', prayer: p.prayer_text, date: new Date(p.created_at).toLocaleDateString() }; });
+    }
+
+    var { data: risePref } = await supaClient.from('rise_preferences').select('*').eq('user_id', currentUser.id).single();
+    if (risePref) {
+      if (risePref.wake_time) { var td = document.getElementById('timeDisplay'); if (td) td.textContent = risePref.wake_time; }
+      if (risePref.gender) selectRiseGender(risePref.gender);
+    }
+
+    var { data: restPref } = await supaClient.from('rest_preferences').select('*').eq('user_id', currentUser.id).single();
+    if (restPref && restPref.gender) selectRestGender(restPref.gender);
+  } catch(e) { console.error('loadUserData:', e); }
+}
+
+function updateCounterUI() {
+  var bar = document.getElementById('prayersRemainingBar');
+  if (bar) bar.innerHTML = prayersLeft + ' of 10 prayers remaining today &#8212; <span onclick="showScreen(\'pricingScreen\')" style="cursor:pointer;text-decoration:underline;color:#3d1f00;font-weight:700;">get more for $0.99</span>';
+}
+
+// ── AUTH ──────────────────────────────────────────────────────────────────────
+async function authSignIn() {
+  var email = (document.getElementById('loginEmail').value || '').trim();
+  var pw = document.getElementById('loginPassword').value || '';
+  if (!email || !pw) { showAuthMsg('login', 'Please enter your email and password.'); return; }
+  var btn = document.getElementById('loginBtn');
+  btn.disabled = true; btn.textContent = 'Signing In...';
+  var { error } = await supaClient.auth.signInWithPassword({ email: email, password: pw });
+  if (error) { showAuthMsg('login', error.message); btn.disabled = false; btn.textContent = 'SIGN IN'; }
+}
+
+async function authSignUp() {
+  var name = (document.getElementById('signupName').value || '').trim();
+  var email = (document.getElementById('signupEmail').value || '').trim();
+  var pw = document.getElementById('signupPassword').value || '';
+  if (!name) { showAuthMsg('signup', 'Please enter your name.'); return; }
+  if (!email || !pw) { showAuthMsg('signup', 'Please enter your email and password.'); return; }
+  if (pw.length < 6) { showAuthMsg('signup', 'Password must be at least 6 characters.'); return; }
+  var btn = document.getElementById('signupBtn');
+  btn.disabled = true; btn.textContent = 'Creating Account...';
+  var { data, error } = await supaClient.auth.signUp({ email: email, password: pw });
+  if (error) { showAuthMsg('signup', error.message); btn.disabled = false; btn.textContent = 'CREATE ACCOUNT'; return; }
+  if (data && data.user) {
+    userName = name;
+    await supaClient.from('profiles').insert({ id: data.user.id, name: name, gender: 'female' });
+    await supaClient.from('prayer_counters').insert({ user_id: data.user.id, count: 0, reset_date: new Date().toISOString().slice(0, 10) });
+  }
+}
+
+async function authSignOut() {
+  if (supaClient) await supaClient.auth.signOut();
+  currentUser = null;
+  moments = [{ name: 'Remy', date: '1999-07-13', category: 'Birthday', note: '' }];
+  savedPrayers = []; prayersLeft = 10; userName = 'Friend';
+  showScreen('loginScreen');
+}
+
+function showAuthMsg(screen, msg) {
+  var el = document.getElementById(screen === 'login' ? 'loginError' : 'signupError');
+  if (el) { el.textContent = msg; el.style.display = 'block'; }
+}
+
+// ── DB HELPERS ────────────────────────────────────────────────────────────────
+async function dbSaveProfile(updates) {
+  if (!supaClient || !currentUser) return;
+  try { await supaClient.from('profiles').upsert(Object.assign({ id: currentUser.id }, updates)); } catch(e) {}
+}
+
+async function dbDecrementCounter() {
+  if (!supaClient || !currentUser) return;
+  var today = new Date().toISOString().slice(0, 10);
+  try {
+    var { data } = await supaClient.from('prayer_counters').select('count,reset_date').eq('user_id', currentUser.id).single();
+    if (data) {
+      var newCount = (data.reset_date === today) ? data.count + 1 : 1;
+      await supaClient.from('prayer_counters').update({ count: newCount, reset_date: today }).eq('user_id', currentUser.id);
+    } else {
+      await supaClient.from('prayer_counters').insert({ user_id: currentUser.id, count: 1, reset_date: today });
+    }
+  } catch(e) {}
+}
+
+async function dbSavePrayer(prayerFor, prayerText, scripture, tone) {
+  if (!supaClient || !currentUser) return null;
+  try {
+    var { data } = await supaClient.from('prayers').insert({ user_id: currentUser.id, prayer_for: prayerFor, prayer_text: prayerText, scripture: scripture || '', tone: tone || '' }).select().single();
+    return data;
+  } catch(e) { return null; }
+}
+
+async function dbSaveMoment(m) {
+  if (!supaClient || !currentUser) return null;
+  try {
+    var { data } = await supaClient.from('moments').insert({ user_id: currentUser.id, name: m.name, category: m.category || '', date: m.date || '', note: m.note || '' }).select().single();
+    return data;
+  } catch(e) { return null; }
+}
+
+async function dbSaveRisePrefs(prefs) {
+  if (!supaClient || !currentUser) return;
+  try { await supaClient.from('rise_preferences').upsert(Object.assign({ user_id: currentUser.id }, prefs)); } catch(e) {}
+}
+
+async function dbSaveRestPrefs(prefs) {
+  if (!supaClient || !currentUser) return;
+  try { await supaClient.from('rest_preferences').upsert(Object.assign({ user_id: currentUser.id }, prefs)); } catch(e) {}
+}
+
 // ========== STATE ==========
 var userName = 'Friend';
 var prayersLeft = 10;
@@ -953,6 +1158,7 @@ function getVoiceForTone(tone, gender) {
 function saveGenderPref(g) {
   defaultGender = g;
   localStorage.setItem('emf_gender', g);
+  dbSaveProfile({ gender: g });
   var fm = document.getElementById('settingsFemale');
   var mm = document.getElementById('settingsMale');
   if (fm) { fm.style.background = g === 'female' ? 'rgba(30,15,0,0.75)' : 'rgba(255,255,255,0.4)'; fm.style.color = g === 'female' ? '#f5c830' : '#111'; fm.style.border = g === 'female' ? 'none' : '1.5px solid rgba(0,0,0,0.15)'; }
@@ -981,6 +1187,7 @@ function saveSettingsName() {
   localStorage.setItem('emf_userName', val);
   document.getElementById('settingsName').textContent = val;
   document.getElementById('homeName').textContent = val;
+  dbSaveProfile({ name: val });
   cancelSettingsNameEdit();
 }
 
@@ -1016,8 +1223,13 @@ function getVerseWindow(h) {
 
 // ========== NAVIGATION ==========
 function showScreen(id) {
+  // Clear auth error messages when switching screens
+  if (id === 'loginScreen') { var le = document.getElementById('loginError'); if (le) { le.textContent = ''; le.style.display = 'none'; } var lb = document.getElementById('loginBtn'); if (lb) { lb.disabled = false; lb.textContent = 'SIGN IN'; } }
+  if (id === 'signupScreen') { var se = document.getElementById('signupError'); if (se) { se.textContent = ''; se.style.display = 'none'; } var sb = document.getElementById('signupBtn'); if (sb) { sb.disabled = false; sb.textContent = 'CREATE ACCOUNT'; } }
   if (id === 'settingsScreen') {
     document.getElementById('settingsName').textContent = userName;
+    var emailEl = document.getElementById('settingsEmail');
+    if (emailEl && currentUser) emailEl.textContent = currentUser.email;
     saveGenderPref(defaultGender);
     var used = 10 - prayersLeft;
     document.getElementById('settingsPrayerCount').textContent = used + ' of 10 prayers used today';
@@ -1133,9 +1345,8 @@ async function generatePrayer() {
   }
 
   prayersLeft--;
-  if (document.getElementById('prayersRemainingBar')) {
-    document.getElementById('prayersRemainingBar').innerHTML = prayersLeft + ' of 10 prayers remaining today &#8212; <span onclick="showScreen(\'pricingScreen\')" style="cursor:pointer;text-decoration:underline;color:#3d1f00;font-weight:700;">get more for $0.99</span>';
-  }
+  dbDecrementCounter();
+  updateCounterUI();
   document.getElementById('loadingWrap').classList.remove('visible');
   document.getElementById('prayerResult').classList.add('visible');
   document.getElementById('generateBtn').disabled = false;
@@ -1146,12 +1357,16 @@ function copyPrayer() {
   navigator.clipboard && navigator.clipboard.writeText(t).then(function(){ alert('Prayer copied to clipboard!'); }).catch(function(){ alert('Prayer is ready to share!'); });
 }
 
-function savePrayer() {
+async function savePrayer() {
   var s = document.getElementById('scriptureText').textContent;
   var p = document.getElementById('prayerText').textContent;
   var f = document.getElementById('prayerFor').value.trim();
-  if (!s || !p) { alert('Generate a prayer first!'); return; }
-  savedPrayers.unshift({ for: f, scripture: s, prayer: p, date: new Date().toLocaleDateString() });
+  var tone = document.getElementById('prayerTone') ? document.getElementById('prayerTone').value : '';
+  if (!p) { alert('Generate a prayer first!'); return; }
+  var entry = { for: f, scripture: s, prayer: p, date: new Date().toLocaleDateString() };
+  var dbRow = await dbSavePrayer(f, p, s, tone);
+  if (dbRow) entry.id = dbRow.id;
+  savedPrayers.unshift(entry);
   alert('Prayer saved to your journal. \u2728');
 }
 
@@ -1365,8 +1580,10 @@ function confirmTime() {
   var h = document.getElementById('timeHour').value;
   var m = document.getElementById('timeMin').value;
   var a = document.getElementById('timeAmPm').value;
-  document.getElementById('timeDisplay').textContent = h + ':' + m + ' ' + a;
+  var t = h + ':' + m + ' ' + a;
+  document.getElementById('timeDisplay').textContent = t;
   document.getElementById('timeDropdowns').style.display = 'none';
+  dbSaveRisePrefs({ wake_time: t });
 }
 
 function getRiseTime() {
@@ -1724,7 +1941,7 @@ function closeModal() {
   document.getElementById('modalOverlay').classList.remove('open');
 }
 
-function saveModal() {
+async function saveModal() {
   var name = document.getElementById('mName').value.trim();
   if (!name) { alert('Please enter a name.'); return; }
   var category = document.getElementById('mCategory').value;
@@ -1733,7 +1950,10 @@ function saveModal() {
   var day = document.getElementById('mDay').value;
   var year = document.getElementById('mYear').value || '0000';
   var dateStr = month && day ? (year + '-' + ('0'+month).slice(-2) + '-' + ('0'+day).slice(-2)) : '';
-  moments.push({ name: name, date: dateStr, category: category, note: document.getElementById('mNote').value.trim() });
+  var m = { name: name, date: dateStr, category: category, note: document.getElementById('mNote').value.trim() };
+  var dbRow = await dbSaveMoment(m);
+  if (dbRow) m.id = dbRow.id;
+  moments.push(m);
   renderMoments();
   closeModal();
 }
@@ -1961,9 +2181,8 @@ function selectRiseGender(g) {
   var mm = document.getElementById('riseMale');
   if (fm) { fm.style.background = g === 'female' ? 'rgba(30,15,0,0.75)' : 'rgba(255,255,255,0.4)'; fm.style.color = g === 'female' ? '#f5c830' : '#111'; }
   if (mm) { mm.style.background = g === 'male' ? 'rgba(30,15,0,0.75)' : 'rgba(255,255,255,0.4)'; mm.style.color = g === 'male' ? '#f5c830' : '#111'; }
-  if (document.getElementById('riseInlinePlayer').style.display !== 'none') {
-    riseStopAndReset();
-  }
+  if (document.getElementById('riseInlinePlayer').style.display !== 'none') { riseStopAndReset(); }
+  dbSaveRisePrefs({ gender: g });
 }
 
 function selectRestGender(g) {
@@ -1972,9 +2191,8 @@ function selectRestGender(g) {
   var mm = document.getElementById('restMale');
   if (fm) { fm.style.background = g === 'female' ? 'rgba(30,15,0,0.75)' : 'rgba(255,255,255,0.4)'; fm.style.color = g === 'female' ? '#f5c830' : '#111'; }
   if (mm) { mm.style.background = g === 'male' ? 'rgba(30,15,0,0.75)' : 'rgba(255,255,255,0.4)'; mm.style.color = g === 'male' ? '#f5c830' : '#111'; }
-  if (document.getElementById('restInlinePlayer').style.display !== 'none') {
-    restStopAndReset();
-  }
+  if (document.getElementById('restInlinePlayer').style.display !== 'none') { restStopAndReset(); }
+  dbSaveRestPrefs({ gender: g });
 }
 
 
