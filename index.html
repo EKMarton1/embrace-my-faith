@@ -1034,8 +1034,15 @@ async function authSignIn() {
   if (!email || !pw) { showAuthMsg('login', 'Please enter your email and password.'); return; }
   var btn = document.getElementById('loginBtn');
   btn.disabled = true; btn.textContent = 'Signing In...';
-  var { error } = await supaClient.auth.signInWithPassword({ email: email, password: pw });
-  if (error) { showAuthMsg('login', error.message); btn.disabled = false; btn.textContent = 'SIGN IN'; }
+  try {
+    var { error } = await supaClient.auth.signInWithPassword({ email: email, password: pw });
+    btn.disabled = false; btn.textContent = 'SIGN IN';
+    if (error) showAuthMsg('login', error.message);
+    // onAuthStateChange handles navigation on success
+  } catch(e) {
+    btn.disabled = false; btn.textContent = 'SIGN IN';
+    showAuthMsg('login', 'Something went wrong. Please try again.');
+  }
 }
 
 async function authSignUp() {
