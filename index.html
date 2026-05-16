@@ -233,12 +233,12 @@ input[type=range]{flex:1;accent-color:#f5c830;}
 .modal-date-row select.modal-input{flex:1.6;}
 
 /* PRAYER LISTEN BUTTON */
-.listen-full-btn{width:100%;background:rgba(30,15,0,0.75);border:none;color:#f5c830;font-family:'Playfair Display',serif;font-weight:700;font-size:16px;letter-spacing:2px;border-radius:14px;padding:18px 16px;cursor:pointer;transition:transform 0.15s ease;display:flex;align-items:center;justify-content:center;margin-bottom:10px;box-sizing:border-box;}
+.listen-full-btn{width:100%;background:rgba(30,15,0,0.75);border:none;color:#f5c830;font-family:'Playfair Display',serif;font-weight:700;font-size:16px;letter-spacing:2px;border-radius:14px;padding:18px 16px;cursor:pointer;transition:transform 0.15s ease;display:block;text-align:center !important;margin-bottom:10px;box-sizing:border-box;}
 .listen-full-btn:hover{transform:scale(1.05);}
 .listen-full-btn:disabled{cursor:default;transform:none;}
-.listen-btn-phrase{display:flex;align-items:center;justify-content:center;gap:10px;transition:opacity 0.5s ease;}
-.listen-btn-main{display:inline-block;}
-.listen-btn-sub{display:inline-block;opacity:0;transition:opacity 0.5s ease;letter-spacing:2px;}
+.listen-btn-phrase{display:block;width:100%;text-align:center !important;transition:opacity 0.5s ease;}
+.listen-btn-main{display:inline;}
+.listen-btn-sub{display:inline;opacity:0;transition:opacity 0.5s ease;margin-left:10px;letter-spacing:2px;}
 .listen-player-bar{width:100%;background:rgba(30,15,0,0.75);border-radius:14px;padding:13px 16px;display:flex;align-items:center;gap:10px;margin-bottom:10px;box-sizing:border-box;}
 .listen-player-btn{background:transparent;border:1px solid rgba(245,200,48,0.5);color:#f5c830;border-radius:8px;padding:7px 16px;font-size:13px;font-weight:700;font-family:'Lato',sans-serif;letter-spacing:1px;cursor:pointer;transition:background 0.15s;white-space:nowrap;}
 .listen-player-btn:hover{background:rgba(245,200,48,0.1);}
