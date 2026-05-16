@@ -1036,11 +1036,18 @@ async function authSignUp() {
   var btn = document.getElementById('signupBtn');
   btn.disabled = true; btn.textContent = 'Creating Account...';
   var { data, error } = await supaClient.auth.signUp({ email: email, password: pw });
-  if (error) { showAuthMsg('signup', error.message); btn.disabled = false; btn.textContent = 'CREATE ACCOUNT'; return; }
+  btn.disabled = false; btn.textContent = 'CREATE ACCOUNT';
+  if (error) { showAuthMsg('signup', error.message); return; }
   if (data && data.user) {
     userName = name;
     await supaClient.from('profiles').insert({ id: data.user.id, name: name, gender: 'female' });
     await supaClient.from('prayer_counters').insert({ user_id: data.user.id, count: 0, reset_date: new Date().toISOString().slice(0, 10) });
+    if (!data.session) {
+      // Email confirmation is on — tell user to check their inbox
+      showAuthMsg('signup', 'Account created! Check your email to confirm, then sign in.');
+      return;
+    }
+    // Session exists (email confirmation off) — onAuthStateChange handles navigation
   }
 }
 
