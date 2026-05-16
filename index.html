@@ -1191,19 +1191,17 @@ async function toggleListen() {
   var mainEl = document.getElementById('listenBtnMain');
   var subEl = document.getElementById('listenBtnSub');
   btn.disabled = true;
-  subEl.style.opacity = '0';
-  phraseEl.style.opacity = '1';
   mainEl.textContent = 'I SEE YOU';
-  // "I HEAR YOU" fades in on the same line
-  setTimeout(function() { subEl.style.opacity = '1'; }, 700);
+  subEl.style.opacity = '1';
+  phraseEl.style.opacity = '1';
   // Both fade away together
-  setTimeout(function() { phraseEl.style.opacity = '0'; }, 1900);
-  // New text fades in
+  setTimeout(function() { phraseEl.style.opacity = '0'; }, 1400);
+  // "GIVE ME A MOMENT" fades in centered
   setTimeout(function() {
     subEl.style.opacity = '0';
-    mainEl.textContent = 'YOUR PRAYER IS BEING CREATED';
+    mainEl.textContent = 'GIVE ME A MOMENT';
     phraseEl.style.opacity = '1';
-  }, 2500);
+  }, 2000);
 
   await speakText(prayer, selectedVoiceId, function() {
     isPlaying = false;
