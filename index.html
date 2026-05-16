@@ -233,12 +233,9 @@ input[type=range]{flex:1;accent-color:#f5c830;}
 .modal-date-row select.modal-input{flex:1.6;}
 
 /* PRAYER LISTEN BUTTON */
-.listen-full-btn{width:100%;background:rgba(30,15,0,0.75);border:none;color:#f5c830;font-family:'Playfair Display',serif;font-weight:700;font-size:16px;letter-spacing:2px;border-radius:14px;padding:18px 16px;cursor:pointer;transition:transform 0.15s ease;display:block;text-align:center !important;margin-bottom:10px;box-sizing:border-box;}
+.listen-full-btn{width:100%;background:rgba(30,15,0,0.75);border:none;color:#f5c830;font-family:'Playfair Display',serif;font-weight:700;font-size:16px;letter-spacing:2px;border-radius:14px;padding:18px 16px;cursor:pointer;transition:transform 0.15s ease, opacity 0.5s ease;display:block;text-align:center;margin-bottom:10px;box-sizing:border-box;}
 .listen-full-btn:hover{transform:scale(1.05);}
 .listen-full-btn:disabled{cursor:default;transform:none;}
-.listen-btn-phrase{display:block;width:100%;text-align:center !important;transition:opacity 0.5s ease;}
-.listen-btn-main{display:inline;}
-.listen-btn-sub{display:inline;opacity:0;transition:opacity 0.5s ease;margin-left:10px;letter-spacing:2px;}
 .listen-player-bar{width:100%;background:rgba(30,15,0,0.75);border-radius:14px;padding:13px 16px;display:flex;align-items:center;gap:10px;margin-bottom:10px;box-sizing:border-box;}
 .listen-player-btn{background:transparent;border:1px solid rgba(245,200,48,0.5);color:#f5c830;border-radius:8px;padding:7px 16px;font-size:13px;font-weight:700;font-family:'Lato',sans-serif;letter-spacing:1px;cursor:pointer;transition:background 0.15s;white-space:nowrap;}
 .listen-player-btn:hover{background:rgba(245,200,48,0.1);}
@@ -392,7 +389,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
         <button class="action-btn" id="vbFemale" onclick="selectVoiceGender('female')" style="background:rgba(30,15,0,0.75);color:#f5c830;flex:unset;padding:10px 24px;font-size:14px;">Female</button>
         <button class="action-btn" id="vbMale" onclick="selectVoiceGender('male')" style="background:rgba(255,255,255,0.4);color:#111;flex:unset;padding:10px 24px;font-size:14px;">Male</button>
       </div>
-      <button class="listen-full-btn" id="listenBtn" onclick="toggleListen()" style="text-align:center;"><span class="listen-btn-phrase" id="listenBtnPhrase" style="display:block;text-align:center;"><span id="listenBtnMain">LISTEN</span><span class="listen-btn-sub" id="listenBtnSub">I HEAR YOU</span></span></button>
+      <button class="listen-full-btn" id="listenBtn" onclick="toggleListen()">LISTEN</button>
       <div id="prayerAudioBar" class="listen-player-bar" style="display:none;">
         <button class="listen-player-btn" id="prayerPauseBtn" onclick="pauseResumePrayer()">Pause</button>
         <div class="listen-progress-wrap">
@@ -1185,21 +1182,17 @@ async function toggleListen() {
 
   // Inline button animation while TTS loads
   var btn = document.getElementById('listenBtn');
-  var phraseEl = document.getElementById('listenBtnPhrase');
-  var mainEl = document.getElementById('listenBtnMain');
-  var subEl = document.getElementById('listenBtnSub');
   btn.disabled = true;
-  mainEl.textContent = 'I SEE YOU';
-  subEl.style.opacity = '1';
-  phraseEl.style.opacity = '1';
-  // Both fade away together
-  setTimeout(function() { phraseEl.style.opacity = '0'; }, 1400);
-  // "GIVE ME A MOMENT" fades in centered
-  setTimeout(function() {
-    subEl.style.opacity = '0';
-    mainEl.textContent = 'GIVE ME A MOMENT';
-    phraseEl.style.opacity = '1';
-  }, 2000);
+  btn.textContent = 'I SEE YOU';
+  btn.style.opacity = '1';
+  // Fade out "I SEE YOU"
+  setTimeout(function() { btn.style.opacity = '0'; }, 1000);
+  // Fade in "I HEAR YOU"
+  setTimeout(function() { btn.textContent = 'I HEAR YOU'; btn.style.opacity = '1'; }, 1500);
+  // Fade out "I HEAR YOU"
+  setTimeout(function() { btn.style.opacity = '0'; }, 2500);
+  // Fade in "GIVE ME A MOMENT"
+  setTimeout(function() { btn.textContent = 'GIVE ME A MOMENT'; btn.style.opacity = '1'; }, 3000);
 
   await speakText(prayer, selectedVoiceId, function() {
     isPlaying = false;
@@ -1210,13 +1203,7 @@ async function toggleListen() {
 
 function resetListenButton() {
   var btn = document.getElementById('listenBtn');
-  var phraseEl = document.getElementById('listenBtnPhrase');
-  var mainEl = document.getElementById('listenBtnMain');
-  var subEl = document.getElementById('listenBtnSub');
-  if (btn) btn.disabled = false;
-  if (phraseEl) phraseEl.style.opacity = '1';
-  if (mainEl) mainEl.textContent = 'LISTEN';
-  if (subEl) subEl.style.opacity = '0';
+  if (btn) { btn.disabled = false; btn.textContent = 'LISTEN'; btn.style.opacity = '1'; }
   stopProgressBar();
 }
 
