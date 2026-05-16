@@ -1028,24 +1028,39 @@ function updateCounterUI() {
 }
 
 // ── AUTH ──────────────────────────────────────────────────────────────────────
+function supaTimeout(ms) {
+  return new Promise(function(_, reject) {
+    setTimeout(function() { reject(new Error('timeout')); }, ms);
+  });
+}
+
 async function authSignIn() {
+  if (!supaClient) { showAuthMsg('login', 'Connection unavailable. Please refresh the page.'); return; }
   var email = (document.getElementById('loginEmail').value || '').trim();
   var pw = document.getElementById('loginPassword').value || '';
   if (!email || !pw) { showAuthMsg('login', 'Please enter your email and password.'); return; }
   var btn = document.getElementById('loginBtn');
   btn.disabled = true; btn.textContent = 'Signing In...';
   try {
-    var { error } = await supaClient.auth.signInWithPassword({ email: email, password: pw });
+    var result = await Promise.race([
+      supaClient.auth.signInWithPassword({ email: email, password: pw }),
+      supaTimeout(12000)
+    ]);
     btn.disabled = false; btn.textContent = 'SIGN IN';
-    if (error) showAuthMsg('login', error.message);
-    // onAuthStateChange handles navigation on success
+    if (result.error) { showAuthMsg('login', result.error.message); return; }
+    if (result.data && result.data.user) {
+      currentUser = result.data.user;
+      await loadUserData();
+      showScreen('homeScreen');
+    }
   } catch(e) {
     btn.disabled = false; btn.textContent = 'SIGN IN';
-    showAuthMsg('login', 'Something went wrong. Please try again.');
+    showAuthMsg('login', e.message === 'timeout' ? 'Connection timed out. Check your internet and try again.' : 'Something went wrong. Please try again.');
   }
 }
 
 async function authSignUp() {
+  if (!supaClient) { showAuthMsg('signup', 'Connection unavailable. Please refresh the page.'); return; }
   var name = (document.getElementById('signupName').value || '').trim();
   var email = (document.getElementById('signupEmail').value || '').trim();
   var pw = document.getElementById('signupPassword').value || '';
@@ -1054,19 +1069,31 @@ async function authSignUp() {
   if (pw.length < 6) { showAuthMsg('signup', 'Password must be at least 6 characters.'); return; }
   var btn = document.getElementById('signupBtn');
   btn.disabled = true; btn.textContent = 'Creating Account...';
-  var { data, error } = await supaClient.auth.signUp({ email: email, password: pw, options: { data: { name: name } } });
-  btn.disabled = false; btn.textContent = 'CREATE ACCOUNT';
-  if (error) { showAuthMsg('signup', error.message); return; }
-  if (data && data.user) {
-    userName = name;
-    await supaClient.from('profiles').insert({ id: data.user.id, name: name, gender: 'female' });
-    await supaClient.from('prayer_counters').insert({ user_id: data.user.id, count: 0, reset_date: new Date().toISOString().slice(0, 10) });
-    if (!data.session) {
-      // Email confirmation is on — tell user to check their inbox
-      showAuthMsg('signup', 'Account created! Check your email to confirm, then sign in.');
-      return;
+  try {
+    var result = await Promise.race([
+      supaClient.auth.signUp({ email: email, password: pw, options: { data: { name: name } } }),
+      supaTimeout(12000)
+    ]);
+    btn.disabled = false; btn.textContent = 'CREATE ACCOUNT';
+    if (result.error) { showAuthMsg('signup', result.error.message); return; }
+    var data = result.data;
+    if (data && data.user) {
+      userName = name;
+      try {
+        await supaClient.from('profiles').insert({ id: data.user.id, name: name, gender: 'female' });
+        await supaClient.from('prayer_counters').insert({ user_id: data.user.id, count: 0, reset_date: new Date().toISOString().slice(0, 10) });
+      } catch(e) {}
+      if (!data.session) {
+        showAuthMsg('signup', 'Account created! Check your email to confirm, then sign in.');
+        return;
+      }
+      currentUser = data.user;
+      await loadUserData();
+      showScreen('homeScreen');
     }
-    // Session exists (email confirmation off) — onAuthStateChange handles navigation
+  } catch(e) {
+    btn.disabled = false; btn.textContent = 'CREATE ACCOUNT';
+    showAuthMsg('signup', e.message === 'timeout' ? 'Connection timed out. Check your internet and try again.' : 'Something went wrong. Please try again.');
   }
 }
 
