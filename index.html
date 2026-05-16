@@ -983,7 +983,7 @@ async function loadUserData() {
     var profiles = await supaGet('/rest/v1/profiles?id=eq.' + uid + '&limit=1');
     var profile = Array.isArray(profiles) ? profiles[0] : null;
     if (profile) {
-      userName = profile.name || 'Friend';
+      userName = profile.name || (currentUser.user_metadata && currentUser.user_metadata.name) || userName || 'Friend';
       defaultGender = profile.gender || 'female';
       localStorage.setItem('emf_gender', defaultGender);
     } else if (currentUser.user_metadata && currentUser.user_metadata.name) {
@@ -1115,7 +1115,8 @@ async function authSignUp() {
         await supaPost('/rest/v1/prayer_counters', { user_id: userId, count: 0, reset_date: today });
       } catch(e) {}
       await loadUserData();
-      showScreen('homeScreen');
+      document.getElementById('notifyTitle').textContent = 'Welcome ' + userName + '!';
+      showScreen('notifyScreen');
     } else {
       showAuthMsg('signup', 'Unexpected response: ' + JSON.stringify(data).slice(0, 120));
     }
