@@ -153,6 +153,10 @@ body{background:#1a1a1a;display:flex;justify-content:center;align-items:flex-sta
 .auth-error{color:#b03a2e;font-size:13px;text-align:center;margin-bottom:10px;display:none;line-height:1.4;}
 .auth-link{font-size:14px;color:rgba(0,0,0,0.55);text-align:center;}
 .auth-link span{color:#3d1f00;font-weight:700;cursor:pointer;text-decoration:underline;}
+.auth-pw-wrap{position:relative;width:100%;margin-bottom:12px;}
+.auth-pw-wrap .auth-input{margin-bottom:0;padding-right:48px;width:100%;}
+.auth-pw-eye{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;color:rgba(0,0,0,0.35);padding:4px;line-height:1;}
+.auth-pw-eye:hover{color:rgba(0,0,0,0.65);}
 .auth-signout-btn{width:100%;padding:13px;background:rgba(180,50,30,0.12);border:1.5px solid rgba(180,50,30,0.25);color:#8b2218;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;margin-top:8px;transition:background 0.15s;}
 .auth-signout-btn:hover{background:rgba(180,50,30,0.2);}
 
@@ -340,7 +344,10 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
   <div class="auth-title">Welcome Back</div>
   <div class="auth-sub">Sign in to continue your journey</div>
   <input class="auth-input" id="loginEmail" type="email" placeholder="Email address" autocomplete="email"/>
-  <input class="auth-input" id="loginPassword" type="password" placeholder="Password" autocomplete="current-password"/>
+  <div class="auth-pw-wrap">
+    <input class="auth-input" id="loginPassword" type="password" placeholder="Password" autocomplete="current-password"/>
+    <button type="button" class="auth-pw-eye" onclick="togglePwVis('loginPassword',this)" tabindex="-1">&#128065;</button>
+  </div>
   <div class="auth-error" id="loginError"></div>
   <button class="auth-btn" id="loginBtn" onclick="authSignIn()">SIGN IN</button>
   <div class="auth-link">New here? <span onclick="showScreen('signupScreen')">Create an account</span></div>
@@ -353,7 +360,10 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
   <div class="auth-sub">Begin your faith journey</div>
   <input class="auth-input" id="signupName" type="text" placeholder="Your name" maxlength="30" autocomplete="name"/>
   <input class="auth-input" id="signupEmail" type="email" placeholder="Email address" autocomplete="email"/>
-  <input class="auth-input" id="signupPassword" type="password" placeholder="Password (min 6 characters)" autocomplete="new-password"/>
+  <div class="auth-pw-wrap">
+    <input class="auth-input" id="signupPassword" type="password" placeholder="Password (min 6 characters)" autocomplete="new-password"/>
+    <button type="button" class="auth-pw-eye" onclick="togglePwVis('signupPassword',this)" tabindex="-1">&#128065;</button>
+  </div>
   <div class="auth-error" id="signupError"></div>
   <button class="auth-btn" id="signupBtn" onclick="authSignUp()">CREATE ACCOUNT</button>
   <div class="auth-link">Already have an account? <span onclick="showScreen('loginScreen')">Sign in</span></div>
@@ -969,6 +979,8 @@ async function loadUserData() {
       userName = profile.name || 'Friend';
       defaultGender = profile.gender || 'female';
       localStorage.setItem('emf_gender', defaultGender);
+    } else if (currentUser.user_metadata && currentUser.user_metadata.name) {
+      userName = currentUser.user_metadata.name;
     }
     var hn = document.getElementById('homeName');
     if (hn) hn.textContent = userName;
@@ -1035,7 +1047,7 @@ async function authSignUp() {
   if (pw.length < 6) { showAuthMsg('signup', 'Password must be at least 6 characters.'); return; }
   var btn = document.getElementById('signupBtn');
   btn.disabled = true; btn.textContent = 'Creating Account...';
-  var { data, error } = await supaClient.auth.signUp({ email: email, password: pw });
+  var { data, error } = await supaClient.auth.signUp({ email: email, password: pw, options: { data: { name: name } } });
   btn.disabled = false; btn.textContent = 'CREATE ACCOUNT';
   if (error) { showAuthMsg('signup', error.message); return; }
   if (data && data.user) {
@@ -1057,6 +1069,12 @@ async function authSignOut() {
   moments = [{ name: 'Remy', date: '1999-07-13', category: 'Birthday', note: '' }];
   savedPrayers = []; prayersLeft = 10; userName = 'Friend';
   showScreen('loginScreen');
+}
+
+function togglePwVis(inputId, btn) {
+  var input = document.getElementById(inputId);
+  if (input.type === 'password') { input.type = 'text'; btn.style.color = 'rgba(0,0,0,0.7)'; }
+  else { input.type = 'password'; btn.style.color = 'rgba(0,0,0,0.35)'; }
 }
 
 function showAuthMsg(screen, msg) {
@@ -1233,6 +1251,7 @@ function showScreen(id) {
   // Clear auth error messages when switching screens
   if (id === 'loginScreen') { var le = document.getElementById('loginError'); if (le) { le.textContent = ''; le.style.display = 'none'; } var lb = document.getElementById('loginBtn'); if (lb) { lb.disabled = false; lb.textContent = 'SIGN IN'; } }
   if (id === 'signupScreen') { var se = document.getElementById('signupError'); if (se) { se.textContent = ''; se.style.display = 'none'; } var sb = document.getElementById('signupBtn'); if (sb) { sb.disabled = false; sb.textContent = 'CREATE ACCOUNT'; } }
+  if (id === 'homeScreen') { var hn = document.getElementById('homeName'); if (hn) hn.textContent = userName; }
   if (id === 'settingsScreen') {
     document.getElementById('settingsName').textContent = userName;
     var emailEl = document.getElementById('settingsEmail');
