@@ -1096,23 +1096,28 @@ async function authSignUp() {
       supaTimeout(12000)
     ]);
     btn.disabled = false; btn.textContent = 'CREATE ACCOUNT';
-    if (data.error || data.error_description) { showAuthMsg('signup', data.error_description || data.error); return; }
-    if (data.id) {
+    var errMsg = data.error_description || data.error || (data.msg);
+    if (errMsg) { showAuthMsg('signup', errMsg); return; }
+    var user = data.user || (data.id ? data : null);
+    var session = data.session || (data.access_token ? data : null);
+    if (user) {
       userName = name;
-      var userId = data.id;
+      var userId = user.id;
       var today = new Date().toISOString().slice(0, 10);
-      if (!data.access_token) {
+      if (!session || !session.access_token) {
         showAuthMsg('signup', 'Account created! Check your email to confirm, then sign in.');
         return;
       }
-      currentUser = data.user || data;
-      currentAccessToken = data.access_token;
+      currentUser = user;
+      currentAccessToken = session.access_token;
       try {
         await supaPost('/rest/v1/profiles', { id: userId, name: name, gender: 'female' });
         await supaPost('/rest/v1/prayer_counters', { user_id: userId, count: 0, reset_date: today });
       } catch(e) {}
       await loadUserData();
       showScreen('homeScreen');
+    } else {
+      showAuthMsg('signup', 'Unexpected response: ' + JSON.stringify(data).slice(0, 120));
     }
   } catch(e) {
     btn.disabled = false; btn.textContent = 'CREATE ACCOUNT';
