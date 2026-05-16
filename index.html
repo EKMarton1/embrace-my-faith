@@ -1034,33 +1034,41 @@ function supaTimeout(ms) {
   });
 }
 
+async function supaAuthFetch(path, body) {
+  var resp = await fetch(SUPA_URL + path, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY },
+    body: JSON.stringify(body)
+  });
+  return resp.json();
+}
+
 async function authSignIn() {
-  if (!supaClient) { showAuthMsg('login', 'Connection unavailable. Please refresh the page.'); return; }
   var email = (document.getElementById('loginEmail').value || '').trim();
   var pw = document.getElementById('loginPassword').value || '';
   if (!email || !pw) { showAuthMsg('login', 'Please enter your email and password.'); return; }
   var btn = document.getElementById('loginBtn');
   btn.disabled = true; btn.textContent = 'Signing In...';
   try {
-    var result = await Promise.race([
-      supaClient.auth.signInWithPassword({ email: email, password: pw }),
+    var data = await Promise.race([
+      supaAuthFetch('/auth/v1/token?grant_type=password', { email: email, password: pw }),
       supaTimeout(12000)
     ]);
     btn.disabled = false; btn.textContent = 'SIGN IN';
-    if (result.error) { showAuthMsg('login', result.error.message); return; }
-    if (result.data && result.data.user) {
-      currentUser = result.data.user;
+    if (data.error || data.error_description) { showAuthMsg('login', data.error_description || data.error); return; }
+    if (data.access_token && data.user) {
+      currentUser = data.user;
+      if (supaClient) await supaClient.auth.setSession({ access_token: data.access_token, refresh_token: data.refresh_token });
       await loadUserData();
       showScreen('homeScreen');
     }
   } catch(e) {
     btn.disabled = false; btn.textContent = 'SIGN IN';
-    showAuthMsg('login', e.message === 'timeout' ? 'Connection timed out. Check your internet and try again.' : 'Something went wrong. Please try again.');
+    showAuthMsg('login', e.message === 'timeout' ? 'Connection timed out. Please try again.' : 'Error: ' + e.message);
   }
 }
 
 async function authSignUp() {
-  if (!supaClient) { showAuthMsg('signup', 'Connection unavailable. Please refresh the page.'); return; }
   var name = (document.getElementById('signupName').value || '').trim();
   var email = (document.getElementById('signupEmail').value || '').trim();
   var pw = document.getElementById('signupPassword').value || '';
@@ -1070,30 +1078,32 @@ async function authSignUp() {
   var btn = document.getElementById('signupBtn');
   btn.disabled = true; btn.textContent = 'Creating Account...';
   try {
-    var result = await Promise.race([
-      supaClient.auth.signUp({ email: email, password: pw, options: { data: { name: name } } }),
+    var data = await Promise.race([
+      supaAuthFetch('/auth/v1/signup', { email: email, password: pw, data: { name: name } }),
       supaTimeout(12000)
     ]);
     btn.disabled = false; btn.textContent = 'CREATE ACCOUNT';
-    if (result.error) { showAuthMsg('signup', result.error.message); return; }
-    var data = result.data;
-    if (data && data.user) {
+    if (data.error || data.error_description) { showAuthMsg('signup', data.error_description || data.error); return; }
+    if (data.id) {
       userName = name;
+      var userId = data.id;
+      var today = new Date().toISOString().slice(0, 10);
       try {
-        await supaClient.from('profiles').insert({ id: data.user.id, name: name, gender: 'female' });
-        await supaClient.from('prayer_counters').insert({ user_id: data.user.id, count: 0, reset_date: new Date().toISOString().slice(0, 10) });
+        await supaAuthFetch('/rest/v1/profiles', { id: userId, name: name, gender: 'female' });
+        await supaAuthFetch('/rest/v1/prayer_counters', { user_id: userId, count: 0, reset_date: today });
       } catch(e) {}
-      if (!data.session) {
+      if (!data.access_token) {
         showAuthMsg('signup', 'Account created! Check your email to confirm, then sign in.');
         return;
       }
-      currentUser = data.user;
+      currentUser = data;
+      if (supaClient) await supaClient.auth.setSession({ access_token: data.access_token, refresh_token: data.refresh_token });
       await loadUserData();
       showScreen('homeScreen');
     }
   } catch(e) {
     btn.disabled = false; btn.textContent = 'CREATE ACCOUNT';
-    showAuthMsg('signup', e.message === 'timeout' ? 'Connection timed out. Check your internet and try again.' : 'Something went wrong. Please try again.');
+    showAuthMsg('signup', e.message === 'timeout' ? 'Connection timed out. Please try again.' : 'Error: ' + e.message);
   }
 }
 
