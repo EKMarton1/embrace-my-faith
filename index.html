@@ -956,25 +956,32 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
 // ========== SUPABASE ==========
 var SUPA_URL = 'https://fubmjytqfucnudpupynw.supabase.co';
 var SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1Ym1qeXRxZnVjbnVkcHVweW53Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5Njk2NzEsImV4cCI6MjA5NDU0NTY3MX0.ajNVdUzA6sdcjWuMtPg-g3e93EDxQmRqpdziYQSoEF0';
-var supaClient = (window.supabase && window.supabase.createClient) ? window.supabase.createClient(SUPA_URL, SUPA_KEY) : null;
 var currentUser = null;
+var currentAccessToken = null;
 
-if (supaClient) {
-  supaClient.auth.onAuthStateChange(async function(event, session) {
-    currentUser = (session && session.user) ? session.user : null;
-    if (currentUser) {
-      await loadUserData();
-      showScreen('homeScreen');
-    } else if (event === 'SIGNED_OUT') {
-      showScreen('loginScreen');
-    }
+function supaHeaders() {
+  return { 'Content-Type': 'application/json', 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + (currentAccessToken || SUPA_KEY) };
+}
+async function supaGet(path) {
+  var resp = await fetch(SUPA_URL + path, { headers: supaHeaders() });
+  return resp.json();
+}
+async function supaPost(path, body, method) {
+  var resp = await fetch(SUPA_URL + path, {
+    method: method || 'POST',
+    headers: Object.assign(supaHeaders(), { 'Prefer': 'return=minimal' }),
+    body: JSON.stringify(body)
   });
+  if (resp.status === 204) return {};
+  return resp.json();
 }
 
 async function loadUserData() {
-  if (!supaClient || !currentUser) return;
+  if (!currentUser) return;
   try {
-    var { data: profile } = await supaClient.from('profiles').select('*').eq('id', currentUser.id).single();
+    var uid = currentUser.id;
+    var profiles = await supaGet('/rest/v1/profiles?id=eq.' + uid + '&limit=1');
+    var profile = Array.isArray(profiles) ? profiles[0] : null;
     if (profile) {
       userName = profile.name || 'Friend';
       defaultGender = profile.gender || 'female';
@@ -987,37 +994,40 @@ async function loadUserData() {
     saveGenderPref(defaultGender);
 
     var today = new Date().toISOString().slice(0, 10);
-    var { data: counter } = await supaClient.from('prayer_counters').select('*').eq('user_id', currentUser.id).single();
+    var counters = await supaGet('/rest/v1/prayer_counters?user_id=eq.' + uid + '&limit=1');
+    var counter = Array.isArray(counters) ? counters[0] : null;
     if (counter) {
       if (counter.reset_date !== today) {
         prayersLeft = 10;
-        await supaClient.from('prayer_counters').update({ count: 0, reset_date: today }).eq('user_id', currentUser.id);
+        await supaPost('/rest/v1/prayer_counters?user_id=eq.' + uid, { count: 0, reset_date: today }, 'PATCH');
       } else {
         prayersLeft = Math.max(0, 10 - counter.count);
       }
     } else {
       prayersLeft = 10;
-      await supaClient.from('prayer_counters').insert({ user_id: currentUser.id, count: 0, reset_date: today });
+      await supaPost('/rest/v1/prayer_counters', { user_id: uid, count: 0, reset_date: today });
     }
     updateCounterUI();
 
-    var { data: mData } = await supaClient.from('moments').select('*').eq('user_id', currentUser.id).order('created_at');
-    if (mData && mData.length) {
+    var mData = await supaGet('/rest/v1/moments?user_id=eq.' + uid + '&order=created_at');
+    if (Array.isArray(mData) && mData.length) {
       moments = mData.map(function(m) { return { id: m.id, name: m.name, date: m.date || '', category: m.category || '', note: m.note || '' }; });
     }
 
-    var { data: pData } = await supaClient.from('prayers').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false });
-    if (pData && pData.length) {
+    var pData = await supaGet('/rest/v1/prayers?user_id=eq.' + uid + '&order=created_at.desc');
+    if (Array.isArray(pData) && pData.length) {
       savedPrayers = pData.map(function(p) { return { id: p.id, for: p.prayer_for || '', scripture: p.scripture || '', prayer: p.prayer_text, date: new Date(p.created_at).toLocaleDateString() }; });
     }
 
-    var { data: risePref } = await supaClient.from('rise_preferences').select('*').eq('user_id', currentUser.id).single();
+    var risePrefs = await supaGet('/rest/v1/rise_preferences?user_id=eq.' + uid + '&limit=1');
+    var risePref = Array.isArray(risePrefs) ? risePrefs[0] : null;
     if (risePref) {
       if (risePref.wake_time) { var td = document.getElementById('timeDisplay'); if (td) td.textContent = risePref.wake_time; }
       if (risePref.gender) selectRiseGender(risePref.gender);
     }
 
-    var { data: restPref } = await supaClient.from('rest_preferences').select('*').eq('user_id', currentUser.id).single();
+    var restPrefs = await supaGet('/rest/v1/rest_preferences?user_id=eq.' + uid + '&limit=1');
+    var restPref = Array.isArray(restPrefs) ? restPrefs[0] : null;
     if (restPref && restPref.gender) selectRestGender(restPref.gender);
   } catch(e) { console.error('loadUserData:', e); }
 }
@@ -1055,12 +1065,15 @@ async function authSignIn() {
       supaTimeout(12000)
     ]);
     btn.disabled = false; btn.textContent = 'SIGN IN';
-    if (data.error || data.error_description) { showAuthMsg('login', data.error_description || data.error); return; }
+    var errMsg = data.error_description || data.error || data.message || data.msg;
+    if (errMsg) { showAuthMsg('login', errMsg); return; }
     if (data.access_token && data.user) {
       currentUser = data.user;
-      if (supaClient) await supaClient.auth.setSession({ access_token: data.access_token, refresh_token: data.refresh_token });
+      currentAccessToken = data.access_token;
       await loadUserData();
       showScreen('homeScreen');
+    } else {
+      showAuthMsg('login', 'Unexpected response: ' + JSON.stringify(data).slice(0, 120));
     }
   } catch(e) {
     btn.disabled = false; btn.textContent = 'SIGN IN';
@@ -1088,16 +1101,16 @@ async function authSignUp() {
       userName = name;
       var userId = data.id;
       var today = new Date().toISOString().slice(0, 10);
-      try {
-        await supaAuthFetch('/rest/v1/profiles', { id: userId, name: name, gender: 'female' });
-        await supaAuthFetch('/rest/v1/prayer_counters', { user_id: userId, count: 0, reset_date: today });
-      } catch(e) {}
       if (!data.access_token) {
         showAuthMsg('signup', 'Account created! Check your email to confirm, then sign in.');
         return;
       }
-      currentUser = data;
-      if (supaClient) await supaClient.auth.setSession({ access_token: data.access_token, refresh_token: data.refresh_token });
+      currentUser = data.user || data;
+      currentAccessToken = data.access_token;
+      try {
+        await supaPost('/rest/v1/profiles', { id: userId, name: name, gender: 'female' });
+        await supaPost('/rest/v1/prayer_counters', { user_id: userId, count: 0, reset_date: today });
+      } catch(e) {}
       await loadUserData();
       showScreen('homeScreen');
     }
@@ -1108,8 +1121,10 @@ async function authSignUp() {
 }
 
 async function authSignOut() {
-  if (supaClient) await supaClient.auth.signOut();
-  currentUser = null;
+  if (currentAccessToken) {
+    try { await fetch(SUPA_URL + '/auth/v1/logout', { method: 'POST', headers: supaHeaders() }); } catch(e) {}
+  }
+  currentUser = null; currentAccessToken = null;
   moments = [{ name: 'Remy', date: '1999-07-13', category: 'Birthday', note: '' }];
   savedPrayers = []; prayersLeft = 10; userName = 'Friend';
   showScreen('loginScreen');
