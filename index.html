@@ -392,9 +392,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
         <button class="action-btn" id="vbFemale" onclick="selectVoiceGender('female')" style="background:rgba(30,15,0,0.75);color:#f5c830;flex:unset;padding:10px 24px;font-size:14px;">Female</button>
         <button class="action-btn" id="vbMale" onclick="selectVoiceGender('male')" style="background:rgba(255,255,255,0.4);color:#111;flex:unset;padding:10px 24px;font-size:14px;">Male</button>
       </div>
-      <button class="listen-full-btn" id="listenBtn" onclick="toggleListen()">
-        <span class="listen-btn-phrase" id="listenBtnPhrase"><span id="listenBtnMain">LISTEN</span><span class="listen-btn-sub" id="listenBtnSub">I HEAR YOU</span></span>
-      </button>
+      <button class="listen-full-btn" id="listenBtn" onclick="toggleListen()" style="text-align:center;"><span class="listen-btn-phrase" id="listenBtnPhrase" style="display:block;text-align:center;"><span id="listenBtnMain">LISTEN</span><span class="listen-btn-sub" id="listenBtnSub">I HEAR YOU</span></span></button>
       <div id="prayerAudioBar" class="listen-player-bar" style="display:none;">
         <button class="listen-player-btn" id="prayerPauseBtn" onclick="pauseResumePrayer()">Pause</button>
         <div class="listen-progress-wrap">
