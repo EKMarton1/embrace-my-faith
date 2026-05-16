@@ -233,7 +233,7 @@ input[type=range]{flex:1;accent-color:#f5c830;}
 .modal-date-row select.modal-input{flex:1.6;}
 
 /* PRAYER LISTEN BUTTON */
-.listen-full-btn{width:100%;background:rgba(30,15,0,0.75);border:none;color:#f5c830;font-family:'Playfair Display',serif;font-weight:700;font-size:16px;letter-spacing:2px;border-radius:14px;padding:18px 16px;cursor:pointer;transition:transform 0.15s ease, opacity 0.5s ease;display:block;text-align:center;margin-bottom:10px;box-sizing:border-box;}
+.listen-full-btn{width:100%;background:rgba(30,15,0,0.75);border:none;color:#f5c830;font-family:'Playfair Display',serif;font-weight:700;font-size:16px;letter-spacing:2px;border-radius:14px;padding:18px 16px;cursor:pointer;transition:transform 0.15s ease, color 0.4s ease;display:block;text-align:center;margin-bottom:10px;box-sizing:border-box;}
 .listen-full-btn:hover{transform:scale(1.05);}
 .listen-full-btn:disabled{cursor:default;transform:none;}
 .listen-player-bar{width:100%;background:rgba(30,15,0,0.75);border-radius:14px;padding:13px 16px;display:flex;align-items:center;gap:10px;margin-bottom:10px;box-sizing:border-box;}
@@ -1184,15 +1184,15 @@ async function toggleListen() {
   var btn = document.getElementById('listenBtn');
   btn.disabled = true;
   btn.textContent = 'I SEE YOU';
-  btn.style.opacity = '1';
-  // Fade out "I SEE YOU"
-  setTimeout(function() { btn.style.opacity = '0'; }, 1000);
-  // Fade in "I HEAR YOU"
-  setTimeout(function() { btn.textContent = 'I HEAR YOU'; btn.style.opacity = '1'; }, 1500);
-  // Fade out "I HEAR YOU"
-  setTimeout(function() { btn.style.opacity = '0'; }, 2500);
-  // Fade in "GIVE ME A MOMENT"
-  setTimeout(function() { btn.textContent = 'GIVE ME A MOMENT'; btn.style.opacity = '1'; }, 3000);
+  btn.style.color = '#f5c830';
+  // Fade out text
+  setTimeout(function() { btn.style.color = 'rgba(245,200,72,0)'; }, 1000);
+  // Swap and fade in "I HEAR YOU"
+  setTimeout(function() { btn.textContent = 'I HEAR YOU'; btn.style.color = '#f5c830'; }, 1500);
+  // Fade out text
+  setTimeout(function() { btn.style.color = 'rgba(245,200,72,0)'; }, 2500);
+  // Swap and fade in "GIVE ME A MOMENT"
+  setTimeout(function() { btn.textContent = 'GIVE ME A MOMENT'; btn.style.color = '#f5c830'; }, 3000);
 
   await speakText(prayer, selectedVoiceId, function() {
     isPlaying = false;
@@ -1203,7 +1203,7 @@ async function toggleListen() {
 
 function resetListenButton() {
   var btn = document.getElementById('listenBtn');
-  if (btn) { btn.disabled = false; btn.textContent = 'LISTEN'; btn.style.opacity = '1'; }
+  if (btn) { btn.disabled = false; btn.textContent = 'LISTEN'; btn.style.color = '#f5c830'; }
   stopProgressBar();
 }
 
