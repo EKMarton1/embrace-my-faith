@@ -722,10 +722,8 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
     <label class="form-label">What do you need prayer for?</label>
     <textarea class="form-textarea" id="requestPrayerText" style="height:110px;" placeholder="Share openly... your circle will lift this up before God."></textarea>
     <label class="form-label">Send request to</label>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;">
-      <button class="action-btn aud-btn" id="audAll" onclick="selectAudience('all')">All</button>
-      <button class="action-btn aud-btn" id="audFamily" onclick="selectAudience('family')">Family</button>
-      <button class="action-btn aud-btn" id="audFriends" onclick="selectAudience('friends')">Friends</button>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;" id="audienceButtonsWrap">
+      <button class="action-btn aud-btn selected" id="audAll" onclick="selectAudienceGroup(null,this)">All</button>
     </div>
     <button class="generate-btn" onclick="submitPrayerRequest()" style="margin-top:4px;">Send My Prayer Request</button>
     <button onclick="showScreen('circleScreen')" style="width:100%;margin-top:10px;padding:14px;background:rgba(255,255,255,0.45);border:1.5px solid rgba(0,0,0,0.15);color:#111111;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;transition:background 0.2s ease;" onmouseover="this.style.background='rgba(255,255,255,0.65)'" onmouseout="this.style.background='rgba(255,255,255,0.45)'">Manage My Circle</button>
@@ -750,7 +748,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
 
     <label class="form-label">Find Someone</label>
     <div style="display:flex;gap:10px;margin-bottom:8px;">
-      <input class="form-input" id="circleSearch" type="text" placeholder="Name or email..." style="margin-bottom:0;flex:1;" onkeydown="if(event.key==='Enter')circleDoSearch()"/>
+      <input class="form-input" id="circleSearch" type="text" placeholder="Name..." style="margin-bottom:0;flex:1;" onkeydown="if(event.key==='Enter')circleDoSearch()"/>
       <button onclick="circleDoSearch()" style="padding:14px 18px;background:rgba(30,15,0,0.8);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:14px;cursor:pointer;">Search</button>
     </div>
     <div id="circleSearchResult" style="margin-bottom:16px;"></div>
@@ -763,7 +761,24 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
     <div class="result-label" style="margin-bottom:8px;">My Circle <span id="circleCountLabel" style="font-size:14px;font-family:'Lato',sans-serif;font-weight:600;color:#111;"></span></div>
     <div id="circleList"><div style="text-align:center;padding:20px;font-size:14px;color:rgba(0,0,0,0.4);">Loading...</div></div>
 
-    <div style="margin-top:24px;font-family:'Playfair Display',serif;font-style:italic;font-size:13px;color:rgba(0,0,0,0.5);text-align:center;">"As iron sharpens iron, so one person sharpens another." — Proverbs 27:17</div>
+    <div style="margin-top:24px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div class="result-label">My Groups</div>
+        <button onclick="openCreateGroup()" style="padding:8px 14px;background:rgba(30,15,0,0.75);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:12px;border-radius:20px;cursor:pointer;">+ New Group</button>
+      </div>
+      <div id="createGroupPanel" style="display:none;background:rgba(255,255,255,0.45);border-radius:16px;padding:16px;margin-bottom:12px;">
+        <input class="form-input" id="newGroupName" type="text" placeholder="Group name (e.g. Family, Church, Work)" style="margin-bottom:12px;"/>
+        <div style="font-size:12px;font-weight:700;color:rgba(0,0,0,0.55);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Add Members</div>
+        <div id="newGroupMemberPicker" style="margin-bottom:14px;"></div>
+        <div style="display:flex;gap:10px;">
+          <button onclick="submitCreateGroup()" style="flex:1;padding:12px;background:rgba(30,15,0,0.85);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;">Create</button>
+          <button onclick="closeCreateGroup()" style="flex:1;padding:12px;background:rgba(255,255,255,0.4);border:1.5px solid rgba(0,0,0,0.15);color:#111;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;">Cancel</button>
+        </div>
+      </div>
+      <div id="circleGroupsList"></div>
+    </div>
+
+    <div style="margin-top:20px;font-family:'Playfair Display',serif;font-style:italic;font-size:13px;color:rgba(0,0,0,0.5);text-align:center;">"As iron sharpens iron, so one person sharpens another." — Proverbs 27:17</div>
   </div>
 </div>
 
@@ -1315,6 +1330,8 @@ function showScreen(id) {
     circlePollingTimer = setInterval(loadCircleData, 15000);
   }
   if (id === 'requestPrayerScreen') {
+    selectAudienceGroup(null, document.getElementById('audAll'));
+    renderAudienceButtons();
     loadPrayerRequests();
     prayerReqPollingTimer = setInterval(loadPrayerRequests, 15000);
   }
@@ -2186,6 +2203,7 @@ async function supaDelete(path) {
 var circleData = [];
 var circlePending = [];
 var circlePendingOutgoing = [];
+var circleGroups = [];
 var circlePollingTimer = null;
 var prayerReqPollingTimer = null;
 
@@ -2215,6 +2233,7 @@ async function loadCircleData() {
   });
   circlePendingOutgoing = outgoingPending.map(function(c){ return c.addressee_id; });
   renderCircleScreen();
+  await loadCircleGroups();
 }
 
 function renderCircleScreen() {
@@ -2261,9 +2280,9 @@ async function circleDoSearch() {
   var res = document.getElementById('circleSearchResult');
   if (!q) { res.innerHTML = ''; return; }
   res.innerHTML = '<div style="padding:12px;font-size:14px;color:rgba(0,0,0,0.45);">Searching...</div>';
-  var results = await supaGet('/rest/v1/profiles?or=(name.ilike.*' + encodeURIComponent(q) + '*,email.ilike.*' + encodeURIComponent(q) + '*)&id=neq.' + currentUser.id + '&select=id,name,email&limit=10');
+  var results = await supaGet('/rest/v1/profiles?name=ilike.*' + encodeURIComponent(q) + '*&id=neq.' + currentUser.id + '&select=id,name&limit=10');
   if (!Array.isArray(results) || results.length === 0) {
-    res.innerHTML = '<div style="padding:12px;font-size:14px;color:rgba(0,0,0,0.45);">No members found with that name or email.</div>';
+    res.innerHTML = '<div style="padding:12px;font-size:14px;color:rgba(0,0,0,0.45);">No members found.</div>';
     return;
   }
   var existingIds = circleData.map(function(c){ return c.userId; });
@@ -2277,8 +2296,7 @@ async function circleDoSearch() {
       '<button onclick="circleSendInvite(\'' + u.id + '\',\'' + escHtml(u.name||'Member') + '\',this)" style="padding:8px 14px;background:rgba(30,15,0,0.75);border:none;color:#f5c830;font-family:Lato,sans-serif;font-weight:700;font-size:12px;border-radius:20px;cursor:pointer;">+ Invite</button>';
     return '<div style="background:rgba(255,255,255,0.45);border-radius:16px;padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:12px;">' +
       '<div style="width:44px;height:44px;border-radius:50%;background:rgba(30,15,0,0.15);display:flex;align-items:center;justify-content:center;font-size:20px;">&#128100;</div>' +
-      '<div style="flex:1;"><div style="font-weight:700;color:#111;font-size:14px;">' + escHtml(u.name||'Member') + '</div>' +
-      '<div style="font-size:12px;color:rgba(0,0,0,0.4);">' + escHtml(u.email||'') + '</div></div>' + badge + '</div>';
+      '<div style="flex:1;"><div style="font-weight:700;color:#111;font-size:14px;">' + escHtml(u.name||'Member') + '</div></div>' + badge + '</div>';
   }).join('');
 }
 
@@ -2315,20 +2333,158 @@ function sendToPerson(name) {
   showScreen('sendPrayerScreen');
 }
 
-// ========== PRAYER REQUESTS ==========
-var selectedAudience = 'all';
-function selectAudience(aud) {
-  selectedAudience = aud;
-  ['All','Family','Friends'].forEach(function(a){
-    var btn = document.getElementById('aud'+a); if (btn) btn.classList.toggle('selected', a.toLowerCase()===aud);
+// ========== CIRCLE GROUPS ==========
+async function loadCircleGroups() {
+  if (!currentUser) return;
+  var groups = await supaGet('/rest/v1/circle_groups?user_id=eq.' + currentUser.id + '&order=created_at&select=*');
+  if (!Array.isArray(groups)) groups = [];
+  var memberRows = [];
+  if (groups.length) {
+    var ids = groups.map(function(g){ return g.id; });
+    var rows = await supaGet('/rest/v1/circle_group_members?group_id=in.(' + ids.join(',') + ')&select=*');
+    if (Array.isArray(rows)) memberRows = rows;
+  }
+  circleGroups = groups.map(function(g){
+    var mids = memberRows.filter(function(r){ return r.group_id===g.id; }).map(function(r){ return r.member_user_id; });
+    var members = mids.map(function(uid){
+      var cm = circleData.find(function(c){ return c.userId===uid; });
+      return cm ? { userId: uid, name: cm.name } : null;
+    }).filter(Boolean);
+    return { id: g.id, name: g.name, members: members };
   });
+  renderGroupsSection();
+  renderAudienceButtons();
+}
+
+function renderGroupsSection() {
+  var el = document.getElementById('circleGroupsList');
+  if (!el) return;
+  if (circleGroups.length === 0) {
+    el.innerHTML = '<div style="text-align:center;padding:16px;font-size:14px;color:rgba(0,0,0,0.4);">No groups yet. Create one to organize your circle.</div>';
+    return;
+  }
+  el.innerHTML = circleGroups.map(function(g){
+    var memberChips = g.members.length
+      ? g.members.map(function(m){
+          return '<span style="display:inline-flex;align-items:center;gap:4px;background:rgba(30,15,0,0.08);border-radius:20px;padding:4px 10px;font-size:12px;font-weight:600;color:#333;margin:3px;">' +
+            escHtml(m.name) +
+            '<button onclick="removeGroupMember(\'' + g.id + '\',\'' + m.userId + '\',this)" style="background:none;border:none;color:#aa2222;font-size:13px;cursor:pointer;padding:0 0 0 4px;line-height:1;">✕</button></span>';
+        }).join('')
+      : '<span style="font-size:12px;color:rgba(0,0,0,0.4);">No members yet</span>';
+    return '<div style="background:rgba(255,255,255,0.45);border-radius:16px;padding:14px;margin-bottom:10px;">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">' +
+      '<div style="font-weight:700;color:#111;font-size:15px;">' + escHtml(g.name) + '</div>' +
+      '<button onclick="deleteGroup(\'' + g.id + '\',this)" style="padding:6px 12px;background:none;border:1.5px solid rgba(170,34,34,0.4);color:#aa2222;font-family:Lato,sans-serif;font-weight:700;font-size:12px;border-radius:20px;cursor:pointer;">Delete</button></div>' +
+      '<div style="display:flex;flex-wrap:wrap;align-items:center;gap:2px;margin-bottom:8px;">' + memberChips + '</div>' +
+      '<button onclick="openAddToGroup(\'' + g.id + '\',this)" style="font-size:12px;color:rgba(30,15,0,0.6);background:none;border:none;cursor:pointer;padding:0;font-family:Lato,sans-serif;font-weight:700;">+ Add member</button>' +
+      '<div class="addToGroupPanel" id="addPanel_' + g.id + '" style="display:none;margin-top:10px;"></div>' +
+      '</div>';
+  }).join('');
+}
+
+function openCreateGroup() {
+  var panel = document.getElementById('createGroupPanel');
+  panel.style.display = 'block';
+  document.getElementById('newGroupName').value = '';
+  var picker = document.getElementById('newGroupMemberPicker');
+  if (circleData.length === 0) {
+    picker.innerHTML = '<div style="font-size:13px;color:rgba(0,0,0,0.4);">Add people to your circle first.</div>';
+    return;
+  }
+  picker.innerHTML = circleData.map(function(m){
+    return '<label style="display:flex;align-items:center;gap:10px;padding:8px 0;cursor:pointer;">' +
+      '<input type="checkbox" value="' + m.userId + '" style="width:18px;height:18px;accent-color:#3d1f00;cursor:pointer;"/>' +
+      '<span style="font-size:14px;font-weight:600;color:#111;">' + escHtml(m.name) + '</span></label>';
+  }).join('');
+}
+
+function closeCreateGroup() {
+  document.getElementById('createGroupPanel').style.display = 'none';
+}
+
+async function submitCreateGroup() {
+  var name = document.getElementById('newGroupName').value.trim();
+  if (!name) { alert('Please enter a group name.'); return; }
+  var checked = Array.from(document.querySelectorAll('#newGroupMemberPicker input:checked')).map(function(i){ return i.value; });
+  var result = await supaPost('/rest/v1/circle_groups', { user_id: currentUser.id, name: name });
+  if (result && result.code) { alert('Could not create group: ' + (result.message||result.code)); return; }
+  // Fetch new group to get its id
+  var groups = await supaGet('/rest/v1/circle_groups?user_id=eq.' + currentUser.id + '&name=eq.' + encodeURIComponent(name) + '&order=created_at.desc&limit=1');
+  var newGroup = Array.isArray(groups) ? groups[0] : null;
+  if (newGroup && checked.length) {
+    for (var i = 0; i < checked.length; i++) {
+      await supaPost('/rest/v1/circle_group_members', { group_id: newGroup.id, member_user_id: checked[i] });
+    }
+  }
+  closeCreateGroup();
+  await loadCircleGroups();
+}
+
+async function deleteGroup(groupId, btn) {
+  if (!confirm('Delete this group?')) return;
+  if (btn) btn.closest('div[style]').style.opacity = '0.4';
+  await supaDelete('/rest/v1/circle_groups?id=eq.' + groupId);
+  await loadCircleGroups();
+}
+
+async function removeGroupMember(groupId, memberUserId, btn) {
+  if (btn) btn.parentElement.style.opacity = '0.4';
+  await supaDelete('/rest/v1/circle_group_members?group_id=eq.' + groupId + '&member_user_id=eq.' + memberUserId);
+  await loadCircleGroups();
+}
+
+function openAddToGroup(groupId, btn) {
+  var panel = document.getElementById('addPanel_' + groupId);
+  if (!panel) return;
+  if (panel.style.display !== 'none') { panel.style.display = 'none'; return; }
+  var group = circleGroups.find(function(g){ return g.id===groupId; });
+  var existingIds = group ? group.members.map(function(m){ return m.userId; }) : [];
+  var available = circleData.filter(function(c){ return existingIds.indexOf(c.userId) < 0; });
+  if (!available.length) { panel.innerHTML = '<div style="font-size:13px;color:rgba(0,0,0,0.4);">All circle members are already in this group.</div>'; panel.style.display='block'; return; }
+  panel.innerHTML = available.map(function(m){
+    return '<button onclick="addToGroup(\'' + groupId + '\',\'' + m.userId + '\',this)" style="display:block;width:100%;text-align:left;padding:8px 12px;background:rgba(255,255,255,0.5);border:none;border-radius:10px;margin-bottom:6px;font-size:13px;font-weight:600;color:#111;cursor:pointer;font-family:Lato,sans-serif;">' + escHtml(m.name) + '</button>';
+  }).join('');
+  panel.style.display = 'block';
+}
+
+async function addToGroup(groupId, memberUserId, btn) {
+  if (btn) { btn.disabled=true; btn.style.opacity='0.5'; }
+  await supaPost('/rest/v1/circle_group_members', { group_id: groupId, member_user_id: memberUserId });
+  await loadCircleGroups();
+}
+
+function renderAudienceButtons() {
+  var wrap = document.getElementById('audienceButtonsWrap');
+  if (!wrap) return;
+  var existing = wrap.querySelectorAll('.aud-btn:not(#audAll)');
+  existing.forEach(function(b){ b.remove(); });
+  circleGroups.forEach(function(g){
+    var b = document.createElement('button');
+    b.className = 'action-btn aud-btn';
+    b.textContent = g.name;
+    b.onclick = function(){ selectAudienceGroup(g.id, b); };
+    wrap.appendChild(b);
+  });
+}
+
+// ========== PRAYER REQUESTS ==========
+var selectedGroupId = null;
+
+function selectAudienceGroup(groupId, btn) {
+  selectedGroupId = groupId;
+  var wrap = document.getElementById('audienceButtonsWrap');
+  if (wrap) wrap.querySelectorAll('.aud-btn').forEach(function(b){ b.classList.remove('selected'); });
+  if (btn) btn.classList.add('selected');
+  else { var all = document.getElementById('audAll'); if (all) all.classList.add('selected'); }
 }
 
 async function submitPrayerRequest() {
   if (!currentUser) { alert('Please sign in to send prayer requests.'); return; }
   var text = document.getElementById('requestPrayerText').value.trim();
   if (!text) { alert('Please share what you would like prayer for.'); return; }
-  var result = await supaPost('/rest/v1/prayer_requests', { user_id:currentUser.id, request_text:text });
+  var payload = { user_id: currentUser.id, request_text: text };
+  if (selectedGroupId) payload.target_group_id = selectedGroupId;
+  var result = await supaPost('/rest/v1/prayer_requests', payload);
   if (result && result.code) { alert('Could not send: ' + (result.message||result.code)); return; }
   document.getElementById('requestPrayerText').value = '';
   var btn = document.querySelector('#requestPrayerScreen .generate-btn');
