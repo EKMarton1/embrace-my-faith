@@ -1491,14 +1491,10 @@ async function toggleListen() {
   btn.disabled = true;
   btn.textContent = 'I SEE YOU';
   btn.style.color = '#f5c830';
-  // Fade out text
-  setTimeout(function() { btn.style.color = 'rgba(245,200,72,0)'; }, 1000);
-  // Swap and fade in "I HEAR YOU"
-  setTimeout(function() { btn.textContent = 'I HEAR YOU'; btn.style.color = '#f5c830'; }, 1500);
-  // Fade out text
-  setTimeout(function() { btn.style.color = 'rgba(245,200,72,0)'; }, 2500);
-  // Swap and fade in "GIVE ME A MOMENT"
-  setTimeout(function() { btn.textContent = 'GIVE ME A MOMENT'; btn.style.color = '#f5c830'; }, 3000);
+  setTimeout(function() { btn.style.color = 'rgba(245,200,72,0)'; }, 2000);
+  setTimeout(function() { btn.textContent = 'I HEAR YOU'; btn.style.color = '#f5c830'; }, 2800);
+  setTimeout(function() { btn.style.color = 'rgba(245,200,72,0)'; }, 4800);
+  setTimeout(function() { btn.textContent = 'GIVE ME A MOMENT'; btn.style.color = '#f5c830'; }, 5600);
 
   await speakText(prayer, selectedVoiceId, function() {
     isPlaying = false;
@@ -1534,9 +1530,15 @@ async function speakText(text, voiceId, onDone) {
       hidePrayerAudioBar();
       if (onDone) onDone();
     };
-    currentAudio.play();
     showPrayerAudioBar();
     startProgressBar();
+    var playPromise = currentAudio.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(function() {
+        var pb = document.getElementById('prayerPauseBtn');
+        if (pb) pb.textContent = 'Play';
+      });
+    }
     return currentAudio;
   } catch(e) {
     console.error('TTS error:', e);
