@@ -78,6 +78,7 @@ body{background:#1a1a1a;display:flex;justify-content:center;align-items:flex-sta
 /* ========== GENERIC SCREEN HEADER ========== */
 .screen-top{display:flex;flex-direction:column;align-items:center;text-align:center;padding:72px 20px 8px;}
 .screen-top-logo{height:60px;object-fit:contain;margin-bottom:8px;cursor:pointer;}
+#backBtn{position:fixed;top:18px;left:16px;z-index:9999;background:rgba(30,15,0,0.55);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:13px;border-radius:50px;padding:7px 16px 7px 12px;cursor:pointer;display:none;backdrop-filter:blur(4px);}
 .screen-title{font-family:'Lato',sans-serif;font-size:34px;font-weight:700;color:rgba(0,0,0,0.75);letter-spacing:0.5px;margin-bottom:4px;}
 .screen-body{padding:20px 20px 40px;flex:1;}
 
@@ -310,6 +311,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
 </head>
 <body>
 <div id="emfApp">
+<button id="backBtn" onclick="goBack()">&#8249; Back</button>
 
 <!-- SPLASH -->
 <div class="screen active" id="splashScreen">
@@ -976,7 +978,7 @@ async function loadUserData() {
       userName = currentUser.user_metadata.name;
     }
     var hn = document.getElementById('homeName');
-    if (hn) hn.textContent = userName;
+    if (hn) hn.textContent = userName.split(' ')[0];
     saveGenderPref(defaultGender);
 
     var today = new Date().toISOString().slice(0, 10);
@@ -1262,7 +1264,7 @@ function saveSettingsName() {
   userName = val;
   localStorage.setItem('emf_userName', val);
   document.getElementById('settingsName').textContent = val;
-  document.getElementById('homeName').textContent = val;
+  document.getElementById('homeName').textContent = val.split(' ')[0];
   dbSaveProfile({ name: val });
   cancelSettingsNameEdit();
 }
@@ -1298,11 +1300,27 @@ function getVerseWindow(h) {
 }
 
 // ========== NAVIGATION ==========
-function showScreen(id) {
+var navHistory = [];
+var noHistoryScreens = ['homeScreen','loginScreen','signupScreen','nameScreen','notifyScreen'];
+
+function goBack() {
+  var prev = navHistory.length ? navHistory.pop() : 'homeScreen';
+  showScreen(prev, true);
+}
+
+function showScreen(id, isBack) {
+  if (!isBack) {
+    var cur = document.querySelector('.screen.active');
+    if (cur && cur.id !== id && noHistoryScreens.indexOf(cur.id) < 0) {
+      navHistory.push(cur.id);
+    }
+  }
+  var bb = document.getElementById('backBtn');
+  if (bb) bb.style.display = noHistoryScreens.indexOf(id) >= 0 ? 'none' : 'block';
   // Clear auth error messages when switching screens
   if (id === 'loginScreen') { var le = document.getElementById('loginError'); if (le) { le.textContent = ''; le.style.display = 'none'; } var lb = document.getElementById('loginBtn'); if (lb) { lb.disabled = false; lb.textContent = 'SIGN IN'; } }
   if (id === 'signupScreen') { var se = document.getElementById('signupError'); if (se) { se.textContent = ''; se.style.display = 'none'; } var sb = document.getElementById('signupBtn'); if (sb) { sb.disabled = false; sb.textContent = 'CREATE ACCOUNT'; } }
-  if (id === 'homeScreen') { var hn = document.getElementById('homeName'); if (hn) hn.textContent = userName; }
+  if (id === 'homeScreen') { var hn = document.getElementById('homeName'); if (hn) hn.textContent = userName.split(' ')[0]; }
   if (id === 'settingsScreen') {
     document.getElementById('settingsName').textContent = userName;
     var emailEl = document.getElementById('settingsEmail');
@@ -1344,8 +1362,8 @@ function saveName() {
   var val = document.getElementById('userNameInput').value.trim();
   if (!val) { alert('Please enter your name to continue.'); return; }
   userName = val;
-  document.getElementById('notifyTitle').textContent = 'Welcome ' + userName + '!';
-  document.getElementById('homeName').textContent = userName;
+  document.getElementById('notifyTitle').textContent = 'Welcome ' + userName.split(' ')[0] + '!';
+  document.getElementById('homeName').textContent = userName.split(' ')[0];
   showScreen('notifyScreen');
 }
 
