@@ -7,12 +7,20 @@
 create table if not exists public.profiles (
   id uuid references auth.users on delete cascade primary key,
   name text,
+  email text,
   gender text default 'female',
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );
 alter table public.profiles enable row level security;
-create policy "profiles_all" on public.profiles for all using (auth.uid() = id) with check (auth.uid() = id);
+-- Drop old single policy if it exists
+drop policy if exists "profiles_all" on public.profiles;
+-- All authenticated users can read profiles (needed for circle search)
+create policy "profiles_read" on public.profiles for select using (auth.uid() is not null);
+-- Users can only write their own profile
+create policy "profiles_write" on public.profiles for insert with check (auth.uid() = id);
+create policy "profiles_update" on public.profiles for update using (auth.uid() = id) with check (auth.uid() = id);
+create policy "profiles_delete" on public.profiles for delete using (auth.uid() = id);
 
 -- PRAYER COUNTERS (daily limit, resets each day)
 create table if not exists public.prayer_counters (
@@ -71,3 +79,52 @@ create table if not exists public.rest_preferences (
 );
 alter table public.rest_preferences enable row level security;
 create policy "rest_all" on public.rest_preferences for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+-- CIRCLE CONNECTIONS
+create table if not exists public.circle_connections (
+  id uuid default gen_random_uuid() primary key,
+  requester_id uuid references auth.users on delete cascade not null,
+  addressee_id uuid references auth.users on delete cascade not null,
+  status text default 'pending' check (status in ('pending', 'accepted', 'declined')),
+  created_at timestamptz default now(),
+  unique(requester_id, addressee_id)
+);
+alter table public.circle_connections enable row level security;
+-- Both parties can see connections they're part of
+create policy "circle_select" on public.circle_connections for select
+  using (auth.uid() = requester_id or auth.uid() = addressee_id);
+-- Only requester can create the invite
+create policy "circle_insert" on public.circle_connections for insert
+  with check (auth.uid() = requester_id);
+-- Only addressee can accept/decline (update status)
+create policy "circle_update" on public.circle_connections for update
+  using (auth.uid() = addressee_id);
+-- Either party can remove the connection
+create policy "circle_delete" on public.circle_connections for delete
+  using (auth.uid() = requester_id or auth.uid() = addressee_id);
+
+-- PRAYER REQUESTS
+create table if not exists public.prayer_requests (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid references auth.users on delete cascade not null,
+  request_text text not null,
+  created_at timestamptz default now()
+);
+alter table public.prayer_requests enable row level security;
+-- Users can see their own requests plus requests from accepted circle members
+create policy "requests_select" on public.prayer_requests for select
+  using (
+    auth.uid() = user_id or
+    exists (
+      select 1 from public.circle_connections cc
+      where cc.status = 'accepted'
+        and (
+          (cc.requester_id = auth.uid() and cc.addressee_id = prayer_requests.user_id) or
+          (cc.addressee_id = auth.uid() and cc.requester_id = prayer_requests.user_id)
+        )
+    )
+  );
+create policy "requests_insert" on public.prayer_requests for insert
+  with check (auth.uid() = user_id);
+create policy "requests_delete" on public.prayer_requests for delete
+  using (auth.uid() = user_id);

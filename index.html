@@ -730,20 +730,10 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
     <button class="generate-btn" onclick="submitPrayerRequest()" style="margin-top:4px;">Send My Prayer Request</button>
     <button onclick="showScreen('circleScreen')" style="width:100%;margin-top:10px;padding:14px;background:rgba(255,255,255,0.45);border:1.5px solid rgba(0,0,0,0.15);color:#111111;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;transition:background 0.2s ease;" onmouseover="this.style.background='rgba(255,255,255,0.65)'" onmouseout="this.style.background='rgba(255,255,255,0.45)'">Manage My Circle</button>
     <div style="margin-top:28px;">
-      <div class="result-label" style="margin-bottom:12px;">Recent Requests from My Circle</div>
-      <div style="background:rgba(255,255,255,0.45);border-radius:16px;padding:16px;margin-bottom:10px;">
-        <div style="font-weight:700;color:#111;font-size:14px;">Maddie H. is asking for prayer</div>
-        <div style="font-size:13px;color:#333;margin-top:4px;margin-bottom:10px;">Please pray for my mother's surgery this Thursday.</div>
-        <button class="action-btn" style="width:100%;transition:background 0.2s ease;" onmouseover="this.style.background='rgba(255,255,255,0.55)'" onmouseout="this.style.background=''" onclick="prayForRequest('Maddie','mother surgery Thursday')">Pray for Maddie</button>
-      </div>
-      <div style="background:rgba(255,255,255,0.45);border-radius:16px;padding:16px;margin-bottom:10px;">
-        <div style="font-weight:700;color:#111;font-size:14px;">Shane F. is asking for prayer</div>
-        <div style="font-size:13px;color:#333;margin-top:4px;margin-bottom:10px;">Going through a difficult season at work. Need strength.</div>
-        <button class="action-btn" style="width:100%;transition:background 0.2s ease;" onmouseover="this.style.background='rgba(255,255,255,0.55)'" onmouseout="this.style.background=''" onclick="prayForRequest('Shane','difficult season at work needing strength')">Pray for Shane</button>
-      </div>
-      <div style="font-size:14px;font-style:italic;color:rgba(0,0,0,0.75);text-align:center;margin-top:8px;">Live requests from your circle coming in the full app.</div>
+      <div class="result-label" style="margin-bottom:12px;">Prayer Requests from My Circle</div>
+      <div id="circleRequestsList"><div style="text-align:center;padding:16px;font-size:14px;color:rgba(0,0,0,0.4);">Loading...</div></div>
     </div>
-    <div style="margin-top:16px;font-family:'Playfair Display',serif;font-style:italic;font-size:15px;color:rgba(0,0,0,0.8);text-align:center;">Carry each other's burdens, and in this way you will fulfill the law of Christ. - Galatians 6:2</div>
+    <div style="margin-top:16px;font-family:'Playfair Display',serif;font-style:italic;font-size:15px;color:rgba(0,0,0,0.8);text-align:center;">Carry each other's burdens, and in this way you will fulfill the law of Christ. — Galatians 6:2</div>
   </div>
 </div>
 
@@ -756,45 +746,24 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
 </div>
   <div class="screen-body">
     <div class="section-label">Your Prayer Circle</div>
-    <div class="section-sub">Your circle is the people you trust to pray with and for. Search for friends and family who have Embrace My Faith and invite them in.</div>
+    <div class="section-sub">Search for friends and family who have Embrace My Faith and invite them in.</div>
 
-    <label class="form-label">Find someone</label>
-    <div style="display:flex;gap:10px;margin-bottom:20px;">
-      <input class="form-input" id="circleSearch" type="text" placeholder="Name or phone number..." style="margin-bottom:0;flex:1;"/>
-      <button onclick="searchCircle()" style="padding:14px 18px;background:rgba(30,15,0,0.8);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:14px;cursor:pointer;">Search</button>
+    <label class="form-label">Find Someone</label>
+    <div style="display:flex;gap:10px;margin-bottom:8px;">
+      <input class="form-input" id="circleSearch" type="text" placeholder="Name or email..." style="margin-bottom:0;flex:1;" onkeydown="if(event.key==='Enter')circleDoSearch()"/>
+      <button onclick="circleDoSearch()" style="padding:14px 18px;background:rgba(30,15,0,0.8);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:14px;cursor:pointer;">Search</button>
     </div>
-    <div id="circleSearchResult"></div>
+    <div id="circleSearchResult" style="margin-bottom:16px;"></div>
 
-    <div class="result-label" style="margin-bottom:12px;">My Circle (3)</div>
-    <div style="background:rgba(255,255,255,0.45);border-radius:16px;padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:12px;">
-      <div style="width:44px;height:44px;border-radius:50%;background:rgba(30,15,0,0.15);display:flex;align-items:center;justify-content:center;font-size:20px;">&#128100;</div>
-      <div style="flex:1;">
-        <div style="font-weight:700;color:#111;font-size:14px;">Tess M.</div>
-        <div style="font-size:12px;color:rgba(0,0,0,0.5);">Active member</div>
-      </div>
-      <button onclick="sendToPerson('Tess')" style="padding:8px 14px;background:rgba(30,15,0,0.75);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:12px;border-radius:20px;cursor:pointer;">Pray</button>
-    </div>
-    <div style="background:rgba(255,255,255,0.45);border-radius:16px;padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:12px;">
-      <div style="width:44px;height:44px;border-radius:50%;background:rgba(30,15,0,0.15);display:flex;align-items:center;justify-content:center;font-size:20px;">&#128100;</div>
-      <div style="flex:1;">
-        <div style="font-weight:700;color:#111;font-size:14px;">Jaric B.</div>
-        <div style="font-size:12px;color:rgba(0,0,0,0.5);">Active member</div>
-      </div>
-      <button onclick="sendToPerson('Jaric')" style="padding:8px 14px;background:rgba(30,15,0,0.75);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:12px;border-radius:20px;cursor:pointer;">Pray</button>
-    </div>
-    <div style="background:rgba(255,255,255,0.45);border-radius:16px;padding:14px;margin-bottom:20px;display:flex;align-items:center;gap:12px;">
-      <div style="width:44px;height:44px;border-radius:50%;background:rgba(30,15,0,0.15);display:flex;align-items:center;justify-content:center;font-size:20px;">&#128100;</div>
-      <div style="flex:1;">
-        <div style="font-weight:700;color:#111;font-size:14px;">Sarah M.</div>
-        <div style="font-size:12px;color:rgba(0,0,0,0.5);">Active member</div>
-      </div>
-      <button onclick="sendToPerson('Sarah')" style="padding:8px 14px;background:rgba(30,15,0,0.75);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:12px;border-radius:20px;cursor:pointer;">Pray</button>
+    <div id="circlePendingSection" style="display:none;">
+      <div class="result-label" style="margin-bottom:8px;">Pending Invites <span id="circlePendingCount" style="font-size:14px;font-family:'Lato',sans-serif;font-weight:600;color:#111;"></span></div>
+      <div id="circlePendingList" style="margin-bottom:20px;"></div>
     </div>
 
-    <div style="background:rgba(255,255,255,0.35);border-radius:16px;padding:16px;text-align:center;">
-      <div style="font-size:13px;color:rgba(0,0,0,0.55);margin-bottom:6px;">Real search and connections coming in the full app.</div>
-      <div style="font-family:'Playfair Display',serif;font-style:italic;font-size:13px;color:rgba(0,0,0,0.5);">"As iron sharpens iron, so one person sharpens another." - Proverbs 27:17</div>
-    </div>
+    <div class="result-label" style="margin-bottom:8px;">My Circle <span id="circleCountLabel" style="font-size:14px;font-family:'Lato',sans-serif;font-weight:600;color:#111;"></span></div>
+    <div id="circleList"><div style="text-align:center;padding:20px;font-size:14px;color:rgba(0,0,0,0.4);">Loading...</div></div>
+
+    <div style="margin-top:24px;font-family:'Playfair Display',serif;font-style:italic;font-size:13px;color:rgba(0,0,0,0.5);text-align:center;">"As iron sharpens iron, so one person sharpens another." — Proverbs 27:17</div>
   </div>
 </div>
 
@@ -1113,7 +1082,7 @@ async function authSignUp() {
       userName = name;
       prayersLeft = 10;
       // Insert profile and counter in background — don't block navigation
-      supaPost('/rest/v1/profiles', { id: userId, name: name, gender: 'female' }).catch(function(){});
+      supaPost('/rest/v1/profiles', { id: userId, name: name, email: email, gender: 'female' }).catch(function(){});
       supaPost('/rest/v1/prayer_counters', { user_id: userId, count: 0, reset_date: today }).catch(function(){});
       var ni = document.getElementById('userNameInput'); if (ni) ni.value = userName.split(' ')[0];
       showScreen('nameScreen');
@@ -1339,6 +1308,16 @@ function showScreen(id) {
   window.scrollTo(0, 0);
   if (id === 'savedScreen') renderSavedPrayers();
   if (id === 'momentsScreen') renderMoments();
+  // Circle polling
+  clearInterval(circlePollingTimer); clearInterval(prayerReqPollingTimer);
+  if (id === 'circleScreen') {
+    loadCircleData();
+    circlePollingTimer = setInterval(loadCircleData, 15000);
+  }
+  if (id === 'requestPrayerScreen') {
+    loadPrayerRequests();
+    prayerReqPollingTimer = setInterval(loadPrayerRequests, 15000);
+  }
 }
 
 // ========== ONBOARDING ==========
@@ -2193,53 +2172,207 @@ function openSendPrayer() {
   showScreen('prayerScreen');
 }
 
-// ── REQUEST PRAYER JS ─────────────────────────────────────────────────────────
-var selectedAudience = 'all';
+// ========== UTILITIES ==========
+function escHtml(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+async function supaDelete(path) {
+  var resp = await fetch(SUPA_URL + path, { method: 'DELETE', headers: supaHeaders() });
+  if (resp.status === 204 || resp.status === 200) return {};
+  try { return resp.json(); } catch(e) { return {}; }
+}
 
-function selectAudience(aud) {
-  selectedAudience = aud;
-  ['All','Family','Friends'].forEach(function(a) {
-    var btn = document.getElementById('aud' + a);
-    if (!btn) return;
-    btn.classList.toggle('selected', a.toLowerCase() === aud);
+// ========== CIRCLE ==========
+var circleData = [];
+var circlePending = [];
+var circlePendingOutgoing = [];
+var circlePollingTimer = null;
+var prayerReqPollingTimer = null;
+
+async function loadCircleData() {
+  if (!currentUser) return;
+  var uid = currentUser.id;
+  var connections = await supaGet('/rest/v1/circle_connections?or=(requester_id.eq.' + uid + ',addressee_id.eq.' + uid + ')&select=*');
+  if (!Array.isArray(connections)) connections = [];
+  var accepted = connections.filter(function(c){ return c.status==='accepted'; });
+  var incomingPending = connections.filter(function(c){ return c.status==='pending' && c.addressee_id===uid; });
+  var outgoingPending = connections.filter(function(c){ return c.status==='pending' && c.requester_id===uid; });
+  var otherIds = [];
+  accepted.forEach(function(c){ otherIds.push(c.requester_id===uid ? c.addressee_id : c.requester_id); });
+  incomingPending.forEach(function(c){ otherIds.push(c.requester_id); });
+  otherIds = otherIds.filter(function(v,i,a){ return a.indexOf(v)===i; });
+  var profiles = {};
+  if (otherIds.length) {
+    var pl = await supaGet('/rest/v1/profiles?id=in.(' + otherIds.join(',') + ')&select=id,name,email');
+    if (Array.isArray(pl)) pl.forEach(function(p){ profiles[p.id]=p; });
+  }
+  circleData = accepted.map(function(c){
+    var oid = c.requester_id===uid ? c.addressee_id : c.requester_id;
+    return { connectionId:c.id, userId:oid, name:(profiles[oid]||{}).name||'Friend' };
   });
+  circlePending = incomingPending.map(function(c){
+    return { connectionId:c.id, userId:c.requester_id, name:(profiles[c.requester_id]||{}).name||'Friend' };
+  });
+  circlePendingOutgoing = outgoingPending.map(function(c){ return c.addressee_id; });
+  renderCircleScreen();
 }
 
-function submitPrayerRequest() {
-  var text = document.getElementById('requestPrayerText').value.trim();
-  if (!text) { alert('Please share what you would like prayer for.'); return; }
-  alert('Your prayer request has been sent to your ' + selectedAudience + '! They will be notified and can pray for you. Full circle connectivity coming in the live app.');
-  document.getElementById('requestPrayerText').value = '';
+function renderCircleScreen() {
+  var ps = document.getElementById('circlePendingSection');
+  var pl = document.getElementById('circlePendingList');
+  if (ps && pl) {
+    if (circlePending.length > 0) {
+      ps.style.display = '';
+      document.getElementById('circlePendingCount').textContent = '(' + circlePending.length + ')';
+      pl.innerHTML = circlePending.map(function(p){
+        return '<div style="background:rgba(255,200,72,0.12);border:1.5px solid rgba(245,200,72,0.35);border-radius:16px;padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:12px;">' +
+          '<div style="width:44px;height:44px;border-radius:50%;background:rgba(30,15,0,0.15);display:flex;align-items:center;justify-content:center;font-size:20px;">&#128100;</div>' +
+          '<div style="flex:1;"><div style="font-weight:700;color:#111;font-size:14px;">' + escHtml(p.name) + '</div>' +
+          '<div style="font-size:12px;color:rgba(0,0,0,0.5);">Wants to join your circle</div></div>' +
+          '<button onclick="circleAccept(\'' + p.connectionId + '\')" style="padding:8px 12px;background:rgba(30,15,0,0.75);border:none;color:#f5c830;font-family:Lato,sans-serif;font-weight:700;font-size:12px;border-radius:20px;cursor:pointer;margin-right:6px;">Accept</button>' +
+          '<button onclick="circleDecline(\'' + p.connectionId + '\')" style="padding:8px 10px;background:rgba(255,255,255,0.35);border:none;color:#555;font-family:Lato,sans-serif;font-weight:700;font-size:12px;border-radius:20px;cursor:pointer;">Decline</button>' +
+          '</div>';
+      }).join('');
+    } else { ps.style.display = 'none'; }
+  }
+  var cl = document.getElementById('circleList');
+  var ccl = document.getElementById('circleCountLabel');
+  if (cl) {
+    if (ccl) ccl.textContent = '(' + circleData.length + ')';
+    if (circleData.length === 0) {
+      cl.innerHTML = '<div style="text-align:center;padding:24px;font-size:14px;color:rgba(0,0,0,0.45);">Your circle is empty. Search for someone to invite.</div>';
+    } else {
+      cl.innerHTML = circleData.map(function(m){
+        return '<div style="background:rgba(255,255,255,0.45);border-radius:16px;padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:12px;">' +
+          '<div style="width:44px;height:44px;border-radius:50%;background:rgba(30,15,0,0.15);display:flex;align-items:center;justify-content:center;font-size:20px;">&#128100;</div>' +
+          '<div style="flex:1;"><div style="font-weight:700;color:#111;font-size:14px;">' + escHtml(m.name) + '</div>' +
+          '<div style="font-size:12px;color:rgba(0,0,0,0.5);">Circle member</div></div>' +
+          '<button onclick="sendToPerson(\'' + escHtml(m.name) + '\')" style="padding:8px 14px;background:rgba(30,15,0,0.75);border:none;color:#f5c830;font-family:Lato,sans-serif;font-weight:700;font-size:12px;border-radius:20px;cursor:pointer;margin-right:6px;">Pray</button>' +
+          '<button onclick="circleRemove(\'' + m.connectionId + '\',this)" style="padding:8px 10px;background:rgba(255,255,255,0.35);border:none;color:#aa2222;font-family:Lato,sans-serif;font-weight:700;font-size:13px;border-radius:20px;cursor:pointer;">✕</button>' +
+          '</div>';
+      }).join('');
+    }
+  }
 }
 
-function prayForRequest(name, situation) {
-  document.getElementById('prayerFor').value = name;
-  document.getElementById('prayerSituation').value = situation;
-  showScreen('prayerScreen');
-}
-
-
-
-function searchCircle() {
+async function circleDoSearch() {
+  if (!currentUser) { alert('Please sign in to search.'); return; }
   var q = document.getElementById('circleSearch').value.trim();
-  if (!q) { alert('Please enter a name or phone number.'); return; }
   var res = document.getElementById('circleSearchResult');
-  var card = document.createElement('div');
-  card.style.cssText = 'background:rgba(255,255,255,0.45);border-radius:16px;padding:14px;margin-bottom:16px;display:flex;align-items:center;gap:12px;';
-  card.innerHTML = '<div style="width:44px;height:44px;border-radius:50%;background:rgba(30,15,0,0.15);display:flex;align-items:center;justify-content:center;font-size:20px;">&#128100;</div>' +
-    '<div style="flex:1;"><div style="font-weight:700;color:#111;font-size:14px;">' + q + '</div><div style="font-size:12px;color:rgba(0,0,0,0.5);">Embrace My Faith member</div></div>';
-  var btn = document.createElement('button');
-  btn.textContent = '+ Invite';
-  btn.style.cssText = 'padding:8px 14px;background:rgba(30,15,0,0.75);border:none;color:#f5c830;font-family:Lato,sans-serif;font-weight:700;font-size:12px;border-radius:20px;cursor:pointer;';
-  btn.onclick = function() { alert('Invite sent to ' + q + '! They will be added to your circle when they accept.'); };
-  card.appendChild(btn);
-  res.innerHTML = '';
-  res.appendChild(card);
+  if (!q) { res.innerHTML = ''; return; }
+  res.innerHTML = '<div style="padding:12px;font-size:14px;color:rgba(0,0,0,0.45);">Searching...</div>';
+  var results = await supaGet('/rest/v1/profiles?or=(name.ilike.*' + encodeURIComponent(q) + '*,email.ilike.*' + encodeURIComponent(q) + '*)&id=neq.' + currentUser.id + '&select=id,name,email&limit=10');
+  if (!Array.isArray(results) || results.length === 0) {
+    res.innerHTML = '<div style="padding:12px;font-size:14px;color:rgba(0,0,0,0.45);">No members found with that name or email.</div>';
+    return;
+  }
+  var existingIds = circleData.map(function(c){ return c.userId; });
+  res.innerHTML = results.map(function(u){
+    var inCircle = existingIds.indexOf(u.id) >= 0;
+    var isPendingOut = circlePendingOutgoing.indexOf(u.id) >= 0;
+    var isPendingIn = circlePending.some(function(p){ return p.userId===u.id; });
+    var badge = inCircle ? '<span style="font-size:12px;color:rgba(0,0,0,0.4);">In circle</span>' :
+      isPendingOut ? '<span style="font-size:12px;color:rgba(0,0,0,0.4);">Invite sent</span>' :
+      isPendingIn ? '<span style="font-size:12px;color:rgba(0,0,0,0.4);">Invited you</span>' :
+      '<button onclick="circleSendInvite(\'' + u.id + '\',\'' + escHtml(u.name||'Member') + '\',this)" style="padding:8px 14px;background:rgba(30,15,0,0.75);border:none;color:#f5c830;font-family:Lato,sans-serif;font-weight:700;font-size:12px;border-radius:20px;cursor:pointer;">+ Invite</button>';
+    return '<div style="background:rgba(255,255,255,0.45);border-radius:16px;padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:12px;">' +
+      '<div style="width:44px;height:44px;border-radius:50%;background:rgba(30,15,0,0.15);display:flex;align-items:center;justify-content:center;font-size:20px;">&#128100;</div>' +
+      '<div style="flex:1;"><div style="font-weight:700;color:#111;font-size:14px;">' + escHtml(u.name||'Member') + '</div>' +
+      '<div style="font-size:12px;color:rgba(0,0,0,0.4);">' + escHtml(u.email||'') + '</div></div>' + badge + '</div>';
+  }).join('');
+}
+
+async function circleSendInvite(userId, name, btn) {
+  if (btn) { btn.disabled=true; btn.textContent='Sending...'; }
+  var result = await supaPost('/rest/v1/circle_connections', { requester_id:currentUser.id, addressee_id:userId, status:'pending' });
+  if (result && result.code) {
+    if (btn) { btn.disabled=false; btn.textContent='+ Invite'; }
+    alert('Could not send invite: ' + (result.message||result.code)); return;
+  }
+  circlePendingOutgoing.push(userId);
+  if (btn) { btn.disabled=true; btn.textContent='Invite sent'; btn.style.opacity='0.6'; }
+}
+
+async function circleAccept(connectionId) {
+  await supaPost('/rest/v1/circle_connections?id=eq.' + connectionId, { status:'accepted' }, 'PATCH');
+  await loadCircleData();
+}
+
+async function circleDecline(connectionId) {
+  await supaPost('/rest/v1/circle_connections?id=eq.' + connectionId, { status:'declined' }, 'PATCH');
+  await loadCircleData();
+}
+
+async function circleRemove(connectionId, btn) {
+  if (!confirm('Remove this person from your circle?')) return;
+  if (btn && btn.parentElement) btn.parentElement.style.opacity = '0.4';
+  await supaDelete('/rest/v1/circle_connections?id=eq.' + connectionId);
+  await loadCircleData();
 }
 
 function sendToPerson(name) {
   document.getElementById('sendPrayerFor').value = name;
   showScreen('sendPrayerScreen');
+}
+
+// ========== PRAYER REQUESTS ==========
+var selectedAudience = 'all';
+function selectAudience(aud) {
+  selectedAudience = aud;
+  ['All','Family','Friends'].forEach(function(a){
+    var btn = document.getElementById('aud'+a); if (btn) btn.classList.toggle('selected', a.toLowerCase()===aud);
+  });
+}
+
+async function submitPrayerRequest() {
+  if (!currentUser) { alert('Please sign in to send prayer requests.'); return; }
+  var text = document.getElementById('requestPrayerText').value.trim();
+  if (!text) { alert('Please share what you would like prayer for.'); return; }
+  var result = await supaPost('/rest/v1/prayer_requests', { user_id:currentUser.id, request_text:text });
+  if (result && result.code) { alert('Could not send: ' + (result.message||result.code)); return; }
+  document.getElementById('requestPrayerText').value = '';
+  var btn = document.querySelector('#requestPrayerScreen .generate-btn');
+  if (btn) { var t=btn.textContent; btn.textContent='Sent to your circle!'; setTimeout(function(){ btn.textContent=t; }, 2200); }
+  loadPrayerRequests();
+}
+
+async function loadPrayerRequests() {
+  if (!currentUser) return;
+  var container = document.getElementById('circleRequestsList');
+  if (!container) return;
+  var requests = await supaGet('/rest/v1/prayer_requests?order=created_at.desc&limit=20');
+  if (!Array.isArray(requests)) requests = [];
+  var others = requests.filter(function(r){ return r.user_id !== currentUser.id; });
+  var uids = others.map(function(r){ return r.user_id; }).filter(function(v,i,a){ return a.indexOf(v)===i; });
+  var profiles = {};
+  if (uids.length) {
+    var pl = await supaGet('/rest/v1/profiles?id=in.(' + uids.join(',') + ')&select=id,name');
+    if (Array.isArray(pl)) pl.forEach(function(p){ profiles[p.id]=p; });
+  }
+  if (others.length === 0) {
+    container.innerHTML = '<div style="text-align:center;padding:16px;font-size:14px;color:rgba(0,0,0,0.45);">No prayer requests yet from your circle.</div>';
+    return;
+  }
+  container.innerHTML = others.map(function(r){
+    var name = (profiles[r.user_id]||{}).name || 'Someone';
+    var date = new Date(r.created_at).toLocaleDateString();
+    var safeText = escHtml(r.request_text);
+    var safeName = escHtml(name);
+    var safeFirst = escHtml(name.split(' ')[0]);
+    return '<div style="background:rgba(255,255,255,0.45);border-radius:16px;padding:16px;margin-bottom:10px;">' +
+      '<div style="font-weight:700;color:#111;font-size:14px;">' + safeName + ' is asking for prayer</div>' +
+      '<div style="font-size:11px;color:rgba(0,0,0,0.4);margin-bottom:6px;">' + date + '</div>' +
+      '<div style="font-size:13px;color:#333;margin-bottom:10px;">' + safeText + '</div>' +
+      '<button class="action-btn" style="width:100%;" onclick="prayForRequest(\'' + safeName + '\',\'' + escHtml(r.request_text.slice(0,100)) + '\')">Pray for ' + safeFirst + '</button>' +
+      '</div>';
+  }).join('');
+}
+
+function prayForRequest(name, situation) {
+  document.getElementById('prayerFor').value = name;
+  document.getElementById('prayerSituation').value = situation;
+  document.getElementById('prayerCharCount').textContent = situation.length + '/150';
+  showScreen('prayerScreen');
 }
 
 
