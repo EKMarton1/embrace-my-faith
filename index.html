@@ -956,8 +956,10 @@ async function supaPost(path, body, method) {
     headers: Object.assign(supaHeaders(), { 'Prefer': 'return=minimal' }),
     body: JSON.stringify(body)
   });
-  if (resp.status === 204) return {};
-  return resp.json();
+  if (resp.status === 204 || resp.status === 201) return {};
+  var txt = await resp.text();
+  if (!txt) return {};
+  try { return JSON.parse(txt); } catch(e) { return {}; }
 }
 
 async function loadUserData() {
@@ -2302,13 +2304,25 @@ async function circleDoSearch() {
 
 async function circleSendInvite(userId, name, btn) {
   if (btn) { btn.disabled=true; btn.textContent='Sending...'; }
-  var result = await supaPost('/rest/v1/circle_connections', { requester_id:currentUser.id, addressee_id:userId, status:'pending' });
-  if (result && result.code) {
+  try {
+    var result = await supaPost('/rest/v1/circle_connections', { requester_id:currentUser.id, addressee_id:userId, status:'pending' });
+    if (result && result.code) {
+      if (btn) { btn.disabled=false; btn.textContent='+ Invite'; }
+      alert('Could not send invite: ' + (result.message||result.code)); return;
+    }
+    circlePendingOutgoing.push(userId);
+    if (btn) {
+      btn.textContent = 'Sent';
+      btn.style.background = 'rgba(30,100,30,0.7)';
+      var card = btn.parentElement;
+      setTimeout(function() {
+        if (card) { card.style.transition='opacity 0.4s'; card.style.opacity='0'; }
+        setTimeout(function() { if (card) card.style.display='none'; }, 400);
+      }, 900);
+    }
+  } catch(e) {
     if (btn) { btn.disabled=false; btn.textContent='+ Invite'; }
-    alert('Could not send invite: ' + (result.message||result.code)); return;
   }
-  circlePendingOutgoing.push(userId);
-  if (btn) { btn.disabled=true; btn.textContent='Invite sent'; btn.style.opacity='0.6'; }
 }
 
 async function circleAccept(connectionId) {
