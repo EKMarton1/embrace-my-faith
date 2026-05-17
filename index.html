@@ -1115,8 +1115,8 @@ async function authSignUp() {
       // Insert profile and counter in background — don't block navigation
       supaPost('/rest/v1/profiles', { id: userId, name: name, gender: 'female' }).catch(function(){});
       supaPost('/rest/v1/prayer_counters', { user_id: userId, count: 0, reset_date: today }).catch(function(){});
-      document.getElementById('notifyTitle').textContent = 'Welcome ' + userName + '!';
-      showScreen('notifyScreen');
+      var ni = document.getElementById('userNameInput'); if (ni) ni.value = userName;
+      showScreen('nameScreen');
     } else {
       showAuthMsg('signup', 'Unexpected response: ' + JSON.stringify(data).slice(0, 120));
     }
