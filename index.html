@@ -594,22 +594,22 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
       <button class="action-btn" id="restMale" onclick="selectRestGender('male')" style="background:rgba(255,255,255,0.4);color:#111;flex:1;padding:12px;font-size:14px;font-weight:700;">Male</button>
     </div>
     <label class="form-label">Background sound</label>
-    <select class="form-select" id="restSound">
-      <option>Gentle Rain</option>
-      <option>Forest Crickets</option>
-      <option>Ocean Waves</option>
-      <option>Soft Piano</option>
-      <option>Silence</option>
+    <select class="form-select" id="restSound" onchange="restSoundChanged()">
+      <option value="silence">Silence</option>
+      <option value="Audio/Rain.mp3">Rain</option>
+      <option value="Audio/ocean-waves.mp3">Ocean Waves</option>
+      <option value="Audio/Night-Crickets.mp3">Night Crickets</option>
     </select>
     <div class="slider-row">
       <label>Voice volume</label>
-      <input type="range" min="0" max="100" value="80" id="restVoiceVol"/>
+      <input type="range" min="0" max="100" value="80" id="restVoiceVol" oninput="restVoiceVolChanged(this.value)"/>
     </div>
     <div class="slider-row">
       <label>Ambient volume</label>
-      <input type="range" min="0" max="100" value="35" id="restAmbientVol"/>
+      <input type="range" min="0" max="100" value="35" id="restAmbientVol" oninput="restAmbientVolChanged(this.value)"/>
     </div>
     <audio id="storyAudio" preload="none"></audio>
+    <audio id="ambientAudio" loop preload="none"></audio>
     <div id="restPlayerWrap">
       <button class="awake-btn" id="restPlayBtn" onclick="startRest()">Begin Tonight&rsquo;s Rest</button>
       <div id="restInlinePlayer" class="story-player" style="display:none;">
@@ -1720,13 +1720,16 @@ var storyInterval = null;
 
 function storyTogglePlay() {
   var audio = document.getElementById('storyAudio');
+  var ambient = document.getElementById('ambientAudio');
   var btn = document.getElementById('storyPlayPause');
   if (audio.paused) {
     audio.play();
+    if (ambient.src && document.getElementById('restSound').value !== 'silence') ambient.play().catch(function(){});
     btn.textContent = 'Pause';
     storyInterval = setInterval(storyUpdateProgress, 500);
   } else {
     audio.pause();
+    ambient.pause();
     btn.textContent = 'Play';
     clearInterval(storyInterval);
   }
@@ -1769,6 +1772,30 @@ function storyFmtTime(s) {
   return m + ':' + (sec < 10 ? '0' : '') + sec;
 }
 
+function restVoiceVolChanged(val) {
+  var audio = document.getElementById('storyAudio');
+  if (audio) audio.volume = val / 100;
+}
+
+function restAmbientVolChanged(val) {
+  var audio = document.getElementById('ambientAudio');
+  if (audio) audio.volume = val / 100;
+}
+
+function restSoundChanged() {
+  var ambient = document.getElementById('ambientAudio');
+  var player = document.getElementById('restInlinePlayer');
+  var src = document.getElementById('restSound').value;
+  if (src === 'silence') {
+    ambient.pause();
+    ambient.src = '';
+    return;
+  }
+  ambient.src = src;
+  ambient.volume = document.getElementById('restAmbientVol').value / 100;
+  if (player.style.display !== 'none') ambient.play();
+}
+
 function startRest() {
   var selected = document.querySelector('#restOptions .option-card.selected');
   if (!selected) { alert('Please select a reading option first.'); return; }
@@ -1776,6 +1803,7 @@ function startRest() {
   document.getElementById('restPlayBtn').style.display = 'none';
   document.getElementById('restInlinePlayer').style.display = 'block';
   var audio = document.getElementById('storyAudio');
+  audio.volume = document.getElementById('restVoiceVol').value / 100;
   var playPromise = audio.play();
   document.getElementById('storyPlayPause').textContent = 'Pause';
   storyInterval = setInterval(storyUpdateProgress, 500);
@@ -1785,6 +1813,13 @@ function startRest() {
       clearInterval(storyInterval);
     });
   }
+  var ambientSrc = document.getElementById('restSound').value;
+  if (ambientSrc !== 'silence') {
+    var ambient = document.getElementById('ambientAudio');
+    ambient.src = ambientSrc;
+    ambient.volume = document.getElementById('restAmbientVol').value / 100;
+    ambient.play().catch(function(){});
+  }
 }
 
 function restStopAndReset() {
@@ -1792,6 +1827,9 @@ function restStopAndReset() {
   audio.pause();
   audio.currentTime = 0;
   clearInterval(storyInterval);
+  var ambient = document.getElementById('ambientAudio');
+  ambient.pause();
+  ambient.currentTime = 0;
   document.getElementById('restInlinePlayer').style.display = 'none';
   document.getElementById('restPlayBtn').style.display = '';
   document.getElementById('storyElapsed').textContent = '0:00';
