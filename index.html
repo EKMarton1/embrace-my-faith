@@ -1110,11 +1110,11 @@ async function authSignUp() {
       }
       currentUser = user;
       currentAccessToken = session.access_token;
-      try {
-        await supaPost('/rest/v1/profiles', { id: userId, name: name, gender: 'female' });
-        await supaPost('/rest/v1/prayer_counters', { user_id: userId, count: 0, reset_date: today });
-      } catch(e) {}
-      await loadUserData();
+      userName = name;
+      prayersLeft = 10;
+      // Insert profile and counter in background — don't block navigation
+      supaPost('/rest/v1/profiles', { id: userId, name: name, gender: 'female' }).catch(function(){});
+      supaPost('/rest/v1/prayer_counters', { user_id: userId, count: 0, reset_date: today }).catch(function(){});
       document.getElementById('notifyTitle').textContent = 'Welcome ' + userName + '!';
       showScreen('notifyScreen');
     } else {
