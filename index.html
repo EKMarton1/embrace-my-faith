@@ -730,7 +730,10 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
     <button class="generate-btn" onclick="submitPrayerRequest()" style="margin-top:4px;">Send My Prayer Request</button>
     <button onclick="showScreen('circleScreen')" style="width:100%;margin-top:10px;padding:14px;background:rgba(255,255,255,0.45);border:1.5px solid rgba(0,0,0,0.15);color:#111111;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;transition:background 0.2s ease;" onmouseover="this.style.background='rgba(255,255,255,0.65)'" onmouseout="this.style.background='rgba(255,255,255,0.45)'">Manage My Circle</button>
     <div style="margin-top:28px;">
-      <div class="result-label" style="margin-bottom:12px;">Prayer Requests from My Circle</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div class="result-label">Prayer Requests from My Circle</div>
+        <button onclick="loadPrayerRequests()" style="background:none;border:none;color:rgba(61,31,0,0.7);font-family:'Lato',sans-serif;font-weight:700;font-size:13px;cursor:pointer;padding:4px 8px;">↻ Refresh</button>
+      </div>
       <div id="circleRequestsList"><div style="text-align:center;padding:16px;font-size:14px;color:rgba(0,0,0,0.4);">Loading...</div></div>
     </div>
     <div style="margin-top:16px;font-family:'Playfair Display',serif;font-style:italic;font-size:15px;color:rgba(0,0,0,0.8);text-align:center;">Carry each other's burdens, and in this way you will fulfill the law of Christ. — Galatians 6:2</div>
@@ -1414,29 +1417,29 @@ async function generatePrayer() {
   document.getElementById('loadingWrap').classList.add('visible');
   stopAudio();
 
-  var systemMsg = "You are a deeply personal Christian prayer minister. Your prayers are intimate, specific, and deeply touching. You NEVER write generic prayers. Every single prayer must feel written ONLY for this exact person and this exact situation.";
+  var systemMsg = "You are a heartfelt Christian prayer minister. Write prayers that are warm, specific, and concise — every word must count. Never use filler phrases or generic language. Each prayer must feel written only for this exact person in this exact moment. Hard limit: 180 words maximum.";
 
   var userMsg = [
-    "Write a deeply personal prayer for the following:",
+    "Write a heartfelt personal prayer (180 words maximum) for:",
     "PERSON: " + forWho,
-    "THEIR SPECIFIC SITUATION: " + situation,
-    "PRAYER TONE: " + tone,
+    "SITUATION: " + situation,
+    "TONE: " + tone,
     "REQUIREMENTS:",
-    "1. Use " + forWho + " by name at least 3 times naturally throughout",
-    "2. Reference the specific situation (" + situation + ") explicitly - no vague language",
-    "3. Name the specific job, interview, career, illness, or relationship directly if mentioned",
-    "4. Write 5-7 warm, intimate sentences ending with Amen",
-    "5. Make it feel like it was written ONLY for this person in this moment",
-    "Respond ONLY with the prayer text - no JSON, no scripture, no labels, just the prayer itself starting with Heavenly Father or Dear Lord"
+    "1. Use " + forWho + " by name 2-3 times naturally",
+    "2. Name the specific situation directly — no vague language",
+    "3. Be warm, intimate, and precise — cut any word that doesn't earn its place",
+    "4. End with Amen",
+    "5. Stay under 180 words",
+    "Respond ONLY with the prayer — no labels, no scripture, no intro. Start with Heavenly Father or Dear Lord."
   ].join("\n");
-    try {
+  try {
     var resp = await fetch('/api/claude', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         system: systemMsg,
         messages: [{ role: 'user', content: userMsg }],
-        max_tokens: 1000
+        max_tokens: 350
       })
     });
     var data = await resp.json();
@@ -2513,7 +2516,6 @@ async function submitPrayerRequest() {
   var text = document.getElementById('requestPrayerText').value.trim();
   if (!text) { alert('Please share what you would like prayer for.'); return; }
   var payload = { user_id: currentUser.id, request_text: text };
-  if (selectedGroupId) payload.target_group_id = selectedGroupId;
   var result = await supaPost('/rest/v1/prayer_requests', payload);
   if (result && result.code) { alert('Could not send: ' + (result.message||result.code)); return; }
   document.getElementById('requestPrayerText').value = '';
@@ -2526,32 +2528,39 @@ async function loadPrayerRequests() {
   if (!currentUser) return;
   var container = document.getElementById('circleRequestsList');
   if (!container) return;
-  var requests = await supaGet('/rest/v1/prayer_requests?order=created_at.desc&limit=20');
-  if (!Array.isArray(requests)) requests = [];
-  var others = requests.filter(function(r){ return r.user_id !== currentUser.id; });
-  var uids = others.map(function(r){ return r.user_id; }).filter(function(v,i,a){ return a.indexOf(v)===i; });
-  var profiles = {};
-  if (uids.length) {
-    var pl = await supaGet('/rest/v1/profiles?id=in.(' + uids.join(',') + ')&select=id,name');
-    if (Array.isArray(pl)) pl.forEach(function(p){ profiles[p.id]=p; });
+  try {
+    var requests = await supaGet('/rest/v1/prayer_requests?order=created_at.desc&limit=20&select=*');
+    if (!Array.isArray(requests)) {
+      container.innerHTML = '<div style="text-align:center;padding:16px;font-size:14px;color:rgba(180,60,60,0.8);">Could not load requests. Tap refresh to try again.</div>';
+      return;
+    }
+    var others = requests.filter(function(r){ return r.user_id !== currentUser.id; });
+    var uids = others.map(function(r){ return r.user_id; }).filter(function(v,i,a){ return a.indexOf(v)===i; });
+    var profiles = {};
+    if (uids.length) {
+      var pl = await supaGet('/rest/v1/profiles?id=in.(' + uids.join(',') + ')&select=id,name');
+      if (Array.isArray(pl)) pl.forEach(function(p){ profiles[p.id]=p; });
+    }
+    if (others.length === 0) {
+      container.innerHTML = '<div style="text-align:center;padding:16px;font-size:14px;color:rgba(0,0,0,0.45);">No prayer requests yet from your circle.</div>';
+      return;
+    }
+    container.innerHTML = others.map(function(r){
+      var name = (profiles[r.user_id]||{}).name || 'Someone';
+      var date = new Date(r.created_at).toLocaleDateString();
+      var safeText = escHtml(r.request_text);
+      var safeName = escHtml(name);
+      var safeFirst = escHtml(name.split(' ')[0]);
+      return '<div style="background:rgba(255,255,255,0.45);border-radius:16px;padding:16px;margin-bottom:10px;">' +
+        '<div style="font-weight:700;color:#111;font-size:14px;">' + safeName + ' is asking for prayer</div>' +
+        '<div style="font-size:11px;color:rgba(0,0,0,0.4);margin-bottom:6px;">' + date + '</div>' +
+        '<div style="font-size:13px;color:#333;margin-bottom:10px;">' + safeText + '</div>' +
+        '<button class="action-btn" style="width:100%;" onclick="prayForRequest(\'' + safeName + '\',\'' + escHtml(r.request_text.slice(0,100)) + '\')">Pray for ' + safeFirst + '</button>' +
+        '</div>';
+    }).join('');
+  } catch(e) {
+    container.innerHTML = '<div style="text-align:center;padding:16px;font-size:14px;color:rgba(180,60,60,0.8);">Could not load requests. Tap refresh to try again.</div>';
   }
-  if (others.length === 0) {
-    container.innerHTML = '<div style="text-align:center;padding:16px;font-size:14px;color:rgba(0,0,0,0.45);">No prayer requests yet from your circle.</div>';
-    return;
-  }
-  container.innerHTML = others.map(function(r){
-    var name = (profiles[r.user_id]||{}).name || 'Someone';
-    var date = new Date(r.created_at).toLocaleDateString();
-    var safeText = escHtml(r.request_text);
-    var safeName = escHtml(name);
-    var safeFirst = escHtml(name.split(' ')[0]);
-    return '<div style="background:rgba(255,255,255,0.45);border-radius:16px;padding:16px;margin-bottom:10px;">' +
-      '<div style="font-weight:700;color:#111;font-size:14px;">' + safeName + ' is asking for prayer</div>' +
-      '<div style="font-size:11px;color:rgba(0,0,0,0.4);margin-bottom:6px;">' + date + '</div>' +
-      '<div style="font-size:13px;color:#333;margin-bottom:10px;">' + safeText + '</div>' +
-      '<button class="action-btn" style="width:100%;" onclick="prayForRequest(\'' + safeName + '\',\'' + escHtml(r.request_text.slice(0,100)) + '\')">Pray for ' + safeFirst + '</button>' +
-      '</div>';
-  }).join('');
 }
 
 function prayForRequest(name, situation) {
