@@ -78,8 +78,9 @@ body{background:#1a1a1a;display:flex;justify-content:center;align-items:flex-sta
 /* ========== GENERIC SCREEN HEADER ========== */
 .screen-top{display:flex;flex-direction:column;align-items:center;text-align:center;padding:72px 20px 8px;}
 .screen-top-logo{height:60px;object-fit:contain;margin-bottom:8px;cursor:pointer;}
-#backBtn{position:fixed;top:18px;left:16px;z-index:9999;background:rgba(30,15,0,0.55);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:13px;border-radius:50px;padding:7px 16px 7px 12px;cursor:pointer;display:none;backdrop-filter:blur(4px);}
-.screen-title{font-family:'Lato',sans-serif;font-size:34px;font-weight:700;color:rgba(0,0,0,0.75);letter-spacing:0.5px;margin-bottom:4px;}
+.screen-title-row{display:flex;align-items:center;width:100%;position:relative;justify-content:center;margin-bottom:4px;}
+.back-arrow-btn{position:absolute;left:0;background:none;border:none;color:rgba(0,0,0,0.65);font-size:30px;cursor:pointer;padding:0 8px 0 0;line-height:1;display:flex;align-items:center;}
+.screen-title{font-family:'Lato',sans-serif;font-size:34px;font-weight:700;color:rgba(0,0,0,0.75);letter-spacing:0.5px;}
 .screen-body{padding:20px 20px 40px;flex:1;}
 
 /* ========== PRAYER ========== */
@@ -311,7 +312,6 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
 </head>
 <body>
 <div id="emfApp">
-<button id="backBtn" onclick="goBack()">&#8249; Back</button>
 
 <!-- SPLASH -->
 <div class="screen active" id="splashScreen">
@@ -412,7 +412,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
 <div class="screen" id="prayerScreen">
 <div class="screen-top">
   <img src="images/EMF_logo.png" alt="Embrace My Faith" onclick="showScreen('homeScreen')" class="screen-top-logo"/>
-  <div class="screen-title">Personal Prayer</div>
+  <div class="screen-title-row"><button class="back-arrow-btn" onclick="goBack()">&#8592;</button><div class="screen-title">Personal Prayer</div></div>
 </div>
   <div class="screen-body">
     <div class="section-label" style="font-size:26.4px;">Lift Your Heart</div>
@@ -466,7 +466,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
 <div class="screen" id="riseScreen">
 <div class="screen-top">
   <img src="images/EMF_logo.png" alt="Embrace My Faith" onclick="showScreen('homeScreen')" class="screen-top-logo"/>
-  <div class="screen-title">Rise</div>
+  <div class="screen-title-row"><button class="back-arrow-btn" onclick="goBack()">&#8592;</button><div class="screen-title">Rise</div></div>
 </div>
   <div class="screen-body">
     <div class="section-label">Rise with Purpose</div>
@@ -570,7 +570,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
 <div class="screen" id="restScreen">
 <div class="screen-top">
   <img src="images/EMF_logo.png" alt="Embrace My Faith" onclick="showScreen('homeScreen')" class="screen-top-logo"/>
-  <div class="screen-title">Rest</div>
+  <div class="screen-title-row"><button class="back-arrow-btn" onclick="goBack()">&#8592;</button><div class="screen-title">Rest</div></div>
 </div>
   <div class="screen-body">
     <div class="section-label">Rest in His Peace</div>
@@ -634,7 +634,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
 <div class="screen" id="connectScreen">
 <div class="screen-top">
   <img src="images/EMF_logo.png" alt="Embrace My Faith" onclick="showScreen('homeScreen')" class="screen-top-logo"/>
-  <div class="screen-title">Send &amp; Request</div>
+  <div class="screen-title-row"><button class="back-arrow-btn" onclick="goBack()">&#8592;</button><div class="screen-title">Send &amp; Request</div></div>
 </div>
   <div class="screen-body">
     <div class="section-label">Share Your Prayer</div>
@@ -682,7 +682,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
 <div class="screen" id="momentsScreen">
 <div class="screen-top">
   <img src="images/EMF_logo.png" alt="Embrace My Faith" onclick="showScreen('homeScreen')" class="screen-top-logo"/>
-  <div class="screen-title">Moments</div>
+  <div class="screen-title-row"><button class="back-arrow-btn" onclick="goBack()">&#8592;</button><div class="screen-title">Moments</div></div>
 </div>
   <div class="screen-body">
     <div class="section-label">Life Moments</div>
@@ -697,7 +697,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
 <div class="screen" id="sendPrayerScreen">
 <div class="screen-top">
   <img src="images/EMF_logo.png" alt="Embrace My Faith" onclick="showScreen('homeScreen')" class="screen-top-logo"/>
-  <div class="screen-title">Send Prayer</div>
+  <div class="screen-title-row"><button class="back-arrow-btn" onclick="goBack()">&#8592;</button><div class="screen-title">Send Prayer</div></div>
 </div>
   <div class="screen-body">
     <div class="section-label" style="font-size:26.4px;">Pray for Someone</div>
@@ -716,7 +716,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
 <div class="screen" id="requestPrayerScreen">
 <div class="screen-top">
   <img src="images/EMF_logo.png" alt="Embrace My Faith" onclick="showScreen('homeScreen')" class="screen-top-logo"/>
-  <div class="screen-title">Request Prayer</div>
+  <div class="screen-title-row"><button class="back-arrow-btn" onclick="goBack()">&#8592;</button><div class="screen-title">Request Prayer</div></div>
 </div>
   <div class="screen-body">
     <div class="section-label" style="font-size:26.4px;">Ask for Prayer</div>
@@ -742,7 +742,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
 <div class="screen" id="circleScreen">
 <div class="screen-top">
   <img src="images/EMF_logo.png" alt="Embrace My Faith" onclick="showScreen('homeScreen')" class="screen-top-logo"/>
-  <div class="screen-title">My Circle</div>
+  <div class="screen-title-row"><button class="back-arrow-btn" onclick="goBack()">&#8592;</button><div class="screen-title">My Circle</div></div>
 </div>
   <div class="screen-body">
     <div class="section-label">Your Prayer Circle</div>
@@ -789,7 +789,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
 <div class="screen" id="settingsScreen">
 <div class="screen-top">
   <img src="images/EMF_logo.png" alt="Embrace My Faith" onclick="showScreen('homeScreen')" class="screen-top-logo"/>
-  <div class="screen-title">Settings</div>
+  <div class="screen-title-row"><button class="back-arrow-btn" onclick="goBack()">&#8592;</button><div class="screen-title">Settings</div></div>
 </div>
   <div class="screen-body">
     <div class="section-label">Your Preferences</div>
@@ -864,7 +864,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
 <div class="screen" id="savedScreen">
 <div class="screen-top">
   <img src="images/EMF_logo.png" alt="Embrace My Faith" onclick="showScreen('homeScreen')" class="screen-top-logo"/>
-  <div class="screen-title">Saved Prayers</div>
+  <div class="screen-title-row"><button class="back-arrow-btn" onclick="goBack()">&#8592;</button><div class="screen-title">Saved Prayers</div></div>
 </div>
   <div class="screen-body">
     <div id="savedList">
@@ -877,7 +877,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
 <div class="screen" id="pricingScreen">
 <div class="screen-top">
   <img src="images/EMF_logo.png" alt="Embrace My Faith" onclick="showScreen('homeScreen')" class="screen-top-logo"/>
-  <div class="screen-title">Begin Your Journey</div>
+  <div class="screen-title-row"><button class="back-arrow-btn" onclick="goBack()">&#8592;</button><div class="screen-title">Begin Your Journey</div></div>
 </div>
   <div class="screen-body">
     <div style="background:rgba(255,255,255,0.55);border-radius:24px;padding:28px 24px;margin-bottom:16px;text-align:center;">
@@ -1315,8 +1315,6 @@ function showScreen(id, isBack) {
       navHistory.push(cur.id);
     }
   }
-  var bb = document.getElementById('backBtn');
-  if (bb) bb.style.display = noHistoryScreens.indexOf(id) >= 0 ? 'none' : 'block';
   // Clear auth error messages when switching screens
   if (id === 'loginScreen') { var le = document.getElementById('loginError'); if (le) { le.textContent = ''; le.style.display = 'none'; } var lb = document.getElementById('loginBtn'); if (lb) { lb.disabled = false; lb.textContent = 'SIGN IN'; } }
   if (id === 'signupScreen') { var se = document.getElementById('signupError'); if (se) { se.textContent = ''; se.style.display = 'none'; } var sb = document.getElementById('signupBtn'); if (sb) { sb.disabled = false; sb.textContent = 'CREATE ACCOUNT'; } }
