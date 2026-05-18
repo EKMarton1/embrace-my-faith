@@ -431,7 +431,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
       <option value="healing and restoration">Healing &amp; Restoration</option>
     </select>
     <button class="generate-btn" id="generateBtn" onclick="generatePrayer()">Create My Prayer &#10022;</button>
-    <div class="prayers-remaining" id="prayersRemainingBar">10 of 10 prayers remaining today &#8212; <span onclick="showScreen('pricingScreen')" style="cursor:pointer;text-decoration:underline;color:#3d1f00;font-weight:700;">get more for $0.99</span></div>
+    <div class="prayers-remaining" id="prayersRemainingBar">15 of 15 prayers remaining today &#8212; <span onclick="showScreen('pricingScreen')" style="cursor:pointer;text-decoration:underline;color:#3d1f00;font-weight:700;">get more for $0.99</span></div>
     <div class="loading-wrap" id="loadingWrap">
       <img src="images/My_Prayer_Icon.png" alt="" style="width:72px;height:72px;object-fit:contain;margin-bottom:12px;opacity:0.85;">
       <div class="loading-dots">Lifting your prayer heavenward...</div>
@@ -809,7 +809,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
 
     <div class="settings-card">
       <div class="settings-card-title">Prayers Today</div>
-      <div style="font-size:15px;font-weight:600;color:#111;" id="settingsPrayerCount">0 of 10 prayers used today</div>
+      <div style="font-size:15px;font-weight:600;color:#111;" id="settingsPrayerCount">0 of 15 prayers used today</div>
       <div class="prayer-bar-track"><div class="prayer-bar-fill" id="settingsPrayerBar" style="width:0%;"></div></div>
     </div>
 
@@ -888,7 +888,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
       <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:#111;margin-bottom:6px;">10 Days Free</div>
       <div style="font-size:15px;color:rgba(0,0,0,0.6);margin-bottom:20px;">$9.99/mo or $79.99/yr</div>
       <div style="text-align:left;margin-bottom:20px;">
-        <div class="plan-feature">10 personal prayers per day</div>
+        <div class="plan-feature">15 personal prayers per day</div>
         <div class="plan-feature">Send &amp; Request prayers with your circle</div>
         <div class="plan-feature">Rise &#8212; Wake with worship &amp; scripture</div>
         <div class="plan-feature">Rest &#8212; Sleep in His Word</div>
@@ -901,7 +901,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
     </div>
     <div style="background:rgba(255,255,255,0.35);border-radius:16px;padding:16px;text-align:center;">
       <div style="font-size:13px;font-weight:600;color:rgba(0,0,0,0.55);margin-bottom:4px;">Need more prayers?</div>
-      <div style="font-size:12px;color:rgba(0,0,0,0.45);margin-bottom:12px;">Add 10 more prayers anytime for just $0.99</div>
+      <div style="font-size:12px;color:rgba(0,0,0,0.45);margin-bottom:12px;">Add 15 more prayers anytime for just $0.99</div>
       <button onclick="alert('Prayer packs coming soon!')" style="padding:10px 24px;background:rgba(30,15,0,0.7);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:13px;border-radius:50px;cursor:pointer;">Buy 10 More Prayers &#8212; $0.99</button>
     </div>
     <div style="margin-top:20px;font-family:'Playfair Display',serif;font-style:italic;font-size:13px;color:rgba(0,0,0,0.5);text-align:center;">&ldquo;For where your treasure is, there your heart will be also.&rdquo;<br/>&#8212; Matthew 6:21</div>
@@ -989,13 +989,13 @@ async function loadUserData() {
     var counter = Array.isArray(counters) ? counters[0] : null;
     if (counter) {
       if (counter.reset_date !== today) {
-        prayersLeft = 10;
+        prayersLeft = 15;
         await supaPost('/rest/v1/prayer_counters?user_id=eq.' + uid, { count: 0, reset_date: today }, 'PATCH');
       } else {
-        prayersLeft = Math.max(0, 10 - counter.count);
+        prayersLeft = Math.max(0, 15 - counter.count);
       }
     } else {
-      prayersLeft = 10;
+      prayersLeft = 15;
       await supaPost('/rest/v1/prayer_counters', { user_id: uid, count: 0, reset_date: today });
     }
     updateCounterUI();
@@ -1025,7 +1025,7 @@ async function loadUserData() {
 
 function updateCounterUI() {
   var bar = document.getElementById('prayersRemainingBar');
-  if (bar) bar.innerHTML = prayersLeft + ' of 10 prayers remaining today &#8212; <span onclick="showScreen(\'pricingScreen\')" style="cursor:pointer;text-decoration:underline;color:#3d1f00;font-weight:700;">get more for $0.99</span>';
+  if (bar) bar.innerHTML = prayersLeft + ' of 15 prayers remaining today &#8212; <span onclick="showScreen(\'pricingScreen\')" style="cursor:pointer;text-decoration:underline;color:#3d1f00;font-weight:700;">get more for $0.99</span>';
 }
 
 // ── AUTH ──────────────────────────────────────────────────────────────────────
@@ -1102,7 +1102,7 @@ async function authSignUp() {
       currentUser = user;
       currentAccessToken = session.access_token;
       userName = name;
-      prayersLeft = 10;
+      prayersLeft = 15;
       // Insert profile and counter in background — don't block navigation
       supaPost('/rest/v1/profiles', { id: userId, name: name, email: email, gender: 'female' }).catch(function(){});
       supaPost('/rest/v1/prayer_counters', { user_id: userId, count: 0, reset_date: today }).catch(function(){});
@@ -1123,7 +1123,7 @@ async function authSignOut() {
   }
   currentUser = null; currentAccessToken = null;
   moments = [{ name: 'Remy', date: '1999-07-13', category: 'Birthday', note: '' }];
-  savedPrayers = []; prayersLeft = 10; userName = 'Friend';
+  savedPrayers = []; prayersLeft = 15; userName = 'Friend';
   showScreen('loginScreen');
 }
 
@@ -1186,7 +1186,7 @@ async function dbSaveRestPrefs(prefs) {
 
 // ========== STATE ==========
 var userName = 'Friend';
-var prayersLeft = 10;
+var prayersLeft = 15;
 
 var moments = [{name: 'Remy', date: '1999-07-13', category: 'Birthday', note: ''}];
 var savedPrayers = [];
@@ -1327,15 +1327,15 @@ function showScreen(id, isBack) {
     var emailEl = document.getElementById('settingsEmail');
     if (emailEl && currentUser) emailEl.textContent = currentUser.email;
     saveGenderPref(defaultGender);
-    var used = 10 - prayersLeft;
-    document.getElementById('settingsPrayerCount').textContent = used + ' of 10 prayers used today';
+    var used = 15 - prayersLeft;
+    document.getElementById('settingsPrayerCount').textContent = used + ' of 15 prayers used today';
     document.getElementById('settingsPrayerBar').style.width = (used * 10) + '%';
     document.getElementById('notifScripture').checked = localStorage.getItem('emf_notif_scripture') !== '0';
     document.getElementById('notifMoments').checked = localStorage.getItem('emf_notif_moments') === '1';
   }
   if (id === 'sendPrayerScreen') {
     var el = document.getElementById('sendPrayersRemaining');
-    if (el) el.textContent = prayersLeft + ' of 10 prayers remaining today';
+    if (el) el.textContent = prayersLeft + ' of 15 prayers remaining today';
   }
   var screens = document.querySelectorAll('.screen');
   for (var i = 0; i < screens.length; i++) screens[i].classList.remove('active');
@@ -1420,17 +1420,12 @@ async function generatePrayer() {
   var systemMsg = "You are a heartfelt Christian prayer minister. Write prayers that are warm, specific, and concise — every word must count. Never use filler phrases or generic language. Each prayer must feel written only for this exact person in this exact moment. Hard limit: 180 words maximum.";
 
   var userMsg = [
-    "Write a heartfelt personal prayer (180 words maximum) for:",
+    "Generate a personal prayer of 150-180 words for:",
     "PERSON: " + forWho,
     "SITUATION: " + situation,
     "TONE: " + tone,
-    "REQUIREMENTS:",
-    "1. Use " + forWho + " by name 2-3 times naturally",
-    "2. Name the specific situation directly — no vague language",
-    "3. Be warm, intimate, and precise — cut any word that doesn't earn its place",
-    "4. End with Amen",
-    "5. Stay under 180 words",
-    "Respond ONLY with the prayer — no labels, no scripture, no intro. Start with Heavenly Father or Dear Lord."
+    "Use " + forWho + "'s name naturally throughout the prayer at least 3 times. Be specific to the details provided. Cut filler and repetitive phrases but never cut the personal details — those are the most important part.",
+    "End with Amen. Respond ONLY with the prayer — no labels, no scripture, no intro. Start with Heavenly Father or Dear Lord."
   ].join("\n");
   try {
     var resp = await fetch('/api/claude', {
