@@ -504,33 +504,33 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
     <div id="worshipSongList" style="display:none;">
       <label class="form-label">Choose your wake track</label>
       <div class="song-list">
-        <div class="song-item" data-song="Devotional" onclick="selectSong('Devotional','Audio/Devotional.mp3')">
+        <div class="song-item" data-song="Devotional" onclick="selectSong('Devotional',AUDIO_BASE+'Devotional.mp3')">
           <span class="song-name">Devotional</span>
-          <button class="song-preview-btn" onclick="previewSong(event,'Audio/Devotional.mp3')">Preview</button>
+          <button class="song-preview-btn" onclick="previewSong(event,AUDIO_BASE+'Devotional.mp3')">Preview</button>
         </div>
-        <div class="song-item" data-song="Hymns" onclick="selectSong('Hymns','Audio/Hymns.mp3')">
+        <div class="song-item" data-song="Hymns" onclick="selectSong('Hymns',AUDIO_BASE+'Hymns.mp3')">
           <span class="song-name">Hymns</span>
-          <button class="song-preview-btn" onclick="previewSong(event,'Audio/Hymns.mp3')">Preview</button>
+          <button class="song-preview-btn" onclick="previewSong(event,AUDIO_BASE+'Hymns.mp3')">Preview</button>
         </div>
-        <div class="song-item" data-song="Give Thanks" onclick="selectSong('Give Thanks','Audio/GiveThanks.mp3')">
+        <div class="song-item" data-song="Give Thanks" onclick="selectSong('Give Thanks',AUDIO_BASE+'GiveThanks.mp3')">
           <span class="song-name">Give Thanks</span>
-          <button class="song-preview-btn" onclick="previewSong(event,'Audio/GiveThanks.mp3')">Preview</button>
+          <button class="song-preview-btn" onclick="previewSong(event,AUDIO_BASE+'GiveThanks.mp3')">Preview</button>
         </div>
-        <div class="song-item" data-song="Praise" onclick="selectSong('Praise','Audio/Praise.mp3')">
+        <div class="song-item" data-song="Praise" onclick="selectSong('Praise',AUDIO_BASE+'Praise.mp3')">
           <span class="song-name">Praise</span>
-          <button class="song-preview-btn" onclick="previewSong(event,'Audio/Praise.mp3')">Preview</button>
+          <button class="song-preview-btn" onclick="previewSong(event,AUDIO_BASE+'Praise.mp3')">Preview</button>
         </div>
-        <div class="song-item" data-song="Praise The Lord" onclick="selectSong('Praise The Lord','Audio/PraiseTheLord.mp3')">
+        <div class="song-item" data-song="Praise The Lord" onclick="selectSong('Praise The Lord',AUDIO_BASE+'PraiseTheLord.mp3')">
           <span class="song-name">Praise The Lord</span>
-          <button class="song-preview-btn" onclick="previewSong(event,'Audio/PraiseTheLord.mp3')">Preview</button>
+          <button class="song-preview-btn" onclick="previewSong(event,AUDIO_BASE+'PraiseTheLord.mp3')">Preview</button>
         </div>
-        <div class="song-item" data-song="Present" onclick="selectSong('Present','Audio/Present.mp3')">
+        <div class="song-item" data-song="Present" onclick="selectSong('Present',AUDIO_BASE+'Present.mp3')">
           <span class="song-name">Present</span>
-          <button class="song-preview-btn" onclick="previewSong(event,'Audio/Present.mp3')">Preview</button>
+          <button class="song-preview-btn" onclick="previewSong(event,AUDIO_BASE+'Present.mp3')">Preview</button>
         </div>
-        <div class="song-item" data-song="Rise" onclick="selectSong('Rise','Audio/Rise.mp3')">
+        <div class="song-item" data-song="Rise" onclick="selectSong('Rise',AUDIO_BASE+'Rise.mp3')">
           <span class="song-name">Rise</span>
-          <button class="song-preview-btn" onclick="previewSong(event,'Audio/Rise.mp3')">Preview</button>
+          <button class="song-preview-btn" onclick="previewSong(event,AUDIO_BASE+'Rise.mp3')">Preview</button>
         </div>
       </div>
     </div>
@@ -598,9 +598,9 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
     <label class="form-label">Background sound</label>
     <select class="form-select" id="restSound" onchange="restSoundChanged()">
       <option value="silence">Silence</option>
-      <option value="Audio/Rain.mp3">Rain</option>
-      <option value="Audio/ocean-waves.mp3">Ocean Waves</option>
-      <option value="Audio/Night-Crickets.mp3">Night Crickets</option>
+      <option value="https://fubmjytqfucnudpupynw.supabase.co/storage/v1/object/public/audio/Rain.mp3">Rain</option>
+      <option value="https://fubmjytqfucnudpupynw.supabase.co/storage/v1/object/public/audio/ocean-waves.mp3">Ocean Waves</option>
+      <option value="https://fubmjytqfucnudpupynw.supabase.co/storage/v1/object/public/audio/Night-Crickets.mp3">Night Crickets</option>
     </select>
     <div class="slider-row">
       <label>Voice volume</label>
@@ -945,6 +945,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
 // ========== SUPABASE ==========
 var SUPA_URL = 'https://fubmjytqfucnudpupynw.supabase.co';
 var SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1Ym1qeXRxZnVjbnVkcHVweW53Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5Njk2NzEsImV4cCI6MjA5NDU0NTY3MX0.ajNVdUzA6sdcjWuMtPg-g3e93EDxQmRqpdziYQSoEF0';
+var AUDIO_BASE = 'https://fubmjytqfucnudpupynw.supabase.co/storage/v1/object/public/audio/';
 var currentUser = null;
 var currentAccessToken = null;
 
@@ -1701,9 +1702,9 @@ function restAudioSrc() {
   var label = selected ? selected.querySelector('.option-card-title').textContent.trim() : 'Evening Prayer';
   var isMale = restVoiceId === SHANE_ID;
   var suffix = isMale ? '_M' : '_F';
-  if (label === 'Bible Story') return 'Audio/Story01' + suffix + '.mp3';
-  if (label === 'Psalms')      return 'Audio/Psalm23' + suffix + '.mp3';
-  return 'Audio/EveningPrayer01' + suffix + '.mp3';
+  if (label === 'Bible Story') return AUDIO_BASE + 'Story01' + suffix + '.mp3';
+  if (label === 'Psalms')      return AUDIO_BASE + 'Psalm23' + suffix + '.mp3';
+  return AUDIO_BASE + 'EveningPrayer01' + suffix + '.mp3';
 }
 
 function restLoadAudio() {
@@ -2570,9 +2571,9 @@ function riseAudioSrc() {
   var selected = document.querySelector('#riseOptions .option-card.selected');
   var label = selected ? selected.querySelector('.option-card-title').textContent.trim() : '';
   var isMale = riseVoiceId === ERIC_ID;
-  if (label === 'Worship Music') return selectedWorshipSong ? selectedWorshipSong.src : 'Audio/Rise01.mp3';
-  if (label === 'Morning Prayer') return 'Audio/MorningPrayer01_' + (isMale ? 'M' : 'F') + '.mp3';
-  return 'Audio/RiseScripture01_' + (isMale ? 'M' : 'F') + '.mp3';
+  if (label === 'Worship Music') return selectedWorshipSong ? selectedWorshipSong.src : AUDIO_BASE + 'Rise01.mp3';
+  if (label === 'Morning Prayer') return AUDIO_BASE + 'MorningPrayer01_' + (isMale ? 'M' : 'F') + '.mp3';
+  return AUDIO_BASE + 'RiseScripture01_' + (isMale ? 'M' : 'F') + '.mp3';
 }
 
 function riseLoadAudio() {
