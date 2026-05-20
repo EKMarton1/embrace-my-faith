@@ -2053,7 +2053,11 @@ function shareVia(method) {
   } else if (method === 'text') {
     window.open('sms:?body=' + encodeURIComponent(text));
   } else if (method === 'email') {
-    window.open('mailto:?subject=A Prayer for You&body=' + encodeURIComponent(text));
+    var prayerContent = [scripture, prayer].filter(Boolean).join('\n\n');
+    var emailBody = prayerContent
+      ? 'I wanted to share this prayer with you:\n\n' + prayerContent + '\n\nShared with love through Embrace My Faith - embracemyfaith.com'
+      : 'Thinking of you and lifting you up in prayer today.\n\nShared with love through Embrace My Faith - embracemyfaith.com';
+    window.open('mailto:?subject=A Prayer for You&body=' + encodeURIComponent(emailBody));
   } else {
     alert('Share method opened!');
   }
