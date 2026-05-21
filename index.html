@@ -297,19 +297,36 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
 .saved-preview{font-family:'Playfair Display',serif;font-style:italic;font-size:13px;color:rgba(30,15,0,0.7);line-height:1.6;}
 .empty-state{text-align:center;padding:60px 20px;font-family:'Playfair Display',serif;font-style:italic;font-size:15px;color:rgba(0,0,0,0.55);}
 
-/* ========== DIVINE / PRICING ========== */
-.pricing-header{text-align:center;padding:24px 0 20px;}
-.pricing-header h2{font-family:'Playfair Display',serif;font-size:26px;color:#111111;margin-bottom:8px;}
-.pricing-header p{font-size:13px;color:rgba(0,0,0,0.72);line-height:1.6;}
-.plan-card{background:rgba(255,255,255,0.35);border:1.5px solid rgba(30,15,0,0.15);border-radius:20px;padding:20px;margin-bottom:14px;}
-.plan-card.featured{background:rgba(255,255,255,0.18);border-color:rgba(255,255,255,0.5);}
-.plan-name{font-family:'Playfair Display',serif;font-size:22px;color:#111111;font-weight:600;margin-bottom:4px;}
-.plan-price{font-size:28px;font-weight:700;color:#111111;margin-bottom:12px;}
-.plan-price span{font-size:14px;font-weight:400;color:rgba(0,0,0,0.68);}
-.plan-feature{font-size:13px;color:#111111;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.08);}
-.plan-feature::before{content:"&#10003; ";color:rgba(255,255,255,0.6);}
-.plan-btn{width:100%;padding:14px;background:rgba(30,15,0,0.75);border:1.5px solid rgba(30,15,0,0.3);color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:15px;border-radius:50px;cursor:pointer;margin-top:16px;}
-.plan-card.featured .plan-btn{background:linear-gradient(135deg,#f5c830,#c8900a);color:#111111;border:none;}
+/* ========== UPGRADE WALL ========== */
+.upgrade-wall{background:rgba(255,255,255,0.62);border:1.5px solid rgba(200,144,10,0.45);border-radius:16px;padding:22px 20px;margin:16px 0;text-align:center;}
+.upgrade-wall-icon{font-size:34px;margin-bottom:8px;}
+.upgrade-wall-title{font-family:'Playfair Display',serif;font-size:18px;color:#111;font-weight:700;margin-bottom:6px;}
+.upgrade-wall-verse{font-family:'Playfair Display',serif;font-style:italic;font-size:13px;color:rgba(0,0,0,0.62);margin-bottom:16px;line-height:1.6;}
+.upgrade-wall-btn{display:block;width:100%;padding:14px;background:linear-gradient(135deg,#c8900a,#3d1f00);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;letter-spacing:0.5px;border-radius:50px;cursor:pointer;touch-action:manipulation;}
+
+/* ========== ACCORDION PRICING ========== */
+.accord-item{background:rgba(255,255,255,0.38);border:1.5px solid rgba(30,15,0,0.12);border-radius:20px;margin-bottom:12px;overflow:hidden;transition:border-color 0.2s;}
+.accord-item.open{border-color:rgba(200,144,10,0.55);}
+.accord-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+.accord-left .accord-name{font-family:'Playfair Display',serif;font-size:20px;color:#111;font-weight:600;}
+.accord-left .accord-tagline{font-size:11px;color:rgba(0,0,0,0.55);margin-top:2px;letter-spacing:0.3px;}
+.accord-right{text-align:right;flex-shrink:0;}
+.accord-right .accord-price{font-size:17px;font-weight:700;color:#111;}
+.accord-right .accord-period{font-size:11px;color:rgba(0,0,0,0.5);}
+.accord-chevron{font-size:20px;color:rgba(0,0,0,0.4);transition:transform 0.25s;margin-left:10px;flex-shrink:0;}
+.accord-item.open .accord-chevron{transform:rotate(180deg);}
+.accord-body{display:none;padding:0 20px 20px;}
+.accord-item.open .accord-body{display:block;}
+.accord-feat{font-size:13px;color:#111;padding:5px 0;border-bottom:1px solid rgba(0,0,0,0.06);display:flex;gap:8px;align-items:flex-start;}
+.accord-feat-yes{color:#c8900a;font-weight:700;flex-shrink:0;margin-top:1px;}
+.accord-feat-no{color:rgba(0,0,0,0.3);flex-shrink:0;margin-top:1px;}
+.accord-feat.locked{color:rgba(0,0,0,0.35);}
+.accord-cta{width:100%;margin-top:16px;padding:14px;border:none;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;letter-spacing:0.5px;border-radius:50px;cursor:pointer;touch-action:manipulation;transition:opacity 0.15s;}
+.accord-cta:active{opacity:0.8;}
+.accord-cta.dark{background:rgba(30,15,0,0.8);color:#f5c830;}
+.accord-cta.gold{background:linear-gradient(135deg,#f5c830,#c8900a);color:#111;}
+.accord-cta.current{background:rgba(255,255,255,0.45);color:#3d1f00;border:1.5px solid rgba(61,31,0,0.3);pointer-events:none;}
+.accord-fine{font-size:11px;color:rgba(0,0,0,0.45);text-align:center;margin-top:8px;}
 </style>
 </head>
 <body>
@@ -378,6 +395,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
   <button class="settings-cog" onclick="showScreen('settingsScreen')">&#9881;</button>
   <div class="home-header">
     <div class="home-logo"><img src="images/EMF_logo.png" alt="Embrace My Faith" style="height:60px;object-fit:contain;"/></div>
+    <div id="trialBar" style="display:none;margin-bottom:8px;"></div>
     <div class="home-greeting" id="timeGreeting">Good Morning,</div>
     <div class="home-name" id="homeName">Friend</div>
     <div class="daily-verse" id="dailyVerse">&ldquo;Be still, and know that I am God.&rdquo; &#8212; Psalm 46:10</div>
@@ -858,7 +876,15 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
 
     <div class="settings-card">
       <div class="settings-card-title">Subscription</div>
-      <div class="settings-card-sub">10-day free trial &#8212; then $9.99/mo or $79.99/yr</div>
+      <div style="font-size:15px;font-weight:700;color:#111;margin-bottom:4px;" id="settingsTierName">Grace (Free)</div>
+      <div style="font-size:13px;color:rgba(0,0,0,0.55);margin-bottom:14px;" id="settingsTierDesc">1 prayer per day</div>
+      <button onclick="showScreen('pricingScreen')" style="width:100%;padding:13px;background:linear-gradient(135deg,#c8900a,#3d1f00);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;touch-action:manipulation;" id="settingsUpgradeBtn">View Plans</button>
+    </div>
+
+    <div class="settings-card">
+      <div class="settings-card-title">Saved Prayers</div>
+      <div class="settings-card-sub" id="settingsSavedCount">0 prayers saved</div>
+      <button onclick="showScreen('savedScreen')" style="width:100%;padding:13px;background:rgba(255,255,255,0.4);border:1.5px solid rgba(0,0,0,0.15);color:#111;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;touch-action:manipulation;margin-top:10px;">View Saved Prayers</button>
     </div>
 
     <div style="text-align:center;margin-top:8px;font-size:11px;color:rgba(0,0,0,0.4);">Embrace My Faith v1.1 &#8212; Built with faith &amp; love</div>
@@ -882,31 +908,90 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
 <div class="screen" id="pricingScreen">
 <div class="screen-top">
   <img src="images/EMF_logo.png" alt="Embrace My Faith" onclick="showScreen('homeScreen')" class="screen-top-logo"/>
-  <div class="screen-title-row"><button class="back-arrow-btn" onclick="goBack()">&#8592;</button><div class="screen-title">Begin Your Journey</div></div>
+  <div class="screen-title-row"><button class="back-arrow-btn" onclick="goBack()">&#8592;</button><div class="screen-title">Choose Your Plan</div></div>
 </div>
   <div class="screen-body">
-    <div style="background:rgba(255,255,255,0.55);border-radius:24px;padding:28px 24px;margin-bottom:16px;text-align:center;">
-      <div style="font-size:48px;margin-bottom:12px;">&#129464;</div>
-      <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:#111;margin-bottom:6px;">10 Days Free</div>
-      <div style="font-size:15px;color:rgba(0,0,0,0.6);margin-bottom:20px;">$9.99/mo or $79.99/yr</div>
-      <div style="text-align:left;margin-bottom:20px;">
-        <div class="plan-feature">15 personal prayers per day</div>
-        <div class="plan-feature">Send &amp; Request prayers with your circle</div>
-        <div class="plan-feature">Rise &#8212; Wake with worship &amp; scripture</div>
-        <div class="plan-feature">Rest &#8212; Sleep in His Word</div>
-        <div class="plan-feature">Moments &#8212; Pray life&rsquo;s milestones</div>
-        <div class="plan-feature">Beautiful voice narration</div>
-        <div class="plan-feature">My Circle &#8212; Private prayer community</div>
+    <div style="text-align:center;margin-bottom:20px;">
+      <div style="font-family:'Playfair Display',serif;font-size:14px;font-style:italic;color:rgba(0,0,0,0.62);">&ldquo;I can do all this through him who gives me strength.&rdquo;<br/>&#8212; Philippians 4:13</div>
+    </div>
+
+    <!-- GRACE -->
+    <div class="accord-item" id="accord-grace">
+      <div class="accord-head" onclick="toggleAccordion('grace')">
+        <div class="accord-left">
+          <div class="accord-name">Grace</div>
+          <div class="accord-tagline">Always free &mdash; a gift from God</div>
+        </div>
+        <div style="display:flex;align-items:center;">
+          <div class="accord-right"><div class="accord-price">Free</div><div class="accord-period">always</div></div>
+          <div class="accord-chevron">&#8964;</div>
+        </div>
       </div>
-      <button class="plan-btn" style="background:linear-gradient(135deg,#c8900a,#3d1f00);color:#f5c830;border:none;font-size:17px;padding:18px;width:100%;border-radius:50px;cursor:pointer;" onclick="alert('Subscription coming soon! Thank you for your interest.')">Start My Free 10 Days &#10022;</button>
-      <div style="margin-top:14px;font-size:12px;font-weight:600;color:rgba(0,0,0,0.5);">No credit card required during trial. Cancel anytime.</div>
+      <div class="accord-body">
+        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>1 personal prayer per day</div>
+        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Share &amp; request prayer via text and email</div>
+        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Life moments &amp; milestones</div>
+        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Day-of moments reminder</div>
+        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Curated Rise &amp; Rest content</div>
+        <div class="accord-feat locked"><span class="accord-feat-no">&#10007;</span>Voice audio</div>
+        <div class="accord-feat locked"><span class="accord-feat-no">&#10007;</span>Saved prayers</div>
+        <div class="accord-feat locked"><span class="accord-feat-no">&#10007;</span>Prayer Circle</div>
+        <button class="accord-cta current" id="graceBtn">Your Current Plan</button>
+      </div>
     </div>
-    <div style="background:rgba(255,255,255,0.35);border-radius:16px;padding:16px;text-align:center;">
-      <div style="font-size:13px;font-weight:600;color:rgba(0,0,0,0.55);margin-bottom:4px;">Need more prayers?</div>
-      <div style="font-size:12px;color:rgba(0,0,0,0.45);margin-bottom:12px;">Add 15 more prayers anytime for just $0.99</div>
-      <button onclick="alert('Prayer packs coming soon!')" style="padding:10px 24px;background:rgba(30,15,0,0.7);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:13px;border-radius:50px;cursor:pointer;">Buy 10 More Prayers &#8212; $0.99</button>
+
+    <!-- PHILIPPIANS 4:13 -->
+    <div class="accord-item" id="accord-philippians">
+      <div class="accord-head" onclick="toggleAccordion('philippians')">
+        <div class="accord-left">
+          <div class="accord-name">Philippians 4:13</div>
+          <div class="accord-tagline">Strength for the journey</div>
+        </div>
+        <div style="display:flex;align-items:center;">
+          <div class="accord-right"><div class="accord-price">$4.13<span style="font-size:12px;font-weight:400;">/mo</span></div><div class="accord-period">or $41.30/yr</div></div>
+          <div class="accord-chevron">&#8964;</div>
+        </div>
+      </div>
+      <div class="accord-body">
+        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>5 personal prayers per day</div>
+        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Live voice audio for every prayer</div>
+        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Send &amp; request prayer to someone you love</div>
+        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Prayer Circle</div>
+        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Save up to 30 prayers</div>
+        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Expanded Rise &amp; Rest &mdash; all voices &amp; ambients</div>
+        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Customizable moments reminders (7 days, 1 day, day of)</div>
+        <button class="accord-cta gold" id="philippiansBtn" onclick="selectPlan('philippians')">Choose Philippians 4:13</button>
+        <div class="accord-fine">10-day free trial &bull; cancel anytime</div>
+      </div>
     </div>
-    <div style="margin-top:20px;font-family:'Playfair Display',serif;font-style:italic;font-size:13px;color:rgba(0,0,0,0.5);text-align:center;">&ldquo;For where your treasure is, there your heart will be also.&rdquo;<br/>&#8212; Matthew 6:21</div>
+
+    <!-- JOHN 9:25 -->
+    <div class="accord-item" id="accord-john">
+      <div class="accord-head" onclick="toggleAccordion('john')">
+        <div class="accord-left">
+          <div class="accord-name">John 9:25</div>
+          <div class="accord-tagline">Once blind, now I see</div>
+        </div>
+        <div style="display:flex;align-items:center;">
+          <div class="accord-right"><div class="accord-price">$9.25<span style="font-size:12px;font-weight:400;">/mo</span></div><div class="accord-period">or $92.50/yr</div></div>
+          <div class="accord-chevron">&#8964;</div>
+        </div>
+      </div>
+      <div class="accord-body">
+        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>15 personal prayers per day</div>
+        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>All available voices</div>
+        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Send &amp; request prayer to someone you love</div>
+        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Prayer Circle</div>
+        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Unlimited saved prayers</div>
+        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Full Rise &amp; Rest &mdash; preview &amp; choose all content</div>
+        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Customizable moments reminders (7 days, 1 day, day of)</div>
+        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Early access to new features</div>
+        <button class="accord-cta dark" id="johnBtn" onclick="selectPlan('john')">Choose John 9:25</button>
+        <div class="accord-fine">10-day free trial &bull; cancel anytime</div>
+      </div>
+    </div>
+
+    <div style="margin-top:16px;text-align:center;font-size:12px;color:rgba(0,0,0,0.45);">New accounts begin with a 10-day full-access trial. No credit card required.</div>
   </div>
 </div>
 
@@ -979,6 +1064,8 @@ async function loadUserData() {
     if (profile) {
       userName = profile.name || (currentUser.user_metadata && currentUser.user_metadata.name) || userName || 'Friend';
       defaultGender = profile.gender || 'female';
+      userTier = profile.tier || 'grace';
+      trialEndsAt = profile.trial_ends_at || null;
       localStorage.setItem('emf_gender', defaultGender);
     } else if (currentUser.user_metadata && currentUser.user_metadata.name) {
       userName = currentUser.user_metadata.name;
@@ -988,20 +1075,22 @@ async function loadUserData() {
     saveGenderPref(defaultGender);
 
     var today = new Date().toISOString().slice(0, 10);
+    var dailyLimit = getDailyLimit();
     var counters = await supaGet('/rest/v1/prayer_counters?user_id=eq.' + uid + '&limit=1');
     var counter = Array.isArray(counters) ? counters[0] : null;
     if (counter) {
       if (counter.reset_date !== today) {
-        prayersLeft = 15;
+        prayersLeft = dailyLimit;
         await supaPost('/rest/v1/prayer_counters?user_id=eq.' + uid, { count: 0, reset_date: today }, 'PATCH');
       } else {
-        prayersLeft = Math.max(0, 15 - counter.count);
+        prayersLeft = Math.max(0, dailyLimit - counter.count);
       }
     } else {
-      prayersLeft = 15;
+      prayersLeft = dailyLimit;
       await supaPost('/rest/v1/prayer_counters', { user_id: uid, count: 0, reset_date: today });
     }
     updateCounterUI();
+    updateTrialBar();
 
     var mData = await supaGet('/rest/v1/moments?user_id=eq.' + uid + '&order=created_at');
     if (Array.isArray(mData) && mData.length) {
@@ -1027,8 +1116,30 @@ async function loadUserData() {
 }
 
 function updateCounterUI() {
+  var limit = getDailyLimit();
   var bar = document.getElementById('prayersRemainingBar');
-  if (bar) bar.innerHTML = prayersLeft + ' of 15 prayers remaining today &#8212; <span onclick="showScreen(\'pricingScreen\')" style="cursor:pointer;text-decoration:underline;color:#3d1f00;font-weight:700;">get more for $0.99</span>';
+  if (bar) {
+    if (prayersLeft <= 0) {
+      bar.innerHTML = 'Daily limit reached &mdash; <span onclick="showScreen(\'pricingScreen\')" style="cursor:pointer;text-decoration:underline;color:#3d1f00;font-weight:700;">upgrade your plan</span>';
+    } else {
+      bar.innerHTML = prayersLeft + ' of ' + limit + ' prayers remaining today';
+      if (!canUseTier('philippians')) {
+        bar.innerHTML += ' &mdash; <span onclick="showScreen(\'pricingScreen\')" style="cursor:pointer;text-decoration:underline;color:#3d1f00;font-weight:700;">upgrade for more</span>';
+      }
+    }
+  }
+}
+function updateTrialBar() {
+  var bar = document.getElementById('trialBar');
+  if (!bar) return;
+  if (isTrialing()) {
+    var days = trialDaysLeft();
+    bar.style.display = 'block';
+    bar.innerHTML = '<span onclick="showScreen(\'pricingScreen\')" style="background:rgba(245,200,48,0.3);border:1px solid rgba(200,144,10,0.4);border-radius:50px;padding:5px 16px;font-size:11px;font-weight:700;color:#3d1f00;letter-spacing:0.5px;cursor:pointer;display:inline-block;">' +
+      '&#9733; Free Trial &mdash; ' + days + ' day' + (days === 1 ? '' : 's') + ' remaining</span>';
+  } else {
+    bar.style.display = 'none';
+  }
 }
 
 // ── AUTH ──────────────────────────────────────────────────────────────────────
@@ -1107,7 +1218,10 @@ async function authSignUp() {
       userName = name;
       prayersLeft = 15;
       // Insert profile and counter in background — don't block navigation
-      supaPost('/rest/v1/profiles', { id: userId, name: name, email: email, gender: 'female' }).catch(function(){});
+      var trialEnd = new Date(); trialEnd.setDate(trialEnd.getDate() + 10);
+      var trialEndStr = trialEnd.toISOString().slice(0, 10);
+      trialEndsAt = trialEndStr; userTier = 'grace';
+      supaPost('/rest/v1/profiles', { id: userId, name: name, email: email, gender: 'female', tier: 'grace', trial_ends_at: trialEndStr }).catch(function(){});
       supaPost('/rest/v1/prayer_counters', { user_id: userId, count: 0, reset_date: today }).catch(function(){});
       var ni = document.getElementById('userNameInput'); if (ni) ni.value = userName.split(' ')[0];
       showScreen('nameScreen');
@@ -1190,6 +1304,59 @@ async function dbSaveRestPrefs(prefs) {
 // ========== STATE ==========
 var userName = 'Friend';
 var prayersLeft = 15;
+var userTier = 'grace';       // 'grace' | 'philippians' | 'john'
+var trialEndsAt = null;       // ISO date string e.g. '2026-05-30'
+
+// ========== TIER HELPERS ==========
+function isTrialing() {
+  if (!trialEndsAt) return false;
+  return new Date(trialEndsAt) > new Date();
+}
+function trialDaysLeft() {
+  if (!trialEndsAt) return 0;
+  return Math.max(0, Math.ceil((new Date(trialEndsAt) - new Date()) / 86400000));
+}
+function getEffectiveTier() {
+  if (isTrialing()) return 'john';
+  return userTier;
+}
+function getDailyLimit() {
+  var t = getEffectiveTier();
+  if (t === 'john') return 15;
+  if (t === 'philippians') return 5;
+  return 1;
+}
+function canUseTier(min) {
+  var rank = { grace: 0, philippians: 1, john: 2 };
+  return (rank[getEffectiveTier()] || 0) >= (rank[min] || 0);
+}
+function getSavedLimit() {
+  var t = getEffectiveTier();
+  if (t === 'john') return Infinity;
+  if (t === 'philippians') return 30;
+  return 0;
+}
+function showUpgradeWall(anchorId, feature, minTier) {
+  var existing = document.getElementById('upgradeWall');
+  if (existing) existing.remove();
+  var tierLabel = minTier === 'philippians' ? 'Philippians 4:13' : 'John 9:25';
+  var verses = {
+    listen: { icon: '&#127925;', title: 'Hear Your Prayer Spoken', verse: '&ldquo;Faith comes from hearing.&rdquo; &mdash; Romans 10:17' },
+    save:   { icon: '&#128214;', title: 'Save Your Prayers', verse: '&ldquo;Write the vision; make it plain.&rdquo; &mdash; Habakkuk 2:2' },
+    circle: { icon: '&#128336;', title: 'Join the Prayer Circle', verse: '&ldquo;Where two or three gather in my name, there am I.&rdquo; &mdash; Matthew 18:20' },
+    limit:  { icon: '&#9997;&#65039;', title: 'Daily Prayer Limit Reached', verse: '&ldquo;I can do all this through him who gives me strength.&rdquo; &mdash; Philippians 4:13' }
+  };
+  var v = verses[feature] || verses.limit;
+  var wall = document.createElement('div');
+  wall.id = 'upgradeWall';
+  wall.className = 'upgrade-wall';
+  wall.innerHTML = '<div class="upgrade-wall-icon">' + v.icon + '</div>' +
+    '<div class="upgrade-wall-title">' + v.title + '</div>' +
+    '<div class="upgrade-wall-verse">' + v.verse + '</div>' +
+    '<button class="upgrade-wall-btn" onclick="showScreen(\'pricingScreen\')">Unlock with ' + tierLabel + ' &#10022;</button>';
+  var anchor = document.getElementById(anchorId);
+  if (anchor) anchor.parentNode.insertBefore(wall, anchor.nextSibling);
+}
 
 var moments = [{name: 'Remy', date: '1999-07-13', category: 'Birthday', note: ''}];
 var savedPrayers = [];
@@ -1305,6 +1472,38 @@ function getVerseWindow(h) {
   return 'night';
 }
 
+// ========== PRICING ACCORDION ==========
+function toggleAccordion(tier) {
+  ['grace','philippians','john'].forEach(function(t) {
+    var el = document.getElementById('accord-' + t);
+    if (el) el.classList.toggle('open', t === tier);
+  });
+}
+function selectPlan(tier) {
+  alert('Subscription payments coming soon! Thank you for your interest in ' + (tier === 'philippians' ? 'Philippians 4:13' : 'John 9:25') + '.');
+}
+function updatePricingButtons() {
+  var effective = getEffectiveTier();
+  var tiers = ['grace','philippians','john'];
+  tiers.forEach(function(t) {
+    var btn = document.getElementById(t + 'Btn');
+    if (!btn) return;
+    if (t === userTier && !isTrialing()) {
+      btn.textContent = 'Your Current Plan';
+      btn.className = 'accord-cta current';
+      btn.onclick = null;
+    } else if (t === effective && isTrialing()) {
+      btn.textContent = (t === 'grace') ? 'Your Plan After Trial' : 'Active (Trial)';
+      btn.className = 'accord-cta current';
+      btn.onclick = null;
+    } else {
+      if (t === 'grace') { btn.textContent = 'Downgrade to Grace'; btn.className = 'accord-cta dark'; btn.onclick = function(){ selectPlan('grace'); }; }
+      else if (t === 'philippians') { btn.textContent = 'Choose Philippians 4:13'; btn.className = 'accord-cta gold'; btn.onclick = function(){ selectPlan('philippians'); }; }
+      else { btn.textContent = 'Choose John 9:25'; btn.className = 'accord-cta dark'; btn.onclick = function(){ selectPlan('john'); }; }
+    }
+  });
+}
+
 // ========== NAVIGATION ==========
 var navHistory = [];
 var noHistoryScreens = ['homeScreen','loginScreen','signupScreen','nameScreen','notifyScreen','splashScreen','pricingScreen'];
@@ -1325,20 +1524,40 @@ function showScreen(id, isBack) {
   if (id === 'loginScreen') { var le = document.getElementById('loginError'); if (le) { le.textContent = ''; le.style.display = 'none'; } var lb = document.getElementById('loginBtn'); if (lb) { lb.disabled = false; lb.textContent = 'SIGN IN'; } }
   if (id === 'signupScreen') { var se = document.getElementById('signupError'); if (se) { se.textContent = ''; se.style.display = 'none'; } var sb = document.getElementById('signupBtn'); if (sb) { sb.disabled = false; sb.textContent = 'CREATE ACCOUNT'; } }
   if (id === 'homeScreen') { var hn = document.getElementById('homeName'); if (hn) hn.textContent = userName.split(' ')[0]; }
+  if (id === 'circleScreen' && !canUseTier('philippians')) {
+    showUpgradeWall('connectScreen', 'circle', 'philippians');
+    id = 'connectScreen';
+  }
   if (id === 'settingsScreen') {
     document.getElementById('settingsName').textContent = userName;
     var emailEl = document.getElementById('settingsEmail');
     if (emailEl && currentUser) emailEl.textContent = currentUser.email;
     saveGenderPref(defaultGender);
-    var used = 15 - prayersLeft;
-    document.getElementById('settingsPrayerCount').textContent = used + ' of 15 prayers used today';
-    document.getElementById('settingsPrayerBar').style.width = (used * 10) + '%';
+    var limit = getDailyLimit();
+    var used = limit - prayersLeft;
+    document.getElementById('settingsPrayerCount').textContent = used + ' of ' + limit + ' prayers used today';
+    document.getElementById('settingsPrayerBar').style.width = Math.min(100, (used / limit) * 100) + '%';
     document.getElementById('notifScripture').checked = localStorage.getItem('emf_notif_scripture') !== '0';
     document.getElementById('notifMoments').checked = localStorage.getItem('emf_notif_moments') === '1';
+    var tierNames = { grace: 'Grace (Free)', philippians: 'Philippians 4:13', john: 'John 9:25' };
+    var tierDescs = { grace: '1 prayer per day', philippians: '5 prayers per day · voice audio · Prayer Circle', john: '15 prayers per day · all voices · unlimited saves' };
+    var eff = getEffectiveTier();
+    var tnEl = document.getElementById('settingsTierName');
+    var tdEl = document.getElementById('settingsTierDesc');
+    if (tnEl) tnEl.textContent = isTrialing() ? 'John 9:25 (Trial — ' + trialDaysLeft() + ' days left)' : (tierNames[userTier] || 'Grace');
+    if (tdEl) tdEl.textContent = tierDescs[eff] || '';
+    var upBtn = document.getElementById('settingsUpgradeBtn');
+    if (upBtn) upBtn.textContent = canUseTier('john') && !isTrialing() ? 'Manage Plan' : 'View Plans';
+    var scEl = document.getElementById('settingsSavedCount');
+    if (scEl) { var lim = getSavedLimit(); scEl.textContent = savedPrayers.length + ' prayer' + (savedPrayers.length !== 1 ? 's' : '') + ' saved' + (lim !== Infinity ? ' (max ' + lim + ')' : ''); }
   }
   if (id === 'sendPrayerScreen') {
     var el = document.getElementById('sendPrayersRemaining');
-    if (el) el.textContent = prayersLeft + ' of 15 prayers remaining today';
+    if (el) el.textContent = prayersLeft + ' of ' + getDailyLimit() + ' prayers remaining today';
+  }
+  if (id === 'pricingScreen') {
+    toggleAccordion(userTier);
+    updatePricingButtons();
   }
   var screens = document.querySelectorAll('.screen');
   for (var i = 0; i < screens.length; i++) screens[i].classList.remove('active');
@@ -1405,7 +1624,11 @@ async function setTimeGreeting() {
 
 // ========== PRAYER GENERATION ==========
 async function generatePrayer() {
-  if (prayersLeft <= 0) { showScreen('pricingScreen'); return; }
+  if (prayersLeft <= 0) {
+    showUpgradeWall('prayerResult', 'limit', 'philippians');
+    document.getElementById('prayerResult').classList.remove('visible');
+    return;
+  }
   var forWhoRaw = document.getElementById('prayerFor').value.trim();
   var situation = document.getElementById('prayerSituation').value.trim();
   var tone = document.getElementById('prayerTone').value;
@@ -1488,8 +1711,18 @@ function fallbackCopy(text, cb) {
 }
 
 async function savePrayer() {
-  var s = document.getElementById('scriptureText').textContent;
-  var p = document.getElementById('prayerText').textContent;
+  if (!canUseTier('philippians')) {
+    showUpgradeWall('prayerActions', 'save', 'philippians');
+    return;
+  }
+  var limit = getSavedLimit();
+  if (savedPrayers.length >= limit) {
+    alert('You\u2019ve reached your ' + limit + '-prayer save limit. Upgrade to John 9:25 for unlimited saved prayers.');
+    return;
+  }
+  var sEl = document.getElementById('scriptureText');
+  var s = sEl ? sEl.textContent.trim() : '';
+  var p = (document.getElementById('prayerText') || {}).textContent || '';
   var f = document.getElementById('prayerFor').value.trim();
   var tone = document.getElementById('prayerTone') ? document.getElementById('prayerTone').value : '';
   if (!p) { alert('Generate a prayer first!'); return; }
@@ -1497,7 +1730,8 @@ async function savePrayer() {
   var dbRow = await dbSavePrayer(f, p, s, tone);
   if (dbRow) entry.id = dbRow.id;
   savedPrayers.unshift(entry);
-  alert('Prayer saved to your journal. \u2728');
+  var toast = document.getElementById('copyToast');
+  if (toast) { toast.textContent = 'Prayer saved \u2728'; toast.style.opacity = '1'; setTimeout(function(){ toast.style.opacity = '0'; setTimeout(function(){ toast.textContent = 'Prayer copied'; }, 400); }, 2000); }
 }
 
 function newPrayer() {
@@ -1516,6 +1750,10 @@ async function toggleListen() {
     isPlaying = false;
     hidePrayerAudioBar();
     resetListenButton();
+    return;
+  }
+  if (!canUseTier('philippians')) {
+    showUpgradeWall('listenBtn', 'listen', 'philippians');
     return;
   }
   var prayer = document.getElementById('prayerText').textContent;

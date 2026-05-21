@@ -9,9 +9,15 @@ create table if not exists public.profiles (
   name text,
   email text,
   gender text default 'female',
+  tier text default 'grace' check (tier in ('grace', 'philippians', 'john')),
+  trial_ends_at date default (current_date + interval '10 days'),
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );
+
+-- Add tier columns to existing installs (safe to run multiple times)
+alter table public.profiles add column if not exists tier text default 'grace' check (tier in ('grace', 'philippians', 'john'));
+alter table public.profiles add column if not exists trial_ends_at date default (current_date + interval '10 days');
 alter table public.profiles enable row level security;
 -- Drop old single policy if it exists
 drop policy if exists "profiles_all" on public.profiles;
