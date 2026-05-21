@@ -136,8 +136,9 @@ body{background:#1a1a1a;display:flex;justify-content:center;align-items:flex-sta
 
 .prayer-text{font-size:15px;color:#111111;line-height:1.8;font-weight:600;background:rgba(255,255,255,0.6);padding:16px;border-radius:16px;margin-bottom:16px;}
 .prayer-actions{display:flex;gap:8px;width:100%;}
-.prayer-action-btn{flex:1;padding:13px 4px;background:rgba(30,15,0,0.75);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:12px;letter-spacing:1.5px;border-radius:12px;cursor:pointer;transition:background 0.15s;}
+.prayer-action-btn{flex:1;padding:13px 4px;background:rgba(30,15,0,0.75);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:12px;letter-spacing:1.5px;border-radius:12px;cursor:pointer;transition:background 0.15s,transform 0.1s;touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
 .prayer-action-btn:hover{background:rgba(30,15,0,0.65);}
+.prayer-action-btn:active{background:rgba(245,200,48,0.3);color:#fff;transform:scale(0.95);}
 .copy-toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(30,15,0,0.88);color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:13px;letter-spacing:1px;padding:10px 24px;border-radius:50px;pointer-events:none;opacity:0;transition:opacity 0.3s;z-index:9999;}
 .aud-btn{background:rgba(255,255,255,0.4);color:#111111;transition:background 0.2s ease;}.aud-btn:hover{background:rgba(255,255,255,0.6);}.aud-btn.selected{background:rgba(255,255,255,0.65);font-weight:700;}
 .action-btn{flex:1;min-width:80px;padding:12px 8px;background:rgba(255,255,255,0.35);border:1px solid rgba(61,31,0,0.2);color:#111111;font-family:'Lato',sans-serif;font-weight:600;font-size:13px;border-radius:50px;cursor:pointer;}
@@ -1473,10 +1474,16 @@ function copyPrayer() {
 function fallbackCopy(text, cb) {
   var ta = document.createElement('textarea');
   ta.value = text;
-  ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0;';
+  ta.contentEditable = true;
+  ta.readOnly = false;
+  ta.style.cssText = 'position:fixed;top:50%;left:50%;width:1px;height:1px;padding:0;border:none;outline:none;opacity:0;font-size:16px;';
   document.body.appendChild(ta);
-  ta.focus();
-  ta.setSelectionRange(0, text.length);
+  var range = document.createRange();
+  range.selectNodeContents(ta);
+  var sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(range);
+  ta.setSelectionRange(0, 99999);
   try { document.execCommand('copy'); if (cb) cb(); } catch(e) {}
   document.body.removeChild(ta);
 }
