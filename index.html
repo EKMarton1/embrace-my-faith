@@ -1474,15 +1474,10 @@ function copyPrayer() {
 function fallbackCopy(text, cb) {
   var ta = document.createElement('textarea');
   ta.value = text;
-  ta.contentEditable = true;
-  ta.readOnly = false;
-  ta.style.cssText = 'position:fixed;top:50%;left:50%;width:1px;height:1px;padding:0;border:none;outline:none;opacity:0;font-size:16px;';
+  ta.style.cssText = 'position:fixed;top:0;left:0;width:2em;height:2em;padding:0;border:none;outline:none;background:transparent;font-size:16px;opacity:0;';
   document.body.appendChild(ta);
-  var range = document.createRange();
-  range.selectNodeContents(ta);
-  var sel = window.getSelection();
-  sel.removeAllRanges();
-  sel.addRange(range);
+  ta.focus();
+  ta.select();
   ta.setSelectionRange(0, 99999);
   try { document.execCommand('copy'); if (cb) cb(); } catch(e) {}
   document.body.removeChild(ta);
