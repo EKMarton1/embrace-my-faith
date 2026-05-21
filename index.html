@@ -1412,7 +1412,7 @@ async function generatePrayer() {
   if (!situation) { alert('Please share what is on your heart.'); return; }
   // If user types "me", "myself", "I" — use their actual name
   var selfWords = ['me', 'myself', 'i', 'my', 'mine'];
-  var forWho = selfWords.indexOf(forWhoRaw.toLowerCase()) !== -1 ? userName : forWhoRaw;
+  var forWho = selfWords.indexOf(forWhoRaw.toLowerCase()) !== -1 ? userName.split(' ')[0] : forWhoRaw;
 
   document.getElementById('generateBtn').disabled = true;
   document.getElementById('prayerResult').classList.remove('visible');
