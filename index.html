@@ -138,6 +138,7 @@ body{background:#1a1a1a;display:flex;justify-content:center;align-items:flex-sta
 .prayer-actions{display:flex;gap:8px;width:100%;}
 .prayer-action-btn{flex:1;padding:13px 4px;background:rgba(30,15,0,0.75);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:12px;letter-spacing:1.5px;border-radius:12px;cursor:pointer;transition:background 0.15s;}
 .prayer-action-btn:hover{background:rgba(30,15,0,0.65);}
+.copy-toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(30,15,0,0.88);color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:13px;letter-spacing:1px;padding:10px 24px;border-radius:50px;pointer-events:none;opacity:0;transition:opacity 0.3s;z-index:9999;}
 .aud-btn{background:rgba(255,255,255,0.4);color:#111111;transition:background 0.2s ease;}.aud-btn:hover{background:rgba(255,255,255,0.6);}.aud-btn.selected{background:rgba(255,255,255,0.65);font-weight:700;}
 .action-btn{flex:1;min-width:80px;padding:12px 8px;background:rgba(255,255,255,0.35);border:1px solid rgba(61,31,0,0.2);color:#111111;font-family:'Lato',sans-serif;font-weight:600;font-size:13px;border-radius:50px;cursor:pointer;}
 
@@ -455,9 +456,9 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
       <div class="prayer-actions" id="prayerActions">
         <button class="prayer-action-btn" onclick="copyPrayer()">COPY</button>
         <button class="prayer-action-btn" onclick="savePrayer()">SAVE</button>
-        <button class="prayer-action-btn" onclick="showScreen('connectScreen')">SHARE</button>
         <button class="prayer-action-btn" onclick="newPrayer()">NEW</button>
       </div>
+      <div class="copy-toast" id="copyToast">Prayer copied</div>
     </div>
   </div>
 </div>
@@ -1458,7 +1459,11 @@ async function generatePrayer() {
 
 function copyPrayer() {
   var t = document.getElementById('scriptureText').textContent + '\n\n' + document.getElementById('prayerText').textContent;
-  navigator.clipboard && navigator.clipboard.writeText(t).then(function(){ alert('Prayer copied to clipboard!'); }).catch(function(){ alert('Prayer is ready to share!'); });
+  navigator.clipboard.writeText(t.trim()).then(function() {
+    var toast = document.getElementById('copyToast');
+    toast.style.opacity = '1';
+    setTimeout(function() { toast.style.opacity = '0'; }, 2000);
+  });
 }
 
 async function savePrayer() {
