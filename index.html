@@ -1446,8 +1446,7 @@ async function generatePrayer() {
     document.getElementById('prayerText').textContent = prayerText;
   } catch(e) {
     console.error('Prayer generation error:', e);
-    document.getElementById('scriptureText').textContent = '\u201cI can do all things through Christ which strengtheneth me.\u201d \u2014 Philippians 4:13 (KJV)';
-    document.getElementById('prayerText').textContent = 'Heavenly Father, we lift up ' + forWho + ' before You now, specifically bringing ' + situation + ' into Your presence. In Your perfect wisdom and love, guide every step and decision in this moment. Strengthen ' + forWho + ' with courage and clarity, and let Your peace that surpasses all understanding guard their heart. We trust that You are already working this together for good. In Jesus\u2019 name, Amen.';
+    document.getElementById('prayerText').textContent = '\u201cI can do all things through Christ which strengtheneth me.\u201d \u2014 Philippians 4:13 (KJV)\n\nHeavenly Father, we lift up ' + forWho + ' before You now, specifically bringing ' + situation + ' into Your presence. In Your perfect wisdom and love, guide every step and decision in this moment. Strengthen ' + forWho + ' with courage and clarity, and let Your peace that surpasses all understanding guard their heart. We trust that You are already working this together for good. In Jesus\u2019 name, Amen.';
   }
 
   prayersLeft--;
@@ -1459,7 +1458,12 @@ async function generatePrayer() {
 }
 
 function copyPrayer() {
-  var t = (document.getElementById('scriptureText').textContent + '\n\n' + document.getElementById('prayerText').textContent).trim();
+  var scriptureEl = document.getElementById('scriptureText');
+  var prayerEl = document.getElementById('prayerText');
+  var parts = [];
+  if (scriptureEl && scriptureEl.textContent.trim()) parts.push(scriptureEl.textContent.trim());
+  if (prayerEl && prayerEl.textContent.trim()) parts.push(prayerEl.textContent.trim());
+  var t = parts.join('\n\n');
   function showToast() {
     var toast = document.getElementById('copyToast');
     toast.style.opacity = '1';
