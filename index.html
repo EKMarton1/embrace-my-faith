@@ -725,15 +725,39 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
   <div class="screen-title-row"><button class="back-arrow-btn" onclick="goBack()">&#8592;</button><div class="screen-title">Send Prayer</div></div>
 </div>
   <div class="screen-body">
-    <div class="section-label" style="font-size:26.4px;">Pray for Someone</div>
-    <div class="section-sub">Enter who you&rsquo;re praying for and what&rsquo;s on their heart &mdash; we&rsquo;ll take you to craft a personal prayer to send to them.</div>
-    <label class="form-label">Who are you praying for?</label>
-    <input class="form-input" id="sendPrayerFor" type="text" placeholder="Name"/>
-    <label class="form-label">What do you want to pray over them?</label>
-    <textarea class="form-textarea" id="sendPrayerSituation" placeholder="Their situation, need, or a blessing you want to speak over them..." maxlength="150" oninput="document.getElementById('sendCharCount').textContent=this.value.length+'/150'"></textarea>
-    <div id="sendCharCount" style="text-align:right;font-size:12px;color:rgba(0,0,0,0.5);margin-top:4px;font-family:'Lato',sans-serif;">0/150</div>
-    <div id="sendPrayersRemaining" style="text-align:center;margin-top:16px;font-size:13px;color:rgba(0,0,0,0.65);"></div>
-    <button class="generate-btn" onclick="openSendPrayer()" style="margin-top:12px;">Craft Their Prayer</button>
+    <!-- FORM -->
+    <div id="sendPrayerForm">
+      <div class="section-label" style="font-size:26.4px;">Pray for Someone</div>
+      <div class="section-sub">Enter who you&rsquo;re praying for and we&rsquo;ll craft a prayer you can send to them.</div>
+      <label class="form-label">Who are you praying for?</label>
+      <input class="form-input" id="sendPrayerFor" type="text" placeholder="Name"/>
+      <label class="form-label">What do you want to pray over them?</label>
+      <textarea class="form-textarea" id="sendPrayerSituation" placeholder="Their situation, need, or a blessing you want to speak over them..." maxlength="150" oninput="document.getElementById('sendCharCount').textContent=this.value.length+'/150'"></textarea>
+      <div id="sendCharCount" style="text-align:right;font-size:12px;color:rgba(0,0,0,0.5);margin-top:4px;font-family:'Lato',sans-serif;">0/150</div>
+      <div id="sendPrayersRemaining" style="text-align:center;margin-top:16px;font-size:13px;color:rgba(0,0,0,0.65);"></div>
+      <button class="generate-btn" id="sendGenerateBtn" onclick="generateSendPrayer()" style="margin-top:12px;">Craft Their Prayer</button>
+    </div>
+
+    <!-- LOADING -->
+    <div id="sendLoadingWrap" style="display:none;text-align:center;padding:48px 0;">
+      <div class="loading-cross">&#10010;</div>
+      <div class="loading-text">Crafting their prayer...</div>
+    </div>
+
+    <!-- RESULT -->
+    <div id="sendPrayerResult" style="display:none;">
+      <div class="section-label" style="font-size:22px;margin-bottom:6px;" id="sendPrayerForLabel"></div>
+      <div style="background:rgba(255,255,255,0.55);border-radius:20px;padding:20px 18px;margin-bottom:18px;">
+        <div id="sendPrayerText" style="font-family:'Playfair Display',serif;font-size:15px;line-height:1.8;color:#1a0a00;white-space:pre-wrap;"></div>
+      </div>
+      <div class="section-label" style="font-size:15px;margin-bottom:10px;text-align:center;">Send this prayer</div>
+      <div style="display:flex;gap:10px;margin-bottom:10px;">
+        <button class="action-btn" style="flex:1;touch-action:manipulation;" onclick="sendPrayerViaText()">&#128172; Text</button>
+        <button class="action-btn" style="flex:1;touch-action:manipulation;" onclick="sendPrayerViaEmail()">&#9993; Email</button>
+        <button class="action-btn" style="flex:1;touch-action:manipulation;" id="sendCopyBtn" onclick="copySendPrayer()">&#128203; Copy</button>
+      </div>
+      <button class="generate-btn" onclick="resetSendPrayer()" style="margin-top:4px;">Craft Another Prayer</button>
+    </div>
   </div>
 </div>
 
@@ -2527,17 +2551,80 @@ function renderSavedPrayers() {
 
 
 // ── SEND A PRAYER JS ─────────────────────────────────────────────────────────
-function openSendPrayer() {
+async function generateSendPrayer() {
+  if (prayersLeft <= 0) { showTierModal('limit'); return; }
   var forWho = document.getElementById('sendPrayerFor').value.trim();
   var situation = document.getElementById('sendPrayerSituation').value.trim();
   if (!forWho) { alert('Please enter who you are praying for.'); return; }
   if (!situation) { alert('Please share what you want to pray over them.'); return; }
-  document.getElementById('prayerFor').value = forWho;
-  document.getElementById('prayerSituation').value = situation;
-  document.getElementById('prayerCharCount').textContent = situation.length + '/150';
-  document.getElementById('prayerResult').classList.remove('visible');
-  document.getElementById('loadingWrap').classList.remove('visible');
-  showScreen('prayerScreen');
+
+  document.getElementById('sendPrayerForm').style.display = 'none';
+  document.getElementById('sendPrayerResult').style.display = 'none';
+  document.getElementById('sendLoadingWrap').style.display = 'block';
+
+  var systemMsg = 'You are a heartfelt Christian prayer minister. Write prayers that are warm, specific, and concise. Hard limit: 180 words maximum.';
+  var userMsg = [
+    'Generate a personal prayer of 150-180 words for:',
+    'PERSON: ' + forWho,
+    'SITUATION: ' + situation,
+    'Use ' + forWho + "'s name naturally at least 3 times. Be specific. No filler phrases.",
+    'End with Amen. Respond ONLY with the prayer — no labels, no intro. Start with Heavenly Father or Dear Lord.'
+  ].join('\n');
+
+  var prayerText = '';
+  try {
+    var resp = await fetch('/api/claude', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ system: systemMsg, messages: [{ role: 'user', content: userMsg }], max_tokens: 350 })
+    });
+    var data = await resp.json();
+    prayerText = (data.content && data.content[0] && data.content[0].text) ? data.content[0].text.trim() : '';
+    if (!prayerText) throw new Error('empty');
+  } catch(e) {
+    prayerText = 'Heavenly Father, we lift up ' + forWho + ' before You now, bringing ' + situation + ' into Your presence. Guide every step, strengthen their heart, and let Your peace that surpasses all understanding guard them. We trust You are already working this together for good. In Jesus’ name, Amen.';
+  }
+
+  prayersLeft--;
+  dbDecrementCounter();
+  updateCounterUI();
+
+  document.getElementById('sendPrayerText').textContent = prayerText;
+  document.getElementById('sendPrayerForLabel').textContent = 'A prayer for ' + forWho;
+  document.getElementById('sendCopyBtn').textContent = '📋 Copy';
+  document.getElementById('sendLoadingWrap').style.display = 'none';
+  document.getElementById('sendPrayerResult').style.display = 'block';
+}
+
+function resetSendPrayer() {
+  document.getElementById('sendPrayerResult').style.display = 'none';
+  document.getElementById('sendLoadingWrap').style.display = 'none';
+  document.getElementById('sendPrayerForm').style.display = 'block';
+}
+
+function getSendPrayerBody() {
+  var name = document.getElementById('sendPrayerFor').value.trim() || 'you';
+  var text = document.getElementById('sendPrayerText').textContent.trim();
+  return 'I wanted to send you this prayer:\n\n' + text + '\n\nSent with love through Embrace My Faith — embracemyfaith.com';
+}
+
+function sendPrayerViaText() {
+  window.location.href = 'sms:?body=' + encodeURIComponent(getSendPrayerBody());
+}
+
+function sendPrayerViaEmail() {
+  var name = document.getElementById('sendPrayerFor').value.trim() || 'you';
+  var subject = 'A prayer for ' + name;
+  window.location.href = 'mailto:?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(getSendPrayerBody());
+}
+
+function copySendPrayer() {
+  var text = getSendPrayerBody();
+  var btn = document.getElementById('sendCopyBtn');
+  function showDone() { btn.textContent = 'Copied ✓'; setTimeout(function(){ btn.textContent = '📋 Copy'; }, 2000); }
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(showDone).catch(function(){ fallbackCopy(text, showDone); });
+  } else { fallbackCopy(text, showDone); }
 }
 
 // ========== UTILITIES ==========
