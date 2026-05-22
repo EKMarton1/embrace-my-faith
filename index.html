@@ -1495,9 +1495,11 @@ function closeTierModal() {
 
 // ========== PRICING ACCORDION ==========
 function toggleAccordion(tier) {
+  var clicked = document.getElementById('accord-' + tier);
+  var isOpen = clicked && clicked.classList.contains('open');
   ['grace','devotion','divine'].forEach(function(t) {
     var el = document.getElementById('accord-' + t);
-    if (el) el.classList.toggle('open', t === tier);
+    if (el) el.classList.toggle('open', !isOpen && t === tier);
   });
 }
 function selectPlan(tier) {
