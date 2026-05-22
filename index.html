@@ -459,7 +459,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
     <div class="prayer-result" id="prayerResult">
       <div class="result-label">Your Personal Prayer</div>
       <div class="prayer-text" id="prayerText"></div>
-      <div style="display:flex;gap:10px;margin-bottom:14px;align-items:center;">
+      <div id="voiceRow" style="display:flex;gap:10px;margin-bottom:14px;align-items:center;">
         <span style="font-size:12px;font-weight:700;color:rgba(0,0,0,0.6);letter-spacing:1px;text-transform:uppercase;">Voice:</span>
         <button class="action-btn" id="vbFemale" onclick="selectVoiceGender('female')" style="background:rgba(30,15,0,0.75);color:#f5c830;flex:unset;padding:10px 24px;font-size:14px;">Female</button>
         <button class="action-btn" id="vbMale" onclick="selectVoiceGender('male')" style="background:rgba(255,255,255,0.4);color:#111;flex:unset;padding:10px 24px;font-size:14px;">Male</button>
@@ -474,7 +474,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
       </div>
       <div class="prayer-actions" id="prayerActions">
         <button class="prayer-action-btn" onclick="copyPrayer()">COPY</button>
-        <button class="prayer-action-btn" onclick="savePrayer()">SAVE</button>
+        <button class="prayer-action-btn" id="savePrayerBtn" onclick="savePrayer()">SAVE</button>
         <button class="prayer-action-btn" onclick="newPrayer()">NEW</button>
       </div>
       <div class="copy-toast" id="copyToast">Prayer copied</div>
@@ -933,9 +933,6 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
         <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Life moments &amp; milestones</div>
         <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Day-of moments reminder</div>
         <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Curated Rise &amp; Rest content</div>
-        <div class="accord-feat locked"><span class="accord-feat-no">&#10007;</span>Voice audio</div>
-        <div class="accord-feat locked"><span class="accord-feat-no">&#10007;</span>Saved prayers</div>
-        <div class="accord-feat locked"><span class="accord-feat-no">&#10007;</span>Prayer Circle</div>
         <button class="accord-cta current" id="graceBtn">Your Current Plan</button>
       </div>
     </div>
@@ -1120,12 +1117,9 @@ function updateCounterUI() {
   var bar = document.getElementById('prayersRemainingBar');
   if (bar) {
     if (prayersLeft <= 0) {
-      bar.innerHTML = 'Daily limit reached &mdash; <span onclick="showScreen(\'pricingScreen\')" style="cursor:pointer;text-decoration:underline;color:#3d1f00;font-weight:700;">upgrade your plan</span>';
+      bar.innerHTML = prayersLeft + ' of ' + limit + ' prayers today &mdash; <span onclick="showScreen(\'pricingScreen\')" style="cursor:pointer;text-decoration:underline;color:#3d1f00;font-weight:700;">See plans</span>';
     } else {
       bar.innerHTML = prayersLeft + ' of ' + limit + ' prayers remaining today';
-      if (!canUseTier('philippians')) {
-        bar.innerHTML += ' &mdash; <span onclick="showScreen(\'pricingScreen\')" style="cursor:pointer;text-decoration:underline;color:#3d1f00;font-weight:700;">upgrade for more</span>';
-      }
     }
   }
 }
@@ -1344,7 +1338,7 @@ function showUpgradeWall(anchorId, feature, minTier) {
     listen: { icon: '&#127925;', title: 'Hear Your Prayer Spoken', verse: '&ldquo;Faith comes from hearing.&rdquo; &mdash; Romans 10:17' },
     save:   { icon: '&#128214;', title: 'Save Your Prayers', verse: '&ldquo;Write the vision; make it plain.&rdquo; &mdash; Habakkuk 2:2' },
     circle: { icon: '&#128336;', title: 'Join the Prayer Circle', verse: '&ldquo;Where two or three gather in my name, there am I.&rdquo; &mdash; Matthew 18:20' },
-    limit:  { icon: '&#9997;&#65039;', title: 'Daily Prayer Limit Reached', verse: '&ldquo;I can do all this through him who gives me strength.&rdquo; &mdash; Philippians 4:13' }
+    limit:  { icon: '&#9997;&#65039;', title: "You’ve used your prayer for today.", verse: '&ldquo;I can do all things through Christ who strengthens me.&rdquo; &mdash; Philippians 4:13' }
   };
   var v = verses[feature] || verses.limit;
   var wall = document.createElement('div');
@@ -1353,7 +1347,7 @@ function showUpgradeWall(anchorId, feature, minTier) {
   wall.innerHTML = '<div class="upgrade-wall-icon">' + v.icon + '</div>' +
     '<div class="upgrade-wall-title">' + v.title + '</div>' +
     '<div class="upgrade-wall-verse">' + v.verse + '</div>' +
-    '<button class="upgrade-wall-btn" onclick="showScreen(\'pricingScreen\')">Unlock with ' + tierLabel + ' &#10022;</button>';
+    '<button class="upgrade-wall-btn" onclick="showScreen(\'pricingScreen\')">See plans</button>';
   var anchor = document.getElementById(anchorId);
   if (anchor) anchor.parentNode.insertBefore(wall, anchor.nextSibling);
 }
@@ -1483,23 +1477,19 @@ function selectPlan(tier) {
   alert('Subscription payments coming soon! Thank you for your interest in ' + (tier === 'philippians' ? 'Philippians 4:13' : 'John 9:25') + '.');
 }
 function updatePricingButtons() {
-  var effective = getEffectiveTier();
   var tiers = ['grace','philippians','john'];
   tiers.forEach(function(t) {
     var btn = document.getElementById(t + 'Btn');
     if (!btn) return;
-    if (t === userTier && !isTrialing()) {
-      btn.textContent = 'Your Current Plan';
-      btn.className = 'accord-cta current';
-      btn.onclick = null;
-    } else if (t === effective && isTrialing()) {
-      btn.textContent = (t === 'grace') ? 'Your Plan After Trial' : 'Active (Trial)';
+    var isCurrent = (t === userTier && !isTrialing()) || (t === 'john' && isTrialing());
+    if (isCurrent) {
+      btn.textContent = 'Current Plan';
       btn.className = 'accord-cta current';
       btn.onclick = null;
     } else {
-      if (t === 'grace') { btn.textContent = 'Downgrade to Grace'; btn.className = 'accord-cta dark'; btn.onclick = function(){ selectPlan('grace'); }; }
-      else if (t === 'philippians') { btn.textContent = 'Choose Philippians 4:13'; btn.className = 'accord-cta gold'; btn.onclick = function(){ selectPlan('philippians'); }; }
-      else { btn.textContent = 'Choose John 9:25'; btn.className = 'accord-cta dark'; btn.onclick = function(){ selectPlan('john'); }; }
+      btn.textContent = 'Select';
+      btn.className = t === 'philippians' ? 'accord-cta gold' : 'accord-cta dark';
+      btn.onclick = (function(tier){ return function(){ selectPlan(tier); }; })(t);
     }
   });
 }
@@ -1566,6 +1556,7 @@ function showScreen(id, isBack) {
   window.scrollTo(0, 0);
   if (id === 'savedScreen') renderSavedPrayers();
   if (id === 'momentsScreen') renderMoments();
+  if (id === 'riseScreen' || id === 'restScreen') applyTierToScreen(id);
   // Circle polling
   clearInterval(circlePollingTimer); clearInterval(prayerReqPollingTimer);
   if (id === 'circleScreen') {
@@ -1678,6 +1669,52 @@ async function generatePrayer() {
   document.getElementById('loadingWrap').classList.remove('visible');
   document.getElementById('prayerResult').classList.add('visible');
   document.getElementById('generateBtn').disabled = false;
+  applyTierToGeneratedPrayer();
+}
+
+function applyTierToScreen(id) {
+  var grace = !canUseTier('philippians');
+  if (id === 'riseScreen' || id === 'restScreen') {
+    var prefix = id === 'riseScreen' ? 'rise' : 'rest';
+    var opts = document.getElementById(prefix + 'Options');
+    var femaleBtn = document.getElementById(prefix + 'Female');
+    var voiceDiv = femaleBtn ? femaleBtn.parentNode : null;
+    var voiceLabel = voiceDiv ? voiceDiv.previousElementSibling : null;
+    var contentLabel = opts ? opts.previousElementSibling : null;
+    var sliders = document.querySelectorAll('#' + id + ' .slider-row');
+    if (opts) opts.style.display = grace ? 'none' : '';
+    if (voiceDiv) voiceDiv.style.display = grace ? 'none' : '';
+    if (voiceLabel) voiceLabel.style.display = grace ? 'none' : '';
+    if (contentLabel) contentLabel.style.display = grace ? 'none' : '';
+    sliders.forEach(function(s) { s.style.display = grace ? 'none' : ''; });
+    if (id === 'restScreen') {
+      var sound = document.getElementById('restSound');
+      var soundLabel = sound ? sound.previousElementSibling : null;
+      if (grace && sound) {
+        sound.value = 'https://fubmjytqfucnudpupynw.supabase.co/storage/v1/object/public/audio/Rain.mp3';
+        sound.style.display = 'none';
+        if (soundLabel) soundLabel.style.display = 'none';
+      } else if (sound) {
+        sound.style.display = '';
+        if (soundLabel) soundLabel.style.display = '';
+      }
+    }
+    if (id === 'riseScreen') {
+      document.getElementById('worshipSongList').style.display = 'none';
+    }
+  }
+}
+
+function applyTierToGeneratedPrayer() {
+  var allowed = canUseTier('philippians');
+  var voiceRow = document.getElementById('voiceRow');
+  var listenBtn = document.getElementById('listenBtn');
+  var audioBar = document.getElementById('prayerAudioBar');
+  var saveBtn = document.getElementById('savePrayerBtn');
+  if (voiceRow) voiceRow.style.display = allowed ? 'flex' : 'none';
+  if (listenBtn) listenBtn.style.display = allowed ? '' : 'none';
+  if (audioBar) audioBar.style.display = 'none';
+  if (saveBtn) saveBtn.style.display = allowed ? '' : 'none';
 }
 
 function copyPrayer() {
