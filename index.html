@@ -1349,12 +1349,12 @@ function getSavedLimit() {
 function showUpgradeWall(anchorId, feature, minTier) {
   var existing = document.getElementById('upgradeWall');
   if (existing) existing.remove();
-  var tierLabel = minTier === ‘devotion’ ? ‘Devotion’ : ‘Divine’;
+  var tierLabel = minTier === 'devotion' ? 'Devotion' : 'Divine';
   var verses = {
-    listen: { icon: ‘&#127925;’, title: ‘Hear Your Prayer Spoken’, verse: ‘&ldquo;Faith comes from hearing.&rdquo; &mdash; Romans 10:17’ },
-    save:   { icon: ‘&#128214;’, title: ‘Save Your Prayers’, verse: ‘&ldquo;Write the vision; make it plain.&rdquo; &mdash; Habakkuk 2:2’ },
-    circle: { icon: ‘&#128336;’, title: ‘Join the Prayer Circle’, verse: ‘&ldquo;Where two or three gather in my name, there am I.&rdquo; &mdash; Matthew 18:20’ },
-    limit:  { icon: ‘&#9997;&#65039;’, title: "You’ve used your prayer for today.", verse: ‘&ldquo;Draw near to God, and he will draw near to you.&rdquo; &mdash; James 4:8’ }
+    listen: { icon: '&#127925;', title: 'Hear Your Prayer Spoken', verse: '&ldquo;Faith comes from hearing.&rdquo; &mdash; Romans 10:17' },
+    save:   { icon: '&#128214;', title: 'Save Your Prayers', verse: '&ldquo;Write the vision; make it plain.&rdquo; &mdash; Habakkuk 2:2' },
+    circle: { icon: '&#128336;', title: 'Join the Prayer Circle', verse: '&ldquo;Where two or three gather in my name, there am I.&rdquo; &mdash; Matthew 18:20' },
+    limit:  { icon: '&#9997;&#65039;', title: "You've used your prayer for today.", verse: '&ldquo;Draw near to God, and he will draw near to you.&rdquo; &mdash; James 4:8' }
   };
   var v = verses[feature] || verses.limit;
   var wall = document.createElement('div');
@@ -1484,16 +1484,16 @@ function getVerseWindow(h) {
 
 // ========== TIER FEATURE MODAL ==========
 var TIER_FEATURES = {
-  listen:         { icon: ‘&#127925;’, title: ‘Hear your prayer spoken aloud.’,          msg: ‘Live voice audio is available in the Devotion plan and above.’,                     tier: ‘devotion’ },
-  save:           { icon: ‘&#128214;’, title: ‘Keep your prayers close.’,                 msg: ‘Save up to 30 prayers with the Devotion plan.’,                                     tier: ‘devotion’ },
-  circle:         { icon: ‘&#128101;’, title: ‘Pray together with those you love.’,       msg: ‘Prayer Circle is available in the Devotion plan and above.’,                        tier: ‘devotion’ },
-  limit:          { icon: ‘&#9997;’,   title: “You’ve created your prayer for today.”,    msg: ‘More prayers each day are available in the Devotion plan.’,                         tier: ‘devotion’ },
-  riserest:       { icon: ‘&#127774;’, title: ‘Choose what speaks to your heart.’,        msg: ‘Full Rise and Rest access is available in the Devotion plan and above.’,            tier: ‘devotion’ },
-  unlimitedsaves: { icon: ‘&#128218;’, title: ‘Never lose a prayer.’,                     msg: ‘Unlimited prayer history is available in the Divine plan.’,                         tier: ‘divine’   }
+  listen:         { icon: '&#127925;', title: 'Hear your prayer spoken aloud.',          msg: 'Live voice audio is available in the Devotion plan and above.',                     tier: 'devotion' },
+  save:           { icon: '&#128214;', title: 'Keep your prayers close.',                 msg: 'Save up to 30 prayers with the Devotion plan.',                                     tier: 'devotion' },
+  circle:         { icon: '&#128101;', title: 'Pray together with those you love.',       msg: 'Prayer Circle is available in the Devotion plan and above.',                        tier: 'devotion' },
+  limit:          { icon: '&#9997;',   title: "You've created your prayer for today.",    msg: 'More prayers each day are available in the Devotion plan.',                         tier: 'devotion' },
+  riserest:       { icon: '&#127774;', title: 'Choose what speaks to your heart.',        msg: 'Full Rise and Rest access is available in the Devotion plan and above.',            tier: 'devotion' },
+  unlimitedsaves: { icon: '&#128218;', title: 'Never lose a prayer.',                     msg: 'Unlimited prayer history is available in the Divine plan.',                         tier: 'divine'   }
 };
 var TIER_VERSES = {
-  devotion: ‘”Draw near to God, and he will draw near to you.” — James 4:8’,
-  divine:   ‘”For in him we live and move and have our being.” — Acts 17:28’
+  devotion: '”Draw near to God, and he will draw near to you.” — James 4:8',
+  divine:   '”For in him we live and move and have our being.” — Acts 17:28'
 };
 function showTierModal(feature) {
   var f = TIER_FEATURES[feature] || TIER_FEATURES.limit;
