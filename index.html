@@ -297,12 +297,19 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
 .saved-preview{font-family:'Playfair Display',serif;font-style:italic;font-size:13px;color:rgba(30,15,0,0.7);line-height:1.6;}
 .empty-state{text-align:center;padding:60px 20px;font-family:'Playfair Display',serif;font-style:italic;font-size:15px;color:rgba(0,0,0,0.55);}
 
-/* ========== UPGRADE WALL ========== */
-.upgrade-wall{background:rgba(255,255,255,0.62);border:1.5px solid rgba(200,144,10,0.45);border-radius:16px;padding:22px 20px;margin:16px 0;text-align:center;}
-.upgrade-wall-icon{font-size:34px;margin-bottom:8px;}
-.upgrade-wall-title{font-family:'Playfair Display',serif;font-size:18px;color:#111;font-weight:700;margin-bottom:6px;}
-.upgrade-wall-verse{font-family:'Playfair Display',serif;font-style:italic;font-size:13px;color:rgba(0,0,0,0.62);margin-bottom:16px;line-height:1.6;}
-.upgrade-wall-btn{display:block;width:100%;padding:14px;background:linear-gradient(135deg,#c8900a,#3d1f00);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;letter-spacing:0.5px;border-radius:50px;cursor:pointer;touch-action:manipulation;}
+/* ========== TIER FEATURE MODAL ========== */
+.tier-modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:200;align-items:center;justify-content:center;padding:24px;}
+.tier-modal-overlay.open{display:flex;}
+.tier-modal-box{width:100%;max-width:346px;background:rgba(255,252,242,0.98);border:1.5px solid rgba(200,144,10,0.28);border-radius:28px;padding:32px 24px 24px;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,0.22);}
+.tier-modal-icon{font-size:44px;margin-bottom:14px;line-height:1;}
+.tier-modal-title{font-family:'Playfair Display',serif;font-size:20px;color:#111;font-weight:700;margin-bottom:10px;line-height:1.35;}
+.tier-modal-msg{font-size:14px;color:rgba(0,0,0,0.62);line-height:1.65;margin-bottom:18px;}
+.tier-modal-verse{font-family:'Playfair Display',serif;font-style:italic;font-size:13px;color:#7a4e00;line-height:1.65;padding:12px 16px;background:rgba(200,144,10,0.1);border-radius:14px;margin-bottom:24px;}
+.tier-modal-btn-primary{display:block;width:100%;padding:15px;background:linear-gradient(135deg,#c8900a,#3d1f00);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:15px;letter-spacing:0.5px;border-radius:50px;cursor:pointer;touch-action:manipulation;margin-bottom:10px;transition:opacity 0.15s;}
+.tier-modal-btn-primary:active{opacity:0.85;}
+.tier-modal-btn-secondary{display:block;width:100%;padding:12px;background:transparent;border:none;color:rgba(0,0,0,0.42);font-family:'Lato',sans-serif;font-weight:600;font-size:14px;cursor:pointer;touch-action:manipulation;}
+.tier-grace-note{font-size:12px;color:rgba(0,0,0,0.5);text-align:center;margin-top:14px;padding:8px 0;}
+.tier-grace-note span{color:#7a4e00;font-weight:700;cursor:pointer;text-decoration:underline;}
 
 /* ========== ACCORDION PRICING ========== */
 .accord-item{background:rgba(255,255,255,0.38);border:1.5px solid rgba(30,15,0,0.12);border-radius:20px;margin-bottom:12px;overflow:hidden;transition:border-color 0.2s;}
@@ -992,6 +999,18 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
   </div>
 </div>
 
+<!-- TIER FEATURE MODAL -->
+<div class="tier-modal-overlay" id="tierModalOverlay" onclick="closeTierModal()">
+  <div class="tier-modal-box" onclick="event.stopPropagation()">
+    <div class="tier-modal-icon" id="tierModalIcon"></div>
+    <div class="tier-modal-title" id="tierModalTitle"></div>
+    <div class="tier-modal-msg" id="tierModalMsg"></div>
+    <div class="tier-modal-verse" id="tierModalVerse"></div>
+    <button class="tier-modal-btn-primary" onclick="showScreen('pricingScreen');closeTierModal()">See Plans</button>
+    <button class="tier-modal-btn-secondary" onclick="closeTierModal()">Maybe Later</button>
+  </div>
+</div>
+
 <!-- MODAL -->
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal-box">
@@ -1466,6 +1485,31 @@ function getVerseWindow(h) {
   return 'night';
 }
 
+// ========== TIER FEATURE MODAL ==========
+var TIER_FEATURES = {
+  listen:         { icon: '&#127925;', title: 'Hear your prayer spoken aloud.',          msg: 'This feature is available in the Philippians 4:13 plan and above.',                tier: 'philippians' },
+  save:           { icon: '&#128214;', title: 'Keep your prayers close.',                 msg: 'Save up to 30 prayers with the Philippians 4:13 plan.',                            tier: 'philippians' },
+  circle:         { icon: '&#128101;', title: 'Pray together with those you love.',       msg: 'Prayer Circle is available in the Philippians 4:13 plan and above.',               tier: 'philippians' },
+  limit:          { icon: '&#9997;',   title: "You’ve created your prayer for today.", msg: 'More prayers are available in the Philippians 4:13 plan.',                       tier: 'philippians' },
+  riserest:       { icon: '&#127774;', title: 'Choose what speaks to your heart.',        msg: 'Full Rise and Rest access is available in the Philippians 4:13 plan and above.',   tier: 'philippians' },
+  unlimitedsaves: { icon: '&#128218;', title: 'Never lose a prayer.',                     msg: 'Unlimited prayer history is available in the John 9:25 plan.',                     tier: 'john'        }
+};
+var TIER_VERSES = {
+  philippians: '“I can do all things through Christ who strengthens me.” — Philippians 4:13',
+  john:        '“I was blind but now I see.” — John 9:25'
+};
+function showTierModal(feature) {
+  var f = TIER_FEATURES[feature] || TIER_FEATURES.limit;
+  document.getElementById('tierModalIcon').innerHTML = f.icon;
+  document.getElementById('tierModalTitle').textContent = f.title;
+  document.getElementById('tierModalMsg').textContent = f.msg;
+  document.getElementById('tierModalVerse').innerHTML = TIER_VERSES[f.tier] || TIER_VERSES.philippians;
+  document.getElementById('tierModalOverlay').classList.add('open');
+}
+function closeTierModal() {
+  document.getElementById('tierModalOverlay').classList.remove('open');
+}
+
 // ========== PRICING ACCORDION ==========
 function toggleAccordion(tier) {
   ['grace','philippians','john'].forEach(function(t) {
@@ -1515,8 +1559,8 @@ function showScreen(id, isBack) {
   if (id === 'signupScreen') { var se = document.getElementById('signupError'); if (se) { se.textContent = ''; se.style.display = 'none'; } var sb = document.getElementById('signupBtn'); if (sb) { sb.disabled = false; sb.textContent = 'CREATE ACCOUNT'; } }
   if (id === 'homeScreen') { var hn = document.getElementById('homeName'); if (hn) hn.textContent = userName.split(' ')[0]; }
   if (id === 'circleScreen' && !canUseTier('philippians')) {
-    showUpgradeWall('connectScreen', 'circle', 'philippians');
-    id = 'connectScreen';
+    showTierModal('circle');
+    return;
   }
   if (id === 'settingsScreen') {
     document.getElementById('settingsName').textContent = userName;
@@ -1616,8 +1660,7 @@ async function setTimeGreeting() {
 // ========== PRAYER GENERATION ==========
 async function generatePrayer() {
   if (prayersLeft <= 0) {
-    showUpgradeWall('prayerResult', 'limit', 'philippians');
-    document.getElementById('prayerResult').classList.remove('visible');
+    showTierModal('limit');
     return;
   }
   var forWhoRaw = document.getElementById('prayerFor').value.trim();
@@ -1749,12 +1792,12 @@ function fallbackCopy(text, cb) {
 
 async function savePrayer() {
   if (!canUseTier('philippians')) {
-    showUpgradeWall('prayerActions', 'save', 'philippians');
+    showTierModal('save');
     return;
   }
   var limit = getSavedLimit();
   if (savedPrayers.length >= limit) {
-    alert('You\u2019ve reached your ' + limit + '-prayer save limit. Upgrade to John 9:25 for unlimited saved prayers.');
+    showTierModal('unlimitedsaves');
     return;
   }
   var sEl = document.getElementById('scriptureText');
@@ -1790,7 +1833,7 @@ async function toggleListen() {
     return;
   }
   if (!canUseTier('philippians')) {
-    showUpgradeWall('listenBtn', 'listen', 'philippians');
+    showTierModal('listen');
     return;
   }
   var prayer = document.getElementById('prayerText').textContent;
