@@ -1693,10 +1693,10 @@ async function generatePrayer() {
   document.getElementById('loadingWrap').classList.add('visible');
   stopAudio();
 
-  var systemMsg = "You are a heartfelt Christian prayer minister. Write prayers that are warm, specific, and concise — every word must count. Never use filler phrases or generic language. Each prayer must feel written only for this exact person in this exact moment. Hard limit: 180 words maximum.";
+  var systemMsg = "You are a heartfelt Christian prayer minister. Write prayers that are warm, specific, and concise — every word must count. Never use filler phrases or generic language. Each prayer must feel written only for this exact person in this exact moment. Hard limit: 120 words maximum.";
 
   var userMsg = [
-    "Generate a personal prayer of 150-180 words for:",
+    "Generate a personal prayer of 100-120 words for:",
     "PERSON: " + forWho,
     "SITUATION: " + situation,
     "TONE: " + tone,
@@ -2568,9 +2568,9 @@ async function generateSendPrayer() {
   document.getElementById('sendPrayerResult').style.display = 'none';
   document.getElementById('sendLoadingWrap').style.display = 'block';
 
-  var systemMsg = 'You are a heartfelt Christian prayer minister. Write prayers that are warm, specific, and concise. Hard limit: 180 words maximum.';
+  var systemMsg = 'You are a heartfelt Christian prayer minister. Write prayers that are warm, specific, and concise. Hard limit: 120 words maximum.';
   var userMsg = [
-    'Generate a personal prayer of 150-180 words for:',
+    'Generate a personal prayer of 100-120 words for:',
     'PERSON: ' + forWho,
     'SITUATION: ' + situation,
     'Use ' + forWho + "'s name naturally at least 3 times. Be specific. No filler phrases.",
