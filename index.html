@@ -919,7 +919,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
 </div>
   <div class="screen-body">
     <div style="text-align:center;margin-bottom:20px;">
-      <div style="font-family:'Playfair Display',serif;font-size:14px;font-style:italic;color:rgba(0,0,0,0.62);">&ldquo;I can do all this through him who gives me strength.&rdquo;<br/>&#8212; Philippians 4:13</div>
+      <div style="font-family:'Playfair Display',serif;font-size:14px;font-style:italic;color:rgba(0,0,0,0.62);">&ldquo;Draw near to God, and he will draw near to you.&rdquo;<br/>&#8212; James 4:8</div>
     </div>
 
     <!-- GRACE -->
@@ -927,7 +927,6 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
       <div class="accord-head" onclick="toggleAccordion('grace')">
         <div class="accord-left">
           <div class="accord-name">Grace</div>
-          <div class="accord-tagline">Always free &mdash; a gift from God</div>
         </div>
         <div style="display:flex;align-items:center;">
           <div class="accord-right"><div class="accord-price">Free</div><div class="accord-period">always</div></div>
@@ -944,15 +943,14 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
       </div>
     </div>
 
-    <!-- PHILIPPIANS 4:13 -->
-    <div class="accord-item" id="accord-philippians">
-      <div class="accord-head" onclick="toggleAccordion('philippians')">
+    <!-- DEVOTION -->
+    <div class="accord-item" id="accord-devotion">
+      <div class="accord-head" onclick="toggleAccordion('devotion')">
         <div class="accord-left">
-          <div class="accord-name">Philippians 4:13</div>
-          <div class="accord-tagline">Strength for the journey</div>
+          <div class="accord-name">Devotion</div>
         </div>
         <div style="display:flex;align-items:center;">
-          <div class="accord-right"><div class="accord-price">$4.13<span style="font-size:12px;font-weight:400;">/mo</span></div><div class="accord-period">or $41.30/yr</div></div>
+          <div class="accord-right"><div class="accord-price">$4.99<span style="font-size:12px;font-weight:400;">/mo</span></div><div class="accord-period">or $49.99/yr</div></div>
           <div class="accord-chevron">&#8964;</div>
         </div>
       </div>
@@ -964,20 +962,19 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
         <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Save up to 30 prayers</div>
         <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Expanded Rise &amp; Rest &mdash; all voices &amp; ambients</div>
         <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Customizable moments reminders (7 days, 1 day, day of)</div>
-        <button class="accord-cta gold" id="philippiansBtn" onclick="selectPlan('philippians')">Choose Philippians 4:13</button>
+        <button class="accord-cta gold" id="devotionBtn" onclick="selectPlan('devotion')">Choose Devotion</button>
         <div class="accord-fine">10-day free trial &bull; cancel anytime</div>
       </div>
     </div>
 
-    <!-- JOHN 9:25 -->
-    <div class="accord-item" id="accord-john">
-      <div class="accord-head" onclick="toggleAccordion('john')">
+    <!-- DIVINE -->
+    <div class="accord-item" id="accord-divine">
+      <div class="accord-head" onclick="toggleAccordion('divine')">
         <div class="accord-left">
-          <div class="accord-name">John 9:25</div>
-          <div class="accord-tagline">Once blind, now I see</div>
+          <div class="accord-name">Divine</div>
         </div>
         <div style="display:flex;align-items:center;">
-          <div class="accord-right"><div class="accord-price">$9.25<span style="font-size:12px;font-weight:400;">/mo</span></div><div class="accord-period">or $92.50/yr</div></div>
+          <div class="accord-right"><div class="accord-price">$9.99<span style="font-size:12px;font-weight:400;">/mo</span></div><div class="accord-period">or $99.99/yr</div></div>
           <div class="accord-chevron">&#8964;</div>
         </div>
       </div>
@@ -990,7 +987,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
         <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Full Rise &amp; Rest &mdash; preview &amp; choose all content</div>
         <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Customizable moments reminders (7 days, 1 day, day of)</div>
         <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Early access to new features</div>
-        <button class="accord-cta dark" id="johnBtn" onclick="selectPlan('john')">Choose John 9:25</button>
+        <button class="accord-cta dark" id="divineBtn" onclick="selectPlan('divine')">Choose Divine</button>
         <div class="accord-fine">10-day free trial &bull; cancel anytime</div>
       </div>
     </div>
@@ -1317,7 +1314,7 @@ async function dbSaveRestPrefs(prefs) {
 // ========== STATE ==========
 var userName = 'Friend';
 var prayersLeft = 15;
-var userTier = 'grace';       // 'grace' | 'philippians' | 'john'
+var userTier = 'grace';       // 'grace' | 'devotion' | 'divine'
 var trialEndsAt = null;       // ISO date string e.g. '2026-05-30'
 
 // ========== TIER HELPERS ==========
@@ -1330,34 +1327,34 @@ function trialDaysLeft() {
   return Math.max(0, Math.ceil((new Date(trialEndsAt) - new Date()) / 86400000));
 }
 function getEffectiveTier() {
-  if (isTrialing()) return 'john';
+  if (isTrialing()) return 'divine';
   return userTier;
 }
 function getDailyLimit() {
   var t = getEffectiveTier();
-  if (t === 'john') return 15;
-  if (t === 'philippians') return 5;
+  if (t === 'divine') return 15;
+  if (t === 'devotion') return 5;
   return 1;
 }
 function canUseTier(min) {
-  var rank = { grace: 0, philippians: 1, john: 2 };
+  var rank = { grace: 0, devotion: 1, divine: 2 };
   return (rank[getEffectiveTier()] || 0) >= (rank[min] || 0);
 }
 function getSavedLimit() {
   var t = getEffectiveTier();
-  if (t === 'john') return Infinity;
-  if (t === 'philippians') return 30;
+  if (t === 'divine') return Infinity;
+  if (t === 'devotion') return 30;
   return 0;
 }
 function showUpgradeWall(anchorId, feature, minTier) {
   var existing = document.getElementById('upgradeWall');
   if (existing) existing.remove();
-  var tierLabel = minTier === 'philippians' ? 'Philippians 4:13' : 'John 9:25';
+  var tierLabel = minTier === ‘devotion’ ? ‘Devotion’ : ‘Divine’;
   var verses = {
-    listen: { icon: '&#127925;', title: 'Hear Your Prayer Spoken', verse: '&ldquo;Faith comes from hearing.&rdquo; &mdash; Romans 10:17' },
-    save:   { icon: '&#128214;', title: 'Save Your Prayers', verse: '&ldquo;Write the vision; make it plain.&rdquo; &mdash; Habakkuk 2:2' },
-    circle: { icon: '&#128336;', title: 'Join the Prayer Circle', verse: '&ldquo;Where two or three gather in my name, there am I.&rdquo; &mdash; Matthew 18:20' },
-    limit:  { icon: '&#9997;&#65039;', title: "You’ve used your prayer for today.", verse: '&ldquo;I can do all things through Christ who strengthens me.&rdquo; &mdash; Philippians 4:13' }
+    listen: { icon: ‘&#127925;’, title: ‘Hear Your Prayer Spoken’, verse: ‘&ldquo;Faith comes from hearing.&rdquo; &mdash; Romans 10:17’ },
+    save:   { icon: ‘&#128214;’, title: ‘Save Your Prayers’, verse: ‘&ldquo;Write the vision; make it plain.&rdquo; &mdash; Habakkuk 2:2’ },
+    circle: { icon: ‘&#128336;’, title: ‘Join the Prayer Circle’, verse: ‘&ldquo;Where two or three gather in my name, there am I.&rdquo; &mdash; Matthew 18:20’ },
+    limit:  { icon: ‘&#9997;&#65039;’, title: "You’ve used your prayer for today.", verse: ‘&ldquo;Draw near to God, and he will draw near to you.&rdquo; &mdash; James 4:8’ }
   };
   var v = verses[feature] || verses.limit;
   var wall = document.createElement('div');
@@ -1487,23 +1484,23 @@ function getVerseWindow(h) {
 
 // ========== TIER FEATURE MODAL ==========
 var TIER_FEATURES = {
-  listen:         { icon: '&#127925;', title: 'Hear your prayer spoken aloud.',          msg: 'This feature is available in the Philippians 4:13 plan and above.',                tier: 'philippians' },
-  save:           { icon: '&#128214;', title: 'Keep your prayers close.',                 msg: 'Save up to 30 prayers with the Philippians 4:13 plan.',                            tier: 'philippians' },
-  circle:         { icon: '&#128101;', title: 'Pray together with those you love.',       msg: 'Prayer Circle is available in the Philippians 4:13 plan and above.',               tier: 'philippians' },
-  limit:          { icon: '&#9997;',   title: "You’ve created your prayer for today.", msg: 'More prayers are available in the Philippians 4:13 plan.',                       tier: 'philippians' },
-  riserest:       { icon: '&#127774;', title: 'Choose what speaks to your heart.',        msg: 'Full Rise and Rest access is available in the Philippians 4:13 plan and above.',   tier: 'philippians' },
-  unlimitedsaves: { icon: '&#128218;', title: 'Never lose a prayer.',                     msg: 'Unlimited prayer history is available in the John 9:25 plan.',                     tier: 'john'        }
+  listen:         { icon: ‘&#127925;’, title: ‘Hear your prayer spoken aloud.’,          msg: ‘Live voice audio is available in the Devotion plan and above.’,                     tier: ‘devotion’ },
+  save:           { icon: ‘&#128214;’, title: ‘Keep your prayers close.’,                 msg: ‘Save up to 30 prayers with the Devotion plan.’,                                     tier: ‘devotion’ },
+  circle:         { icon: ‘&#128101;’, title: ‘Pray together with those you love.’,       msg: ‘Prayer Circle is available in the Devotion plan and above.’,                        tier: ‘devotion’ },
+  limit:          { icon: ‘&#9997;’,   title: “You’ve created your prayer for today.”,    msg: ‘More prayers each day are available in the Devotion plan.’,                         tier: ‘devotion’ },
+  riserest:       { icon: ‘&#127774;’, title: ‘Choose what speaks to your heart.’,        msg: ‘Full Rise and Rest access is available in the Devotion plan and above.’,            tier: ‘devotion’ },
+  unlimitedsaves: { icon: ‘&#128218;’, title: ‘Never lose a prayer.’,                     msg: ‘Unlimited prayer history is available in the Divine plan.’,                         tier: ‘divine’   }
 };
 var TIER_VERSES = {
-  philippians: '“I can do all things through Christ who strengthens me.” — Philippians 4:13',
-  john:        '“I was blind but now I see.” — John 9:25'
+  devotion: ‘”Draw near to God, and he will draw near to you.” — James 4:8’,
+  divine:   ‘”For in him we live and move and have our being.” — Acts 17:28’
 };
 function showTierModal(feature) {
   var f = TIER_FEATURES[feature] || TIER_FEATURES.limit;
   document.getElementById('tierModalIcon').innerHTML = f.icon;
   document.getElementById('tierModalTitle').textContent = f.title;
   document.getElementById('tierModalMsg').textContent = f.msg;
-  document.getElementById('tierModalVerse').innerHTML = TIER_VERSES[f.tier] || TIER_VERSES.philippians;
+  document.getElementById('tierModalVerse').innerHTML = TIER_VERSES[f.tier] || TIER_VERSES.devotion;
   document.getElementById('tierModalOverlay').classList.add('open');
 }
 function closeTierModal() {
@@ -1512,27 +1509,28 @@ function closeTierModal() {
 
 // ========== PRICING ACCORDION ==========
 function toggleAccordion(tier) {
-  ['grace','philippians','john'].forEach(function(t) {
+  ['grace','devotion','divine'].forEach(function(t) {
     var el = document.getElementById('accord-' + t);
     if (el) el.classList.toggle('open', t === tier);
   });
 }
 function selectPlan(tier) {
-  alert('Subscription payments coming soon! Thank you for your interest in ' + (tier === 'philippians' ? 'Philippians 4:13' : 'John 9:25') + '.');
+  var name = tier === 'devotion' ? 'Devotion' : 'Divine';
+  alert('Subscription payments coming soon! Thank you for your interest in the ' + name + ' plan.');
 }
 function updatePricingButtons() {
-  var tiers = ['grace','philippians','john'];
+  var tiers = ['grace','devotion','divine'];
   tiers.forEach(function(t) {
     var btn = document.getElementById(t + 'Btn');
     if (!btn) return;
-    var isCurrent = (t === userTier && !isTrialing()) || (t === 'john' && isTrialing());
+    var isCurrent = (t === userTier && !isTrialing()) || (t === 'divine' && isTrialing());
     if (isCurrent) {
       btn.textContent = 'Current Plan';
       btn.className = 'accord-cta current';
       btn.onclick = null;
     } else {
       btn.textContent = 'Select';
-      btn.className = t === 'philippians' ? 'accord-cta gold' : 'accord-cta dark';
+      btn.className = t === 'devotion' ? 'accord-cta gold' : 'accord-cta dark';
       btn.onclick = (function(tier){ return function(){ selectPlan(tier); }; })(t);
     }
   });
@@ -1558,7 +1556,7 @@ function showScreen(id, isBack) {
   if (id === 'loginScreen') { var le = document.getElementById('loginError'); if (le) { le.textContent = ''; le.style.display = 'none'; } var lb = document.getElementById('loginBtn'); if (lb) { lb.disabled = false; lb.textContent = 'SIGN IN'; } }
   if (id === 'signupScreen') { var se = document.getElementById('signupError'); if (se) { se.textContent = ''; se.style.display = 'none'; } var sb = document.getElementById('signupBtn'); if (sb) { sb.disabled = false; sb.textContent = 'CREATE ACCOUNT'; } }
   if (id === 'homeScreen') { var hn = document.getElementById('homeName'); if (hn) hn.textContent = userName.split(' ')[0]; }
-  if (id === 'circleScreen' && !canUseTier('philippians')) {
+  if (id === 'circleScreen' && !canUseTier('devotion')) {
     showTierModal('circle');
     return;
   }
@@ -1573,15 +1571,15 @@ function showScreen(id, isBack) {
     document.getElementById('settingsPrayerBar').style.width = Math.min(100, (used / limit) * 100) + '%';
     document.getElementById('notifScripture').checked = localStorage.getItem('emf_notif_scripture') !== '0';
     document.getElementById('notifMoments').checked = localStorage.getItem('emf_notif_moments') === '1';
-    var tierNames = { grace: 'Grace (Free)', philippians: 'Philippians 4:13', john: 'John 9:25' };
-    var tierDescs = { grace: '1 prayer per day', philippians: '5 prayers per day · voice audio · Prayer Circle', john: '15 prayers per day · all voices · unlimited saves' };
+    var tierNames = { grace: 'Grace (Free)', devotion: 'Devotion', divine: 'Divine' };
+    var tierDescs = { grace: '1 prayer per day', devotion: '5 prayers per day · voice audio · Prayer Circle', divine: '15 prayers per day · all voices · unlimited saves' };
     var eff = getEffectiveTier();
     var tnEl = document.getElementById('settingsTierName');
     var tdEl = document.getElementById('settingsTierDesc');
-    if (tnEl) tnEl.textContent = isTrialing() ? 'John 9:25 (Trial — ' + trialDaysLeft() + ' days left)' : (tierNames[userTier] || 'Grace');
+    if (tnEl) tnEl.textContent = isTrialing() ? 'Divine (Trial — ' + trialDaysLeft() + ' days left)' : (tierNames[userTier] || 'Grace');
     if (tdEl) tdEl.textContent = tierDescs[eff] || '';
     var upBtn = document.getElementById('settingsUpgradeBtn');
-    if (upBtn) upBtn.textContent = canUseTier('john') && !isTrialing() ? 'Manage Plan' : 'View Plans';
+    if (upBtn) upBtn.textContent = canUseTier('divine') && !isTrialing() ? 'Manage Plan' : 'View Plans';
     var scEl = document.getElementById('settingsSavedCount');
     if (scEl) { var lim = getSavedLimit(); scEl.textContent = savedPrayers.length + ' prayer' + (savedPrayers.length !== 1 ? 's' : '') + ' saved' + (lim !== Infinity ? ' (max ' + lim + ')' : ''); }
   }
@@ -1703,7 +1701,7 @@ async function generatePrayer() {
     document.getElementById('prayerText').textContent = prayerText;
   } catch(e) {
     console.error('Prayer generation error:', e);
-    document.getElementById('prayerText').textContent = '\u201cI can do all things through Christ which strengtheneth me.\u201d \u2014 Philippians 4:13 (KJV)\n\nHeavenly Father, we lift up ' + forWho + ' before You now, specifically bringing ' + situation + ' into Your presence. In Your perfect wisdom and love, guide every step and decision in this moment. Strengthen ' + forWho + ' with courage and clarity, and let Your peace that surpasses all understanding guard their heart. We trust that You are already working this together for good. In Jesus\u2019 name, Amen.';
+    document.getElementById('prayerText').textContent = '\u201cDraw near to God, and he will draw near to you.\u201d \u2014 James 4:8\n\nHeavenly Father, we lift up ' + forWho + ' before You now, specifically bringing ' + situation + ' into Your presence. In Your perfect wisdom and love, guide every step and decision in this moment. Strengthen ' + forWho + ' with courage and clarity, and let Your peace that surpasses all understanding guard their heart. We trust that You are already working this together for good. In Jesus\u2019 name, Amen.';
   }
 
   prayersLeft--;
@@ -1716,7 +1714,7 @@ async function generatePrayer() {
 }
 
 function applyTierToScreen(id) {
-  var grace = !canUseTier('philippians');
+  var grace = !canUseTier('devotion');
   if (id === 'riseScreen' || id === 'restScreen') {
     var prefix = id === 'riseScreen' ? 'rise' : 'rest';
     var opts = document.getElementById(prefix + 'Options');
@@ -1749,7 +1747,7 @@ function applyTierToScreen(id) {
 }
 
 function applyTierToGeneratedPrayer() {
-  var allowed = canUseTier('philippians');
+  var allowed = canUseTier('devotion');
   var voiceRow = document.getElementById('voiceRow');
   var listenBtn = document.getElementById('listenBtn');
   var audioBar = document.getElementById('prayerAudioBar');
@@ -1791,7 +1789,7 @@ function fallbackCopy(text, cb) {
 }
 
 async function savePrayer() {
-  if (!canUseTier('philippians')) {
+  if (!canUseTier('devotion')) {
     showTierModal('save');
     return;
   }
@@ -1832,7 +1830,7 @@ async function toggleListen() {
     resetListenButton();
     return;
   }
-  if (!canUseTier('philippians')) {
+  if (!canUseTier('devotion')) {
     showTierModal('listen');
     return;
   }
