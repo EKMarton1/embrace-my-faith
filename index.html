@@ -2881,11 +2881,12 @@ async function loadPrayerRequests() {
       var safeText = escHtml(r.request_text);
       var safeName = escHtml(name);
       var safeFirst = escHtml(name.split(' ')[0]);
-      return '<div style="background:rgba(255,255,255,0.45);border-radius:16px;padding:16px;margin-bottom:10px;">' +
+      var cardId = 'req-card-' + r.id;
+      return '<div id="' + cardId + '" style="background:rgba(255,255,255,0.45);border-radius:16px;padding:16px;margin-bottom:10px;transition:opacity 0.3s;">' +
         '<div style="font-weight:700;color:#111;font-size:14px;">' + safeName + ' is asking for prayer</div>' +
         '<div style="font-size:11px;color:rgba(0,0,0,0.4);margin-bottom:6px;">' + date + '</div>' +
         '<div style="font-size:13px;color:#333;margin-bottom:10px;">' + safeText + '</div>' +
-        '<button class="action-btn" style="width:100%;" onclick="prayForRequest(\'' + safeName + '\',\'' + escHtml(r.request_text.slice(0,100)) + '\')">Pray for ' + safeFirst + '</button>' +
+        '<button class="action-btn" style="width:100%;" onclick="markPrayed(\'' + cardId + '\',\'' + safeFirst + '\',this)">Pray for ' + safeFirst + '</button>' +
         '</div>';
     }).join('');
   } catch(e) {
@@ -2893,11 +2894,15 @@ async function loadPrayerRequests() {
   }
 }
 
-function prayForRequest(name, situation) {
-  document.getElementById('prayerFor').value = name;
-  document.getElementById('prayerSituation').value = situation;
-  document.getElementById('prayerCharCount').textContent = situation.length + '/150';
-  showScreen('prayerScreen');
+function markPrayed(cardId, firstName, btn) {
+  btn.textContent = 'Prayed for ' + firstName + ' ✓';
+  btn.disabled = true;
+  btn.style.opacity = '0.7';
+  var card = document.getElementById(cardId);
+  if (card) {
+    card.style.opacity = '0';
+    setTimeout(function() { card.style.display = 'none'; }, 300);
+  }
 }
 
 
