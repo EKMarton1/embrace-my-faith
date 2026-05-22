@@ -2602,10 +2602,17 @@ function resetSendPrayer() {
   document.getElementById('sendPrayerForm').style.display = 'block';
 }
 
+function getEmfLink() {
+  var ua = navigator.userAgent || '';
+  if (/iPhone|iPad|iPod/i.test(ua)) return 'https://apps.apple.com/app/embrace-my-faith/id6745518009';
+  if (/Android/i.test(ua)) return 'https://play.google.com/store/apps/details?id=com.embracemyfaith';
+  return 'https://embracemyfaith.com';
+}
+
 function getSendPrayerBody() {
-  var name = document.getElementById('sendPrayerFor').value.trim() || 'you';
   var text = document.getElementById('sendPrayerText').textContent.trim();
-  return 'I wanted to send you this prayer:\n\n' + text + '\n\nSent with love through Embrace My Faith — embracemyfaith.com';
+  var link = getEmfLink();
+  return 'I wanted to send you this prayer:\n\n' + text + '\n\n—\nSent with love through Embrace My Faith\n' + link;
 }
 
 function sendPrayerViaText() {
