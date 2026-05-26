@@ -750,6 +750,17 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
       <div style="background:rgba(255,255,255,0.55);border-radius:20px;padding:20px 18px;margin-bottom:18px;">
         <div id="sendPrayerText" style="font-family:'Playfair Display',serif;font-size:15px;line-height:1.8;color:#1a0a00;white-space:pre-wrap;"></div>
       </div>
+      <div id="sendVoiceRow" style="display:flex;gap:10px;margin-bottom:14px;align-items:center;">
+        <span style="font-size:12px;font-weight:700;color:rgba(0,0,0,0.6);letter-spacing:1px;text-transform:uppercase;">Voice:</span>
+        <button class="action-btn" id="sendVbFemale" onclick="selectSendVoiceGender('female')" style="background:rgba(30,15,0,0.75);color:#f5c830;flex:unset;padding:10px 24px;font-size:14px;">Female</button>
+        <button class="action-btn" id="sendVbMale" onclick="selectSendVoiceGender('male')" style="background:rgba(255,255,255,0.4);color:#111;flex:unset;padding:10px 24px;font-size:14px;">Male</button>
+      </div>
+      <button class="listen-full-btn" id="sendListenBtn" onclick="toggleSendListen()">LISTEN</button>
+      <div id="sendAudioBar" class="listen-player-bar" style="display:none;">
+        <button class="listen-player-btn" id="sendPauseBtn" onclick="pauseResumeSend()">Pause</button>
+        <div class="listen-progress-wrap"><div class="listen-progress-fill" id="sendProgressFill"></div></div>
+        <button class="listen-player-btn" onclick="stopSendPrayer()">Stop</button>
+      </div>
       <div class="section-label" style="font-size:15px;margin-bottom:10px;text-align:center;">Send this prayer</div>
       <div style="display:flex;gap:10px;margin-bottom:10px;">
         <button class="action-btn" style="flex:1;touch-action:manipulation;" onclick="sendPrayerViaText()">&#128172; Text</button>
@@ -1839,6 +1850,7 @@ function newPrayer() {
 
 // ========== LISTEN / TTS ==========
 var prayerProgressInterval = null;
+var sendProgressInterval = null;
 
 async function toggleListen() {
   if (isPlaying || currentAudio) {
@@ -1975,6 +1987,144 @@ function stopProgressBar() {
   if (prayerProgressInterval) { clearInterval(prayerProgressInterval); prayerProgressInterval = null; }
   var fill = document.getElementById('prayerProgressFill');
   if (fill) fill.style.width = '0%';
+}
+
+// ── SEND PRAYER LISTEN ───────────────────────────────────────────────────────
+function selectSendVoiceGender(gender) {
+  var f = document.getElementById('sendVbFemale');
+  var m = document.getElementById('sendVbMale');
+  if (!f || !m) return;
+  if (gender === 'female') {
+    f.style.background = 'rgba(30,15,0,0.75)'; f.style.color = '#f5c830';
+    m.style.background = 'rgba(255,255,255,0.4)'; m.style.color = '#111';
+  } else {
+    m.style.background = 'rgba(30,15,0,0.75)'; m.style.color = '#f5c830';
+    f.style.background = 'rgba(255,255,255,0.4)'; f.style.color = '#111';
+  }
+}
+
+function applySendListenTier() {
+  var allowed = canUseTier('devotion');
+  var vr = document.getElementById('sendVoiceRow');
+  var lb = document.getElementById('sendListenBtn');
+  var ab = document.getElementById('sendAudioBar');
+  if (vr) vr.style.display = allowed ? 'flex' : 'none';
+  if (lb) lb.style.display = allowed ? '' : 'none';
+  if (ab) ab.style.display = 'none';
+}
+
+async function toggleSendListen() {
+  if (isPlaying || currentAudio) {
+    stopAudio();
+    isPlaying = false;
+    hideSendAudioBar();
+    resetSendListenButton();
+    return;
+  }
+  if (!canUseTier('devotion')) { showTierModal('listen'); return; }
+  var prayer = document.getElementById('sendPrayerText').textContent;
+  if (!prayer) { alert('Generate a prayer first!'); return; }
+  var gender = (document.getElementById('sendVbMale') && document.getElementById('sendVbMale').style.color === 'rgb(245, 200, 48)') ? 'male' : 'female';
+  selectedVoiceId = getVoiceForTone('hopeful and uplifting', gender);
+  isPlaying = true;
+  var btn = document.getElementById('sendListenBtn');
+  btn.disabled = true;
+  btn.textContent = 'I SEE YOU'; btn.style.color = '#f5c830';
+  setTimeout(function() { btn.style.color = 'rgba(245,200,72,0)'; }, 2000);
+  setTimeout(function() { btn.textContent = 'I HEAR YOU'; btn.style.color = '#f5c830'; }, 2800);
+  setTimeout(function() { btn.style.color = 'rgba(245,200,72,0)'; }, 4800);
+  setTimeout(function() { btn.textContent = 'GIVE ME A MOMENT'; btn.style.color = '#f5c830'; }, 5600);
+  await speakTextSend(prayer, selectedVoiceId, function() {
+    isPlaying = false;
+    hideSendAudioBar();
+    resetSendListenButton();
+  });
+}
+
+function resetSendListenButton() {
+  var btn = document.getElementById('sendListenBtn');
+  if (btn) { btn.disabled = false; btn.textContent = 'LISTEN'; btn.style.color = '#f5c830'; }
+  stopSendProgressBar();
+}
+
+function showSendAudioBar() {
+  document.getElementById('sendListenBtn').style.display = 'none';
+  document.getElementById('sendAudioBar').style.display = 'flex';
+  document.getElementById('sendPauseBtn').textContent = 'Pause';
+}
+
+function hideSendAudioBar() {
+  document.getElementById('sendAudioBar').style.display = 'none';
+  document.getElementById('sendListenBtn').style.display = '';
+}
+
+function pauseResumeSend() {
+  if (!currentAudio) return;
+  var btn = document.getElementById('sendPauseBtn');
+  if (currentAudio.paused) { currentAudio.play(); btn.textContent = 'Pause'; }
+  else { currentAudio.pause(); btn.textContent = 'Resume'; }
+}
+
+function stopSendPrayer() {
+  stopAudio();
+  stopSendProgressBar();
+  hideSendAudioBar();
+  resetSendListenButton();
+}
+
+function startSendProgressBar() {
+  stopSendProgressBar();
+  sendProgressInterval = setInterval(function() {
+    if (!currentAudio || !currentAudio.duration) return;
+    var pct = (currentAudio.currentTime / currentAudio.duration) * 100;
+    var fill = document.getElementById('sendProgressFill');
+    if (fill) fill.style.width = pct + '%';
+  }, 400);
+}
+
+function stopSendProgressBar() {
+  if (sendProgressInterval) { clearInterval(sendProgressInterval); sendProgressInterval = null; }
+  var fill = document.getElementById('sendProgressFill');
+  if (fill) fill.style.width = '0%';
+}
+
+async function speakTextSend(text, voiceId, onDone) {
+  stopAudio();
+  try {
+    var resp = await fetch('/api/speak', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: text, voiceId: voiceId })
+    });
+    if (!resp.ok) throw new Error('TTS failed: ' + resp.status);
+    var blob = await resp.blob();
+    var url = URL.createObjectURL(blob);
+    currentAudio = new Audio(url);
+    currentAudio.volume = 0.9;
+    isPlaying = true;
+    currentAudio.onended = function() {
+      isPlaying = false;
+      URL.revokeObjectURL(url);
+      stopSendProgressBar();
+      hideSendAudioBar();
+      if (onDone) onDone();
+    };
+    showSendAudioBar();
+    startSendProgressBar();
+    var playPromise = currentAudio.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(function() {
+        var pb = document.getElementById('sendPauseBtn');
+        if (pb) pb.textContent = 'Play';
+      });
+    }
+    return currentAudio;
+  } catch(e) {
+    console.error('TTS error:', e);
+    isPlaying = false;
+    resetSendListenButton();
+    alert('Voice is resting. Please try again in a moment.');
+  }
 }
 
 // ========== RISE ==========
@@ -2600,9 +2750,12 @@ async function generateSendPrayer() {
   document.getElementById('sendCopyBtn').textContent = '📋 Copy';
   document.getElementById('sendLoadingWrap').style.display = 'none';
   document.getElementById('sendPrayerResult').style.display = 'block';
+  applySendListenTier();
 }
 
 function resetSendPrayer() {
+  stopAudio();
+  stopSendProgressBar();
   document.getElementById('sendPrayerResult').style.display = 'none';
   document.getElementById('sendLoadingWrap').style.display = 'none';
   document.getElementById('sendPrayerForm').style.display = 'block';
