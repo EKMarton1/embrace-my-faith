@@ -387,10 +387,11 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
   <div class="auth-sub">Begin your faith journey</div>
   <input class="auth-input" id="signupName" type="text" placeholder="Your name" maxlength="30" autocomplete="name"/>
   <input class="auth-input" id="signupEmail" type="email" placeholder="Email address" autocomplete="email"/>
-  <div class="auth-pw-wrap">
-    <input class="auth-input" id="signupPassword" type="password" placeholder="Password (min 6 characters)" autocomplete="new-password"/>
-    <button type="button" class="auth-pw-eye" onclick="togglePwVis('signupPassword',this)" tabindex="-1">&#128065;</button>
-  </div>
+  <input class="auth-input" id="signupPassword" type="password" placeholder="Password (min 6 characters)" autocomplete="new-password"/>
+  <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(0,0,0,0.55);margin-top:-6px;margin-bottom:10px;cursor:pointer;">
+    <input type="checkbox" onchange="document.getElementById('signupPassword').type=this.checked?'text':'password'" style="width:16px;height:16px;accent-color:#3d1f00;cursor:pointer;"/>
+    Show password
+  </label>
   <div class="auth-error" id="signupError"></div>
   <button class="auth-btn" id="signupBtn" onclick="authSignUp()">CREATE ACCOUNT</button>
   <div class="auth-link">Already have an account? <span onclick="showScreen('loginScreen')">Sign in</span></div>
