@@ -158,8 +158,8 @@ body{background:#1a1a1a;display:flex;justify-content:center;align-items:flex-sta
 .auth-link span{color:#3d1f00;font-weight:700;cursor:pointer;text-decoration:underline;}
 .auth-pw-wrap{position:relative;width:100%;margin-bottom:12px;}
 .auth-pw-wrap .auth-input{margin-bottom:0;padding-right:48px;width:100%;}
-.auth-pw-eye{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;color:rgba(0,0,0,0.35);padding:4px;line-height:1;}
-.auth-pw-eye:hover{color:rgba(0,0,0,0.65);}
+.auth-pw-toggle{position:absolute;right:14px;top:50%;transform:translateY(-50%);appearance:none;-webkit-appearance:none;width:18px;height:18px;border:2px solid rgba(61,31,0,0.35);border-radius:50%;cursor:pointer;background:transparent;transition:background 0.15s,border-color 0.15s;flex-shrink:0;}
+.auth-pw-toggle:checked{background:#3d1f00;border-color:#3d1f00;}
 .auth-signout-btn{width:100%;padding:13px;background:rgba(180,50,30,0.12);border:1.5px solid rgba(180,50,30,0.25);color:#8b2218;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;margin-top:8px;transition:background 0.15s;}
 .auth-signout-btn:hover{background:rgba(180,50,30,0.2);}
 
@@ -373,7 +373,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
   <input class="auth-input" id="loginEmail" type="email" placeholder="Email address" autocomplete="email"/>
   <div class="auth-pw-wrap">
     <input class="auth-input" id="loginPassword" type="password" placeholder="Password" autocomplete="current-password"/>
-    <button type="button" class="auth-pw-eye" onclick="togglePwVis('loginPassword',this)" tabindex="-1">&#128065;</button>
+    <input type="checkbox" class="auth-pw-toggle" onchange="document.getElementById('loginPassword').type=this.checked?'text':'password'"/>
   </div>
   <div class="auth-error" id="loginError"></div>
   <button class="auth-btn" id="loginBtn" onclick="authSignIn()">SIGN IN</button>
@@ -387,11 +387,10 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
   <div class="auth-sub">Begin your faith journey</div>
   <input class="auth-input" id="signupName" type="text" placeholder="Your name" maxlength="30" autocomplete="name"/>
   <input class="auth-input" id="signupEmail" type="email" placeholder="Email address" autocomplete="email"/>
-  <input class="auth-input" id="signupPassword" type="password" placeholder="Password (min 6 characters)" autocomplete="new-password"/>
-  <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(0,0,0,0.55);margin-top:-6px;margin-bottom:10px;cursor:pointer;">
-    <input type="checkbox" onchange="document.getElementById('signupPassword').type=this.checked?'text':'password'" style="width:16px;height:16px;accent-color:#3d1f00;cursor:pointer;"/>
-    Show password
-  </label>
+  <div class="auth-pw-wrap">
+    <input class="auth-input" id="signupPassword" type="password" placeholder="Password (min 6 characters)" autocomplete="new-password"/>
+    <input type="checkbox" class="auth-pw-toggle" onchange="document.getElementById('signupPassword').type=this.checked?'text':'password'"/>
+  </div>
   <div class="auth-error" id="signupError"></div>
   <button class="auth-btn" id="signupBtn" onclick="authSignUp()">CREATE ACCOUNT</button>
   <div class="auth-link">Already have an account? <span onclick="showScreen('loginScreen')">Sign in</span></div>
