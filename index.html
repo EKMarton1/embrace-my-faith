@@ -344,7 +344,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
   <div class="splash-title" style="display:none;"></div>
   <div class="splash-sub">Walk in His Light</div>
   <div class="splash-verse">&ldquo;I have come that they may have life, and have it to the full.&rdquo;<br/>&#8212; John 10:10</div>
-  <button class="splash-btn" onclick="showScreen('loginScreen')">Begin My Journey</button>
+  <button class="splash-btn" onclick="beginJourney()">Begin My Journey</button>
 </div>
 
 <!-- NAME ENTRY -->
@@ -1211,6 +1211,7 @@ async function authSignIn() {
     if (data.access_token && data.user) {
       currentUser = data.user;
       currentAccessToken = data.access_token;
+      localStorage.setItem('emf_returning', '1');
       await loadUserData();
       showScreen('homeScreen');
     } else {
@@ -1251,6 +1252,7 @@ async function authSignUp() {
       }
       currentUser = user;
       currentAccessToken = session.access_token;
+      localStorage.setItem('emf_returning', '1');
       userName = name;
       prayersLeft = 15;
       // Insert profile and counter in background — don't block navigation
@@ -1278,6 +1280,10 @@ async function authSignOut() {
   moments = [{ name: 'Remy', date: '1999-07-13', category: 'Birthday', note: '' }];
   savedPrayers = []; prayersLeft = 15; userName = 'Friend';
   showScreen('loginScreen');
+}
+
+function beginJourney() {
+  showScreen(localStorage.getItem('emf_returning') ? 'loginScreen' : 'signupScreen');
 }
 
 function togglePwVis(inputId, btn) {
