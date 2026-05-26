@@ -66,7 +66,9 @@ body{background:#1a1a1a;display:flex;justify-content:center;align-items:flex-sta
 .home-logo{margin-bottom:8px;line-height:0;}
 .home-greeting{font-size:34px;font-weight:700;color:rgba(0,0,0,0.75);letter-spacing:0.5px;margin-bottom:4px;}
 .home-name{font-family:'Lato',sans-serif;font-size:36px;color:#111111;font-weight:700;margin-bottom:10px;}
-.daily-verse{font-family:'Lato',sans-serif;font-style:italic;font-size:16px;font-weight:600;color:#111111;line-height:1.6;max-width:300px;margin:0 auto;text-shadow:0 1px 3px rgba(255,255,255,0.6);}
+.daily-verse{max-width:300px;margin:0 auto;text-align:center;}
+.daily-verse-text{font-family:'Lato',sans-serif;font-style:italic;font-size:14px;font-weight:600;color:rgba(0,0,0,0.72);line-height:1.5;text-shadow:0 1px 3px rgba(255,255,255,0.5);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.daily-verse-ref{font-family:'Lato',sans-serif;font-size:12px;font-weight:600;color:rgba(0,0,0,0.50);margin-top:3px;text-shadow:0 1px 3px rgba(255,255,255,0.5);}
 .home-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:8px 20px 32px;}
 .grid-card{background:rgba(255,255,255,0.45);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.6);border-radius:20px;padding:28px 16px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;cursor:pointer;transition:all 0.2s;}
 .grid-card:hover{background:rgba(255,255,255,0.65);}.grid-card:active{transform:scale(0.96);background:rgba(255,255,255,0.18);}
@@ -409,7 +411,10 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
       <button class="settings-cog" onclick="showScreen('settingsScreen')">&#9881;</button>
     </div>
     <div class="screen-title" id="homeName" style="margin-top:2px;">Friend</div>
-    <div class="daily-verse" id="dailyVerse" style="margin-top:10px;">&ldquo;Be still, and know that I am God.&rdquo; &#8212; Psalm 46:10</div>
+    <div class="daily-verse" id="dailyVerse" style="margin-top:10px;">
+      <div class="daily-verse-text" id="dailyVerseText">&ldquo;Be still, and know that I am God.&rdquo;</div>
+      <div class="daily-verse-ref" id="dailyVerseRef">&mdash; Psalm 46:10</div>
+    </div>
   </div>
   <div class="home-grid">
     <div class="grid-card" onclick="showScreen('prayerScreen')">
@@ -436,6 +441,9 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
       <div class="card-icon"><img src="images/Rest_Icon.png" alt="Rest" style="width:42px;height:42px;"></div>
       <div class="card-label">Rest</div>
     </div>
+  </div>
+  <div class="screen-footer">
+    <div class="emf-copyright">&copy; 2026 Embrace My Faith LLC</div>
   </div>
 </div>
 
@@ -489,7 +497,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
       </div>
       <div class="copy-toast" id="copyToast">Prayer copied</div>
     </div>
-    <div class="screen-footer"><div class="page-verse"><div class="page-verse-text">"Call to me and I will answer you."</div><div class="page-verse-ref">&mdash; Jeremiah 33:3</div></div><div class="emf-copyright">&copy; 2026 Embrace My Faith LLC</div></div>
+    <div class="screen-footer"><div class="emf-copyright">&copy; 2026 Embrace My Faith LLC</div></div>
   </div>
 </div>
 
@@ -593,7 +601,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
         </div>
       </div>
     </div>
-    <div class="screen-footer"><div class="page-verse"><div class="page-verse-text">"This is the day the Lord has made; let us rejoice."</div><div class="page-verse-ref">&mdash; Psalm 118:24</div></div><div class="emf-copyright">&copy; 2026 Embrace My Faith LLC</div></div>
+    <div class="screen-footer"><div class="emf-copyright">&copy; 2026 Embrace My Faith LLC</div></div>
   </div>
 </div>
 
@@ -656,7 +664,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
         </div>
       </div>
     </div>
-    <div class="screen-footer"><div class="page-verse"><div class="page-verse-text">"He grants sleep to those he loves."</div><div class="page-verse-ref">&mdash; Psalm 127:2</div></div><div class="emf-copyright">&copy; 2026 Embrace My Faith LLC</div></div>
+    <div class="screen-footer"><div class="emf-copyright">&copy; 2026 Embrace My Faith LLC</div></div>
   </div>
 </div>
 
@@ -704,7 +712,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
       <textarea id="prayerRequestText" style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.6);border:1.5px solid rgba(0,0,0,0.15);color:#111;font-family:'Lato',sans-serif;font-size:14px;resize:none;height:80px;outline:none;" placeholder="Share what you'd like prayer for... your community will lift you up."></textarea>
       <button onclick="sendPrayerRequest()" style="width:100%;margin-top:10px;padding:13px;background:rgba(30,15,0,0.8);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;">&#128591; Send Prayer Request to My Circle</button>
     </div>
-    <div class="screen-footer"><div class="page-verse"><div class="page-verse-text">"Ask and it will be given; seek and you will find."</div><div class="page-verse-ref">&mdash; Matthew 7:7</div></div><div class="emf-copyright">&copy; 2026 Embrace My Faith LLC</div></div>
+    <div class="screen-footer"><div class="emf-copyright">&copy; 2026 Embrace My Faith LLC</div></div>
   </div>
 </div>
 
@@ -718,7 +726,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
     <div class="section-sub">Add the people and milestones that matter. Tap &ldquo;Pray&rdquo; to lift them up anytime.</div>
     <button class="add-moment-top-btn" onclick="openModal()">+ Add Moment</button>
     <div id="momentsList"></div>
-    <div class="screen-footer"><div class="page-verse"><div class="page-verse-text">"I will remember the deeds of the Lord."</div><div class="page-verse-ref">&mdash; Psalm 77:11</div></div><div class="emf-copyright">&copy; 2026 Embrace My Faith LLC</div></div>
+    <div class="screen-footer"><div class="emf-copyright">&copy; 2026 Embrace My Faith LLC</div></div>
   </div>
 </div>
 
@@ -778,7 +786,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
         </a>
       </div>
     </div>
-    <div class="screen-footer"><div class="page-verse"><div class="page-verse-text">"The prayer of a righteous person is powerful."</div><div class="page-verse-ref">&mdash; James 5:16</div></div><div class="emf-copyright">&copy; 2026 Embrace My Faith LLC</div></div>
+    <div class="screen-footer"><div class="emf-copyright">&copy; 2026 Embrace My Faith LLC</div></div>
   </div>
 </div>
 
@@ -806,7 +814,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
       <div id="circleRequestsList"><div style="text-align:center;padding:16px;font-size:14px;color:rgba(0,0,0,0.4);">Loading...</div></div>
     </div>
     <div style="margin-top:16px;font-family:'Lato',sans-serif;font-style:italic;font-size:15px;color:rgba(0,0,0,0.8);text-align:center;">Carry each other's burdens, and in this way you will fulfill the law of Christ. — Galatians 6:2</div>
-    <div class="screen-footer"><div class="page-verse"><div class="page-verse-text">"Pray for each other so that you may be healed."</div><div class="page-verse-ref">&mdash; James 5:16</div></div><div class="emf-copyright">&copy; 2026 Embrace My Faith LLC</div></div>
+    <div class="screen-footer"><div class="emf-copyright">&copy; 2026 Embrace My Faith LLC</div></div>
   </div>
 </div>
 
@@ -852,7 +860,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
       <div id="circleGroupsList"></div>
     </div>
 
-    <div class="screen-footer"><div class="page-verse"><div class="page-verse-text">"As iron sharpens iron, so one person sharpens another."</div><div class="page-verse-ref">&mdash; Proverbs 27:17</div></div><div class="emf-copyright">&copy; 2026 Embrace My Faith LLC</div></div>
+    <div class="screen-footer"><div class="emf-copyright">&copy; 2026 Embrace My Faith LLC</div></div>
   </div>
 </div>
 
@@ -936,7 +944,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
     </div>
 
     <div style="text-align:center;margin-top:8px;font-size:11px;color:rgba(0,0,0,0.4);">Embrace My Faith v1.1 &#8212; Built with faith &amp; love</div>
-    <div class="screen-footer"><div class="page-verse"><div class="page-verse-text">"Draw near to God, and he will draw near to you."</div><div class="page-verse-ref">&mdash; James 4:8</div></div><div class="emf-copyright">&copy; 2026 Embrace My Faith LLC</div></div>
+    <div class="screen-footer"><div class="emf-copyright">&copy; 2026 Embrace My Faith LLC</div></div>
   </div>
 </div>
 
@@ -949,7 +957,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
     <div id="savedList">
       <div class="empty-state">&ldquo;Your prayers are treasured here,<br/>as they are in Heaven.&rdquo;</div>
     </div>
-    <div class="screen-footer"><div class="page-verse"><div class="page-verse-text">"I have hidden your word in my heart."</div><div class="page-verse-ref">&mdash; Psalm 119:11</div></div><div class="emf-copyright">&copy; 2026 Embrace My Faith LLC</div></div>
+    <div class="screen-footer"><div class="emf-copyright">&copy; 2026 Embrace My Faith LLC</div></div>
   </div>
 </div>
 
@@ -1076,7 +1084,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
       <button class="modal-save" onclick="saveModal()">Save Moment</button>
       <button class="modal-cancel" onclick="closeModal()">Cancel</button>
     </div>
-    <div class="screen-footer"><div class="page-verse"><div class="page-verse-text">"Draw near to God, and he will draw near to you."</div><div class="page-verse-ref">&mdash; James 4:8</div></div><div class="emf-copyright">&copy; 2026 Embrace My Faith LLC</div></div>
+    <div class="screen-footer"><div class="emf-copyright">&copy; 2026 Embrace My Faith LLC</div></div>
   </div>
 </div>
 
@@ -1672,9 +1680,9 @@ async function setTimeGreeting() {
   var dateStr = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
   var cacheKey = 'emf_verse_' + win + '_' + dateStr;
   var cached = localStorage.getItem(cacheKey);
-  if (cached) { document.getElementById('dailyVerse').textContent = cached; return; }
+  if (cached) { setDailyVerse(cached); return; }
 
-  document.getElementById('dailyVerse').textContent = '“Be still, and know that I am God.” — Psalm 46:10';
+  setDailyVerse('”Be still, and know that I am God.” — Psalm 46:10');
   try {
     var resp = await fetch('/api/claude', {
       method: 'POST',
@@ -1688,10 +1696,19 @@ async function setTimeGreeting() {
     var data = await resp.json();
     var verse = (data.content && data.content[0] && data.content[0].text) ? data.content[0].text.trim() : '';
     if (verse) {
-      document.getElementById('dailyVerse').textContent = verse;
+      setDailyVerse(verse);
       localStorage.setItem(cacheKey, verse);
     }
   } catch(e) { /* keep fallback */ }
+}
+function setDailyVerse(full) {
+  var sep = full.lastIndexOf(' — ');
+  var txt = sep > -1 ? full.substring(0, sep) : full;
+  var ref = sep > -1 ? '— ' + full.substring(sep + 3) : '';
+  var te = document.getElementById('dailyVerseText');
+  var re = document.getElementById('dailyVerseRef');
+  if (te) te.textContent = txt;
+  if (re) re.textContent = ref;
 }
 
 // ========== PRAYER GENERATION ==========
