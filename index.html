@@ -61,7 +61,7 @@ body{background:#1a1a1a;display:flex;justify-content:center;align-items:flex-sta
 
 /* ========== HOME ========== */
 #homeScreen{padding:0;}
-.settings-cog{position:absolute;top:20px;right:20px;background:rgba(255,255,255,0.35);border:1px solid rgba(0,0,0,0.15);border-radius:50%;width:32px;height:32px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;}
+.settings-cog{position:absolute;right:0;background:rgba(255,255,255,0.35);border:1px solid rgba(0,0,0,0.15);border-radius:50%;width:32px;height:32px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
 .home-header{padding:72px 28px 16px;text-align:center;}
 .home-logo{margin-bottom:8px;line-height:0;}
 .home-greeting{font-size:34px;font-weight:700;color:rgba(0,0,0,0.75);letter-spacing:0.5px;margin-bottom:4px;}
@@ -403,12 +403,13 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
 
 <!-- HOME -->
 <div class="screen" id="homeScreen">
-  <button class="settings-cog" onclick="showScreen('settingsScreen')">&#9881;</button>
-  <div class="home-header">
-    <div class="home-logo"><img src="images/EMF_logo.png" alt="Embrace My Faith" style="height:60px;object-fit:contain;"/></div>
-    <div class="home-greeting" id="timeGreeting">Good Morning,</div>
-    <div class="home-name" id="homeName">Friend</div>
-    <div class="daily-verse" id="dailyVerse">&ldquo;Be still, and know that I am God.&rdquo; &#8212; Psalm 46:10</div>
+  <div class="screen-top">
+    <div class="screen-title-row">
+      <div class="screen-title" id="timeGreeting">Good Morning,</div>
+      <button class="settings-cog" onclick="showScreen('settingsScreen')">&#9881;</button>
+    </div>
+    <div class="screen-title" id="homeName" style="margin-top:2px;">Friend</div>
+    <div class="daily-verse" id="dailyVerse" style="margin-top:10px;">&ldquo;Be still, and know that I am God.&rdquo; &#8212; Psalm 46:10</div>
   </div>
   <div class="home-grid">
     <div class="grid-card" onclick="showScreen('prayerScreen')">
@@ -1623,7 +1624,10 @@ function showScreen(id, isBack) {
     if (el) el.textContent = prayersLeft + ' of ' + getDailyLimit() + ' prayers remaining today';
   }
   if (id === 'pricingScreen') {
-    toggleAccordion(userTier);
+    ['grace','devotion','divine'].forEach(function(t){
+      var el = document.getElementById('accord-' + t);
+      if (el) el.classList.remove('open');
+    });
     updatePricingButtons();
   }
   var screens = document.querySelectorAll('.screen');
