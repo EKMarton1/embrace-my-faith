@@ -68,13 +68,13 @@ body{background:#1a1a1a;display:flex;justify-content:center;align-items:flex-sta
 .daily-verse-text{font-family:'Lato',sans-serif;font-style:italic;font-size:14px;font-weight:600;color:rgba(0,0,0,0.72);line-height:1.5;text-shadow:0 1px 3px rgba(255,255,255,0.5);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
 .daily-verse-ref{font-family:'Lato',sans-serif;font-size:12px;font-weight:600;color:rgba(0,0,0,0.50);margin-top:3px;text-shadow:0 1px 3px rgba(255,255,255,0.5);}
 .home-bars{display:flex;flex-direction:column;gap:12px;padding:0 16px;}
-.home-bar-card{display:flex;align-items:center;background:rgba(255,248,210,0.88);border-radius:20px;padding:16px 20px;cursor:pointer;transition:all 0.2s;touch-action:manipulation;}
-.home-bar-card:active{transform:scale(0.97);}
-.home-bar-icon{width:54px;height:54px;object-fit:contain;margin-right:18px;flex-shrink:0;}
-.home-bar-label{font-family:'Lato',sans-serif;font-size:22px;font-weight:700;color:rgba(0,0,0,0.82);}
+.home-bar-card{display:flex;align-items:center;background:rgba(255,248,210,0.68);border-radius:20px;padding:14px 20px;cursor:pointer;transition:background 0.12s ease;touch-action:manipulation;}
+.home-bar-card:active{background:rgba(255,248,210,0.92);}
+.home-bar-icon{width:54px;height:54px;object-fit:contain;margin-left:8px;margin-right:18px;flex-shrink:0;}
+.home-bar-label{font-family:'Lato',sans-serif;font-size:22px;font-weight:700;color:rgba(0,0,0,0.82);flex:1;padding-left:10px;}
 .home-tiles{display:flex;gap:10px;padding:12px 16px 0;}
-.home-tile{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(255,248,210,0.88);border-radius:20px;padding:18px 8px 14px;cursor:pointer;transition:all 0.2s;touch-action:manipulation;}
-.home-tile:active{transform:scale(0.97);}
+.home-tile{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(255,248,210,0.68);border-radius:20px;padding:18px 8px 14px;cursor:pointer;transition:background 0.12s ease;touch-action:manipulation;}
+.home-tile:active{background:rgba(255,248,210,0.92);}
 .home-tile-icon{width:52px;height:52px;object-fit:contain;margin-bottom:8px;}
 .home-tile-label{font-family:'Lato',sans-serif;font-size:14px;font-weight:700;color:rgba(0,0,0,0.75);}
 
@@ -207,6 +207,18 @@ input[type=range]{flex:1;accent-color:#f5c830;}
 .song-name{font-family:'Lato',sans-serif;font-weight:600;font-size:14px;color:#111;}
 .song-preview-btn{background:rgba(30,15,0,0.7);color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:12px;padding:6px 14px;border:none;border-radius:50px;cursor:pointer;transition:background 0.2s;flex-shrink:0;}
 .song-preview-btn:hover{background:rgba(30,15,0,0.9);}
+
+/* ========== MY CIRCLE REDESIGN ========== */
+.circle-slim-bar{display:flex;align-items:center;background:rgba(255,255,255,0.65);border-radius:14px;padding:10px 16px;margin-bottom:8px;gap:10px;}
+.circle-slim-btn{padding:9px 16px;background:rgba(30,15,0,0.80);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:13px;border-radius:12px;cursor:pointer;white-space:nowrap;touch-action:manipulation;}
+.circle-cancel-btn{padding:9px 16px;background:rgba(255,255,255,0.45);border:1.5px solid rgba(0,0,0,0.15);color:#333;font-family:'Lato',sans-serif;font-weight:700;font-size:13px;border-radius:12px;cursor:pointer;white-space:nowrap;touch-action:manipulation;}
+.circle-search-input{flex:1;padding:9px 14px;border-radius:12px;border:none;background:rgba(255,255,255,0.65);font-family:'Lato',sans-serif;font-size:14px;color:#111;outline:none;}
+.circle-group-btn{display:flex;align-items:center;justify-content:space-between;width:100%;padding:10px 18px;background:rgba(30,15,0,0.80);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:12px;cursor:pointer;margin-bottom:8px;touch-action:manipulation;letter-spacing:0.5px;}
+.circle-section-label{font-family:'Lato',sans-serif;font-weight:700;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:rgba(0,0,0,0.50);margin-bottom:10px;margin-top:4px;}
+#addGroupOverlay{position:absolute;inset:0;background:rgba(0,0,0,0.45);z-index:50;display:none;align-items:center;justify-content:center;border-radius:44px;}
+#addGroupOverlay.visible{display:flex;}
+.add-group-box{background:rgba(255,248,210,0.98);border-radius:20px;padding:22px 20px;width:280px;max-width:88%;}
+.add-group-box-title{font-family:'Lato',sans-serif;font-weight:700;font-size:15px;color:#111;margin-bottom:14px;text-align:center;}
 
 /* ========== SETTINGS ========== */
 .settings-card{background:rgba(255,255,255,0.45);border-radius:20px;padding:20px;margin-bottom:16px;}
@@ -440,7 +452,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
       <div class="home-tile-label">Moments</div>
     </div>
     <div class="home-tile" onclick="showScreen('riseScreen')">
-      <img class="home-tile-icon" src="images/Rise_Icon.png" alt="Rise"/>
+      <img class="home-tile-icon" src="images/Rise_Icon.png" alt="Rise" style="width:57px;height:57px;"/>
       <div class="home-tile-label">Rise</div>
     </div>
     <div class="home-tile" onclick="showScreen('restScreen')">
@@ -828,46 +840,58 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
 <!-- MY CIRCLE -->
 <div class="screen" id="circleScreen">
 <div class="screen-top">
-  <div class="screen-title-row"><button class="back-arrow-btn" onclick="goBack()">&lt;</button><div class="screen-title">My Circle</div></div>
+  <div class="screen-title-row"><button class="back-arrow-btn" onclick="goBack()">&lt;</button><div class="screen-title">My Prayer Circle</div></div>
 </div>
   <div class="screen-body">
-    <div class="section-label">Your Prayer Circle</div>
-    <div class="section-sub">Search for friends and family who have Embrace My Faith and invite them in.</div>
+    <div class="section-sub" style="text-align:center;margin-bottom:16px;">Search for family and friends who have the Embrace My Faith app and send an invite</div>
 
-    <label class="form-label">Find Someone</label>
-    <div style="display:flex;gap:10px;margin-bottom:8px;">
-      <input class="form-input" id="circleSearch" type="text" placeholder="Name..." style="margin-bottom:0;flex:1;" onkeydown="if(event.key==='Enter')circleDoSearch()"/>
-      <button onclick="circleDoSearch()" style="padding:14px 18px;background:rgba(30,15,0,0.8);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:14px;cursor:pointer;">Search</button>
+    <!-- Search row -->
+    <div style="display:flex;gap:8px;margin-bottom:10px;">
+      <input class="circle-search-input" id="circleSearch" type="text" placeholder="Name..." onkeydown="if(event.key==='Enter')circleDoSearch()"/>
+      <button class="circle-slim-btn" onclick="circleDoSearch()">Search</button>
     </div>
-    <div id="circleSearchResult" style="margin-bottom:16px;"></div>
+    <div id="circleSearchResult" style="margin-bottom:8px;"></div>
 
-    <div id="circlePendingSection" style="display:none;">
-      <div class="result-label" style="margin-bottom:8px;">Pending Invites <span id="circlePendingCount" style="font-size:14px;font-family:'Lato',sans-serif;font-weight:600;color:#111;"></span></div>
-      <div id="circlePendingList" style="margin-bottom:20px;"></div>
+    <!-- Pending invites -->
+    <div id="circlePendingSection" style="display:none;margin-bottom:12px;">
+      <div class="circle-section-label">Pending Invites <span id="circlePendingCount"></span></div>
+      <div id="circlePendingList"></div>
     </div>
 
-    <div class="result-label" style="margin-bottom:8px;">My Circle <span id="circleCountLabel" style="font-size:14px;font-family:'Lato',sans-serif;font-weight:600;color:#111;"></span></div>
-    <div id="circleList"><div style="text-align:center;padding:20px;font-size:14px;color:rgba(0,0,0,0.4);">Loading...</div></div>
-
-    <div style="margin-top:24px;">
+    <!-- MY GROUPS -->
+    <div style="margin-top:4px;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-        <div class="result-label">My Groups</div>
-        <button onclick="openCreateGroup()" style="padding:8px 14px;background:rgba(30,15,0,0.75);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:12px;border-radius:20px;cursor:pointer;">+ New Group</button>
+        <div class="circle-section-label" style="margin:0;">My Groups</div>
+        <button class="circle-slim-btn" onclick="openCreateGroup()">+ New Group</button>
       </div>
       <div id="createGroupPanel" style="display:none;background:rgba(255,255,255,0.45);border-radius:16px;padding:16px;margin-bottom:12px;">
-        <input class="form-input" id="newGroupName" type="text" placeholder="Group name (e.g. Family, Church, Work)" style="margin-bottom:12px;"/>
-        <div style="font-size:12px;font-weight:700;color:rgba(0,0,0,0.55);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Add Members</div>
-        <div id="newGroupMemberPicker" style="margin-bottom:14px;"></div>
-        <div style="display:flex;gap:10px;">
-          <button onclick="submitCreateGroup()" style="flex:1;padding:12px;background:rgba(30,15,0,0.85);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;">Create</button>
-          <button onclick="closeCreateGroup()" style="flex:1;padding:12px;background:rgba(255,255,255,0.4);border:1.5px solid rgba(0,0,0,0.15);color:#111;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;">Cancel</button>
+        <input class="circle-search-input" id="newGroupName" type="text" placeholder="Group name (e.g. Church, Work)" style="width:100%;margin-bottom:12px;flex:none;"/>
+        <div style="display:flex;gap:8px;">
+          <button class="circle-slim-btn" onclick="submitCreateGroup()" style="flex:1;">Create</button>
+          <button class="circle-cancel-btn" onclick="closeCreateGroup()" style="flex:1;">Cancel</button>
         </div>
       </div>
-      <div id="circleGroupsList"></div>
+      <div id="circleGroupButtons"></div>
     </div>
 
     <div class="screen-footer"><div class="emf-copyright">&copy; 2026 Embrace My Faith LLC</div></div>
   </div>
+  <!-- Add-to-group overlay (scoped inside screen) -->
+  <div id="addGroupOverlay" onclick="closeAddGroupOverlay()">
+    <div class="add-group-box" onclick="event.stopPropagation()">
+      <div class="add-group-box-title" id="addGroupOverlayTitle">Add to group</div>
+      <div id="addGroupOverlayButtons"></div>
+      <button class="circle-cancel-btn" onclick="closeAddGroupOverlay()" style="width:100%;margin-top:10px;">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- CIRCLE SUBPAGE (My Circle members / group subpage) -->
+<div class="screen" id="circleSubpageScreen">
+<div class="screen-top">
+  <div class="screen-title-row"><button class="back-arrow-btn" onclick="goBack()">&lt;</button><div class="screen-title" id="circleSubpageTitle">My Circle</div></div>
+</div>
+  <div class="screen-body" id="circleSubpageBody"></div>
 </div>
 
 
@@ -1220,16 +1244,17 @@ async function authSignIn() {
       supaAuthFetch('/auth/v1/token?grant_type=password', { email: email, password: pw }),
       supaTimeout(12000)
     ]);
-    btn.disabled = false; btn.textContent = 'SIGN IN';
     var errMsg = data.error_description || data.error || data.message || data.msg;
-    if (errMsg) { showAuthMsg('login', errMsg); return; }
+    if (errMsg) { btn.disabled = false; btn.textContent = 'SIGN IN'; showAuthMsg('login', errMsg); return; }
     if (data.access_token && data.user) {
       currentUser = data.user;
       currentAccessToken = data.access_token;
       localStorage.setItem('emf_returning', '1');
       await loadUserData();
       showScreen('homeScreen');
+      btn.disabled = false; btn.textContent = 'SIGN IN';
     } else {
+      btn.disabled = false; btn.textContent = 'SIGN IN';
       showAuthMsg('login', 'Unexpected response: ' + JSON.stringify(data).slice(0, 120));
     }
   } catch(e) {
@@ -2844,6 +2869,11 @@ var circlePendingOutgoing = [];
 var circleGroups = [];
 var circlePollingTimer = null;
 var prayerReqPollingTimer = null;
+var circleSubpageMode = "myCircle";
+var circleSubpageGroupId = null;
+var circleSubpageGroupName = "";
+var circleAddTargetUserId = null;
+var circleAddTargetName = "";
 
 async function loadCircleData() {
   if (!currentUser) return;
@@ -2882,33 +2912,14 @@ function renderCircleScreen() {
       ps.style.display = '';
       document.getElementById('circlePendingCount').textContent = '(' + circlePending.length + ')';
       pl.innerHTML = circlePending.map(function(p){
-        return '<div style="background:rgba(255,200,72,0.12);border:1.5px solid rgba(245,200,72,0.35);border-radius:16px;padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:12px;">' +
-          '<div style="width:44px;height:44px;border-radius:50%;background:rgba(30,15,0,0.15);display:flex;align-items:center;justify-content:center;font-size:20px;">&#128100;</div>' +
-          '<div style="flex:1;"><div style="font-weight:700;color:#111;font-size:14px;">' + escHtml(p.name) + '</div>' +
-          '<div style="font-size:12px;color:rgba(0,0,0,0.5);">Wants to join your circle</div></div>' +
-          '<button onclick="circleAccept(\'' + p.connectionId + '\')" style="padding:8px 12px;background:rgba(30,15,0,0.75);border:none;color:#f5c830;font-family:Lato,sans-serif;font-weight:700;font-size:12px;border-radius:20px;cursor:pointer;margin-right:6px;">Accept</button>' +
-          '<button onclick="circleDecline(\'' + p.connectionId + '\')" style="padding:8px 10px;background:rgba(255,255,255,0.35);border:none;color:#555;font-family:Lato,sans-serif;font-weight:700;font-size:12px;border-radius:20px;cursor:pointer;">Decline</button>' +
+        return '<div class="circle-slim-bar">' +
+          '<div style="flex:1;font-weight:700;color:#111;font-size:14px;font-family:Lato,sans-serif;">' + escHtml(p.name) + '</div>' +
+          '<div style="font-size:12px;color:rgba(0,0,0,0.5);margin-right:8px;">Invited you</div>' +
+          '<button class="circle-slim-btn" onclick="circleAccept(\'' + p.connectionId + '\')" style="margin-right:6px;padding:7px 12px;">Accept</button>' +
+          '<button class="circle-cancel-btn" onclick="circleDecline(\'' + p.connectionId + '\')" style="padding:7px 10px;">Decline</button>' +
           '</div>';
       }).join('');
     } else { ps.style.display = 'none'; }
-  }
-  var cl = document.getElementById('circleList');
-  var ccl = document.getElementById('circleCountLabel');
-  if (cl) {
-    if (ccl) ccl.textContent = '(' + circleData.length + ')';
-    if (circleData.length === 0) {
-      cl.innerHTML = '<div style="text-align:center;padding:24px;font-size:14px;color:rgba(0,0,0,0.45);">Your circle is empty. Search for someone to invite.</div>';
-    } else {
-      cl.innerHTML = circleData.map(function(m){
-        return '<div style="background:rgba(255,255,255,0.45);border-radius:16px;padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:12px;">' +
-          '<div style="width:44px;height:44px;border-radius:50%;background:rgba(30,15,0,0.15);display:flex;align-items:center;justify-content:center;font-size:20px;">&#128100;</div>' +
-          '<div style="flex:1;"><div style="font-weight:700;color:#111;font-size:14px;">' + escHtml(m.name) + '</div>' +
-          '<div style="font-size:12px;color:rgba(0,0,0,0.5);">Circle member</div></div>' +
-          '<button onclick="sendToPerson(\'' + escHtml(m.name) + '\')" style="padding:8px 14px;background:rgba(30,15,0,0.75);border:none;color:#f5c830;font-family:Lato,sans-serif;font-weight:700;font-size:12px;border-radius:20px;cursor:pointer;margin-right:6px;">Pray</button>' +
-          '<button onclick="circleRemove(\'' + m.connectionId + '\',this)" style="padding:8px 10px;background:rgba(255,255,255,0.35);border:none;color:#aa2222;font-family:Lato,sans-serif;font-weight:700;font-size:13px;border-radius:20px;cursor:pointer;">✕</button>' +
-          '</div>';
-      }).join('');
-    }
   }
 }
 
@@ -2928,13 +2939,12 @@ async function circleDoSearch() {
     var inCircle = existingIds.indexOf(u.id) >= 0;
     var isPendingOut = circlePendingOutgoing.indexOf(u.id) >= 0;
     var isPendingIn = circlePending.some(function(p){ return p.userId===u.id; });
-    var badge = inCircle ? '<span style="font-size:12px;color:rgba(0,0,0,0.4);">In circle</span>' :
-      isPendingOut ? '<span style="font-size:12px;color:rgba(0,0,0,0.4);">Invite sent</span>' :
-      isPendingIn ? '<span style="font-size:12px;color:rgba(0,0,0,0.4);">Invited you</span>' :
-      '<button onclick="circleSendInvite(\'' + u.id + '\',\'' + escHtml(u.name||'Member') + '\',this)" style="padding:8px 14px;background:rgba(30,15,0,0.75);border:none;color:#f5c830;font-family:Lato,sans-serif;font-weight:700;font-size:12px;border-radius:20px;cursor:pointer;">+ Invite</button>';
-    return '<div style="background:rgba(255,255,255,0.45);border-radius:16px;padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:12px;">' +
-      '<div style="width:44px;height:44px;border-radius:50%;background:rgba(30,15,0,0.15);display:flex;align-items:center;justify-content:center;font-size:20px;">&#128100;</div>' +
-      '<div style="flex:1;"><div style="font-weight:700;color:#111;font-size:14px;">' + escHtml(u.name||'Member') + '</div></div>' + badge + '</div>';
+    var badge = inCircle ? '<span style="font-size:12px;color:rgba(0,0,0,0.45);margin-left:auto;">In circle</span>' :
+      isPendingOut ? '<span style="font-size:12px;color:rgba(0,0,0,0.45);margin-left:auto;">Invite sent</span>' :
+      isPendingIn ? '<span style="font-size:12px;color:rgba(0,0,0,0.45);margin-left:auto;">Invited you</span>' :
+      '<button class="circle-slim-btn" onclick="circleSendInvite(\'' + u.id + '\',\'' + escHtml(u.name||'Member') + '\',this)" style="margin-left:auto;padding:7px 12px;">+ Invite</button>';
+    return '<div class="circle-slim-bar">' +
+      '<div style="flex:1;font-weight:700;color:#111;font-size:14px;font-family:Lato,sans-serif;">' + escHtml(u.name||'Member') + '</div>' + badge + '</div>';
   }).join('');
 }
 
@@ -3004,48 +3014,200 @@ async function loadCircleGroups() {
   });
   renderGroupsSection();
   renderAudienceButtons();
+  if (document.getElementById('circleSubpageScreen') && document.getElementById('circleSubpageScreen').classList.contains('active')) renderCircleSubpageBody();
 }
 
 function renderGroupsSection() {
-  var el = document.getElementById('circleGroupsList');
+  var el = document.getElementById('circleGroupButtons');
   if (!el) return;
-  if (circleGroups.length === 0) {
-    el.innerHTML = '<div style="text-align:center;padding:16px;font-size:14px;color:rgba(0,0,0,0.4);">No groups yet. Create one to organize your circle.</div>';
+  // Always-present MY CIRCLE button
+  var html = '<button class="circle-group-btn" onclick="openCircleGroupPage()">' +
+    '<span>MY CIRCLE</span><span>' + circleData.length + '</span></button>';
+  // FAMILY - always shown, find in groups or show empty
+  var familyGroup = circleGroups.find(function(g){ return g.name.toUpperCase() === 'FAMILY'; });
+  var familyCount = familyGroup ? familyGroup.members.length : 0;
+  var familyId = familyGroup ? familyGroup.id : '';
+  html += '<button class="circle-group-btn" onclick="openGroupPage(\'' + familyId + '\',\'FAMILY\')">' +
+    '<span>FAMILY</span><span>' + familyCount + '</span></button>';
+  // Custom groups (excluding FAMILY)
+  circleGroups.filter(function(g){ return g.name.toUpperCase() !== 'FAMILY'; }).forEach(function(g){
+    html += '<button class="circle-group-btn" onclick="openGroupPage(\'' + g.id + '\',\'' + escHtml(g.name.toUpperCase()) + '\')">' +
+      '<span>' + escHtml(g.name.toUpperCase()) + '</span><span>' + g.members.length + '</span></button>';
+  });
+  el.innerHTML = html;
+}
+
+// ── MY CIRCLE subpage ──────────────────────────────────────────────────────────
+function openCircleGroupPage() {
+  circleSubpageMode = 'myCircle';
+  circleSubpageGroupId = null;
+  circleSubpageGroupName = 'MY CIRCLE';
+  var t = document.getElementById('circleSubpageTitle');
+  if (t) t.textContent = 'MY CIRCLE';
+  renderCircleSubpageBody();
+  showScreen('circleSubpageScreen');
+}
+
+function renderCircleSubpageBody() {
+  var body = document.getElementById('circleSubpageBody');
+  if (!body) return;
+  if (circleSubpageMode === 'myCircle') {
+    if (circleData.length === 0) {
+      body.innerHTML = '<div style="text-align:center;padding:32px 20px;font-size:14px;color:rgba(0,0,0,0.45);">Your circle is empty. Go back and search for someone to invite.</div>';
+    } else {
+      body.innerHTML = '<div style="padding:0 20px;">' + circleData.map(function(m){
+        var uid = m.userId; var cid = m.connectionId; var nm = escHtml(m.name);
+        return '<div class="circle-slim-bar">' +
+          '<div style="flex:1;font-weight:700;color:#111;font-size:14px;font-family:Lato,sans-serif;">' + nm + '</div>' +
+          '<button class="circle-slim-btn" onclick="openAddGroupOverlay(\'' + uid + '\',\'' + nm + '\')" style="padding:7px 14px;margin-right:6px;">+</button>' +
+          '<button class="circle-slim-btn" onclick="circleRemoveFromSubpage(\'' + cid + '\',this)" style="background:rgba(150,20,20,0.75);padding:7px 12px;">✕</button>' +
+          '</div>';
+      }).join('') + '</div><div class="screen-footer"><div class="emf-copyright">&copy; 2026 Embrace My Faith LLC</div></div>';
+    }
+  } else {
+    // Group subpage
+    var group = circleGroups.find(function(g){ return g.id === circleSubpageGroupId; });
+    var members = group ? group.members : [];
+    var memberIds = members.map(function(m){ return m.userId; });
+    body.innerHTML = '<div style="padding:0 20px;">' +
+      '<div style="display:flex;gap:8px;margin-bottom:10px;">' +
+      '<input class="circle-search-input" id="groupSubSearch" type="text" placeholder="Search your circle..." onkeydown="if(event.key==='Enter')groupSubDoSearch()"/>' +
+      '<button class="circle-slim-btn" onclick="groupSubDoSearch()">Search</button></div>' +
+      '<div id="groupSubSearchResult" style="margin-bottom:10px;"></div>' +
+      '<div class="circle-section-label">Members</div>' +
+      (members.length === 0
+        ? '<div style="font-size:14px;color:rgba(0,0,0,0.45);padding:12px 0;">No members yet. Search your circle above to add someone.</div>'
+        : members.map(function(m){
+            return '<div class="circle-slim-bar">' +
+              '<div style="flex:1;font-weight:700;color:#111;font-size:14px;font-family:Lato,sans-serif;">' + escHtml(m.name) + '</div>' +
+              '<button class="circle-slim-btn" onclick="removeGroupMemberFromSubpage(\'' + (group ? group.id : '') + '\',\'' + m.userId + '\',this)" style="background:rgba(150,20,20,0.75);padding:7px 14px;">Remove</button>' +
+              '</div>';
+          }).join('')
+      ) +
+      '</div><div class="screen-footer"><div class="emf-copyright">&copy; 2026 Embrace My Faith LLC</div></div>';
+  }
+}
+
+function groupSubDoSearch() {
+  var q = (document.getElementById('groupSubSearch') && document.getElementById('groupSubSearch').value || '').trim().toLowerCase();
+  var res = document.getElementById('groupSubSearchResult');
+  if (!res) return;
+  if (!q) { res.innerHTML = ''; return; }
+  var group = circleGroups.find(function(g){ return g.id === circleSubpageGroupId; });
+  var existingIds = group ? group.members.map(function(m){ return m.userId; }) : [];
+  var matches = circleData.filter(function(m){ return m.name.toLowerCase().indexOf(q) >= 0 && existingIds.indexOf(m.userId) < 0; });
+  if (matches.length === 0) {
+    res.innerHTML = '<div style="font-size:13px;color:rgba(0,0,0,0.45);padding:8px 0;">No results.</div>';
     return;
   }
-  el.innerHTML = circleGroups.map(function(g){
-    var memberChips = g.members.length
-      ? g.members.map(function(m){
-          return '<span style="display:inline-flex;align-items:center;gap:4px;background:rgba(30,15,0,0.08);border-radius:20px;padding:4px 10px;font-size:12px;font-weight:600;color:#333;margin:3px;">' +
-            escHtml(m.name) +
-            '<button onclick="removeGroupMember(\'' + g.id + '\',\'' + m.userId + '\',this)" style="background:none;border:none;color:#aa2222;font-size:13px;cursor:pointer;padding:0 0 0 4px;line-height:1;">✕</button></span>';
-        }).join('')
-      : '<span style="font-size:12px;color:rgba(0,0,0,0.4);">No members yet</span>';
-    return '<div style="background:rgba(255,255,255,0.45);border-radius:16px;padding:14px;margin-bottom:10px;">' +
-      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">' +
-      '<div style="font-weight:700;color:#111;font-size:15px;">' + escHtml(g.name) + '</div>' +
-      '<button onclick="deleteGroup(\'' + g.id + '\',this)" style="padding:6px 12px;background:none;border:1.5px solid rgba(170,34,34,0.4);color:#aa2222;font-family:Lato,sans-serif;font-weight:700;font-size:12px;border-radius:20px;cursor:pointer;">Delete</button></div>' +
-      '<div style="display:flex;flex-wrap:wrap;align-items:center;gap:2px;margin-bottom:8px;">' + memberChips + '</div>' +
-      '<button onclick="openAddToGroup(\'' + g.id + '\',this)" style="font-size:12px;color:rgba(30,15,0,0.6);background:none;border:none;cursor:pointer;padding:0;font-family:Lato,sans-serif;font-weight:700;">+ Add member</button>' +
-      '<div class="addToGroupPanel" id="addPanel_' + g.id + '" style="display:none;margin-top:10px;"></div>' +
+  res.innerHTML = matches.map(function(m){
+    return '<div class="circle-slim-bar">' +
+      '<div style="flex:1;font-weight:700;color:#111;font-size:14px;font-family:Lato,sans-serif;">' + escHtml(m.name) + '</div>' +
+      '<button class="circle-slim-btn" onclick="addMemberToCurrentGroup(\'' + m.userId + '\',this)" style="padding:7px 14px;">Add</button>' +
       '</div>';
   }).join('');
 }
 
+async function addMemberToCurrentGroup(userId, btn) {
+  if (btn) { btn.disabled=true; btn.textContent='Adding...'; }
+  var gid = circleSubpageGroupId;
+  if (!gid) {
+    // FAMILY group doesn't exist yet — create it first
+    var result = await supaPost('/rest/v1/circle_groups', { user_id: currentUser.id, name: 'FAMILY' });
+    if (result && result.code) { if (btn) { btn.disabled=false; btn.textContent='Add'; } alert('Could not create group.'); return; }
+    var groups = await supaGet('/rest/v1/circle_groups?user_id=eq.' + currentUser.id + '&name=eq.FAMILY&order=created_at.desc&limit=1');
+    var ng = Array.isArray(groups) ? groups[0] : null;
+    if (!ng) { if (btn) { btn.disabled=false; btn.textContent='Add'; } return; }
+    circleSubpageGroupId = ng.id;
+    gid = ng.id;
+  }
+  await supaPost('/rest/v1/circle_group_members', { group_id: gid, member_user_id: userId });
+  await loadCircleGroups();
+  renderCircleSubpageBody();
+}
+
+async function removeGroupMemberFromSubpage(groupId, memberUserId, btn) {
+  if (btn) { btn.disabled=true; btn.textContent='...'; }
+  await supaDelete('/rest/v1/circle_group_members?group_id=eq.' + groupId + '&member_user_id=eq.' + memberUserId);
+  await loadCircleGroups();
+  renderCircleSubpageBody();
+}
+
+async function circleRemoveFromSubpage(connectionId, btn) {
+  if (!confirm('Remove this person from your circle?')) return;
+  if (btn && btn.parentElement) btn.parentElement.style.opacity = '0.4';
+  await supaDelete('/rest/v1/circle_connections?id=eq.' + connectionId);
+  await loadCircleData();
+  renderCircleSubpageBody();
+}
+
+// ── Group subpage ──────────────────────────────────────────────────────────────
+function openGroupPage(groupId, groupName) {
+  circleSubpageMode = 'group';
+  circleSubpageGroupId = groupId || null;
+  circleSubpageGroupName = groupName;
+  var t = document.getElementById('circleSubpageTitle');
+  if (t) t.textContent = groupName;
+  renderCircleSubpageBody();
+  showScreen('circleSubpageScreen');
+}
+
+// ── Add-to-group overlay ───────────────────────────────────────────────────────
+function openAddGroupOverlay(userId, userName) {
+  circleAddTargetUserId = userId;
+  circleAddTargetName = userName;
+  var overlay = document.getElementById('addGroupOverlay');
+  var title = document.getElementById('addGroupOverlayTitle');
+  var btns = document.getElementById('addGroupOverlayButtons');
+  if (!overlay || !btns) return;
+  title.textContent = 'Add ' + userName + ' to a group';
+  // Show groups the member is NOT already in
+  var available = circleGroups.filter(function(g){
+    return !g.members.some(function(m){ return m.userId === userId; });
+  });
+  // Always show FAMILY if not in groups or member not in it
+  var familyGroup = circleGroups.find(function(g){ return g.name.toUpperCase() === 'FAMILY'; });
+  var hasFamilySlot = !familyGroup || !familyGroup.members.some(function(m){ return m.userId === userId; });
+  var html = '';
+  if (hasFamilySlot && !available.find(function(g){ return g.name.toUpperCase() === 'FAMILY'; })) {
+    html += '<button class="circle-group-btn" onclick="addToGroupFromOverlay(\'' + (familyGroup ? familyGroup.id : '') + '\',\'FAMILY\')" style="margin-bottom:8px;"><span>FAMILY</span></button>';
+  }
+  available.forEach(function(g){
+    html += '<button class="circle-group-btn" onclick="addToGroupFromOverlay(\'' + g.id + '\',\'' + escHtml(g.name.toUpperCase()) + '\')" style="margin-bottom:8px;"><span>' + escHtml(g.name.toUpperCase()) + '</span></button>';
+  });
+  if (!html) html = '<div style="font-size:13px;color:rgba(0,0,0,0.5);text-align:center;padding:8px 0;">' + userName + ' is already in all groups.</div>';
+  btns.innerHTML = html;
+  overlay.classList.add('visible');
+}
+
+function closeAddGroupOverlay() {
+  var overlay = document.getElementById('addGroupOverlay');
+  if (overlay) overlay.classList.remove('visible');
+}
+
+async function addToGroupFromOverlay(groupId, groupName) {
+  closeAddGroupOverlay();
+  var userId = circleAddTargetUserId;
+  if (!userId) return;
+  var gid = groupId;
+  if (!gid) {
+    var result = await supaPost('/rest/v1/circle_groups', { user_id: currentUser.id, name: groupName });
+    if (result && result.code) { alert('Could not create group.'); return; }
+    var groups = await supaGet('/rest/v1/circle_groups?user_id=eq.' + currentUser.id + '&name=eq.' + encodeURIComponent(groupName) + '&order=created_at.desc&limit=1');
+    var ng = Array.isArray(groups) ? groups[0] : null;
+    if (!ng) return;
+    gid = ng.id;
+  }
+  await supaPost('/rest/v1/circle_group_members', { group_id: gid, member_user_id: userId });
+  await loadCircleGroups();
+  renderCircleSubpageBody();
+}
+
 function openCreateGroup() {
   var panel = document.getElementById('createGroupPanel');
-  panel.style.display = 'block';
-  document.getElementById('newGroupName').value = '';
-  var picker = document.getElementById('newGroupMemberPicker');
-  if (circleData.length === 0) {
-    picker.innerHTML = '<div style="font-size:13px;color:rgba(0,0,0,0.4);">Add people to your circle first.</div>';
-    return;
-  }
-  picker.innerHTML = circleData.map(function(m){
-    return '<label style="display:flex;align-items:center;gap:10px;padding:8px 0;cursor:pointer;">' +
-      '<input type="checkbox" value="' + m.userId + '" style="width:18px;height:18px;accent-color:#3d1f00;cursor:pointer;"/>' +
-      '<span style="font-size:14px;font-weight:600;color:#111;">' + escHtml(m.name) + '</span></label>';
-  }).join('');
+  if (panel) { panel.style.display = 'block'; }
+  var ni = document.getElementById('newGroupName');
+  if (ni) { ni.value = ''; ni.focus(); }
 }
 
 function closeCreateGroup() {
@@ -3053,19 +3215,10 @@ function closeCreateGroup() {
 }
 
 async function submitCreateGroup() {
-  var name = document.getElementById('newGroupName').value.trim();
+  var name = (document.getElementById('newGroupName') ? document.getElementById('newGroupName').value : '').trim();
   if (!name) { alert('Please enter a group name.'); return; }
-  var checked = Array.from(document.querySelectorAll('#newGroupMemberPicker input:checked')).map(function(i){ return i.value; });
   var result = await supaPost('/rest/v1/circle_groups', { user_id: currentUser.id, name: name });
   if (result && result.code) { alert('Could not create group: ' + (result.message||result.code)); return; }
-  // Fetch new group to get its id
-  var groups = await supaGet('/rest/v1/circle_groups?user_id=eq.' + currentUser.id + '&name=eq.' + encodeURIComponent(name) + '&order=created_at.desc&limit=1');
-  var newGroup = Array.isArray(groups) ? groups[0] : null;
-  if (newGroup && checked.length) {
-    for (var i = 0; i < checked.length; i++) {
-      await supaPost('/rest/v1/circle_group_members', { group_id: newGroup.id, member_user_id: checked[i] });
-    }
-  }
   closeCreateGroup();
   await loadCircleGroups();
 }
@@ -3083,25 +3236,7 @@ async function removeGroupMember(groupId, memberUserId, btn) {
   await loadCircleGroups();
 }
 
-function openAddToGroup(groupId, btn) {
-  var panel = document.getElementById('addPanel_' + groupId);
-  if (!panel) return;
-  if (panel.style.display !== 'none') { panel.style.display = 'none'; return; }
-  var group = circleGroups.find(function(g){ return g.id===groupId; });
-  var existingIds = group ? group.members.map(function(m){ return m.userId; }) : [];
-  var available = circleData.filter(function(c){ return existingIds.indexOf(c.userId) < 0; });
-  if (!available.length) { panel.innerHTML = '<div style="font-size:13px;color:rgba(0,0,0,0.4);">All circle members are already in this group.</div>'; panel.style.display='block'; return; }
-  panel.innerHTML = available.map(function(m){
-    return '<button onclick="addToGroup(\'' + groupId + '\',\'' + m.userId + '\',this)" style="display:block;width:100%;text-align:left;padding:8px 12px;background:rgba(255,255,255,0.5);border:none;border-radius:10px;margin-bottom:6px;font-size:13px;font-weight:600;color:#111;cursor:pointer;font-family:Lato,sans-serif;">' + escHtml(m.name) + '</button>';
-  }).join('');
-  panel.style.display = 'block';
-}
-
-async function addToGroup(groupId, memberUserId, btn) {
-  if (btn) { btn.disabled=true; btn.style.opacity='0.5'; }
-  await supaPost('/rest/v1/circle_group_members', { group_id: groupId, member_user_id: memberUserId });
-  await loadCircleGroups();
-}
+// openAddToGroup / addToGroup replaced by overlay system
 
 function renderAudienceButtons() {
   var wrap = document.getElementById('audienceButtonsWrap');
