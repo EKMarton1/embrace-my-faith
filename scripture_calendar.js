@@ -101,18 +101,54 @@
   // ═══════════════════════════════════════════════════════════════════════════
   // 3.  SEASON MAP  —  ordered list of { label, start, end } for a given year
   //     Single-day holidays are included as zero-width ranges (start === end).
-  //     The map is recalculated each time a new year is requested.
+  //     Years 2024–2028: calculated fresh each app load (in-memory cache only).
+  //     Years 2029+    : calculated once, persisted in localStorage keyed by
+  //                      year, and force-refreshed every January 1st.
   // ═══════════════════════════════════════════════════════════════════════════
 
-  var _seasonMapCache = {};
+  var _seasonMapCache  = {};
+  var PERSIST_FROM_YEAR = 2029;          // first year that uses localStorage
+
+  /** Store Date objects as millisecond timestamps for lossless JSON round-trip. */
+  function _serializeMap(map) {
+    return JSON.stringify(map.map(function (s) {
+      return { label: s.label, start: s.start.getTime(), end: s.end.getTime() };
+    }));
+  }
+
+  /** Restore a season map that was previously serialized by _serializeMap. */
+  function _deserializeMap(json) {
+    return JSON.parse(json).map(function (s) {
+      return { label: s.label, start: new Date(s.start), end: new Date(s.end) };
+    });
+  }
+
+  function _storageKey(year) { return 'emf_calendar_' + year; }
 
   /**
    * Build and return the full season map for `year`.
    * Seasons are checked in the order they appear here; the first match wins.
    * Single-day holidays come first so they override any enclosing season.
+   *
+   * Cache hierarchy (fastest → slowest):
+   *   1. In-memory  _seasonMapCache  — always checked first
+   *   2. localStorage (years 2029+)  — read on first miss, skips recalculation
+   *   3. Full calculation            — result written to both caches
    */
   function getSeasonMap(year) {
+    // ── 1. In-memory hit ────────────────────────────────────────────────────
     if (_seasonMapCache[year]) return _seasonMapCache[year];
+
+    // ── 2. localStorage hit (2029+ only) ────────────────────────────────────
+    if (year >= PERSIST_FROM_YEAR) {
+      try {
+        var stored = localStorage.getItem(_storageKey(year));
+        if (stored) {
+          _seasonMapCache[year] = _deserializeMap(stored);
+          return _seasonMapCache[year];
+        }
+      } catch (e) { /* localStorage unavailable — fall through to calculation */ }
+    }
 
     var easter     = getEaster(year);
 
@@ -187,9 +223,50 @@
       { label: "Thanksgiving",    start: thanksStart,  end: thanksEnd    },
     ];
 
+    // ── 3b. Persist to localStorage for 2029+ ───────────────────────────────
+    if (year >= PERSIST_FROM_YEAR) {
+      try { localStorage.setItem(_storageKey(year), _serializeMap(map)); } catch (e) {}
+    }
+
     _seasonMapCache[year] = map;
     return map;
   }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 3b. CALENDAR CACHE INIT  —  called automatically on script load
+  //     On Jan 1 of any year ≥ 2029: wipes stale localStorage entries for the
+  //     current year and next year, then recalculates and re-persists both.
+  //     On all other days the existing localStorage entries are used as-is;
+  //     no recalculation occurs unless an entry is missing.
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  function initCalendarCache() {
+    var now  = new Date();
+    var year = now.getFullYear();
+
+    // Nothing to do before 2029 — in-memory cache handles those years fine.
+    if (year < PERSIST_FROM_YEAR) return;
+
+    var isJan1 = now.getMonth() === 0 && now.getDate() === 1;
+
+    if (isJan1) {
+      // Force-refresh current year and next year so the new year's
+      // Easter-relative dates (Ash Wednesday, Palm Sunday, etc.) are correct.
+      [year, year + 1].forEach(function (y) {
+        delete _seasonMapCache[y];                          // clear in-memory
+        try { localStorage.removeItem(_storageKey(y)); } catch (e) {}
+        getSeasonMap(y);                                    // recalculate + persist
+      });
+    } else {
+      // Not Jan 1 — warm the in-memory cache from localStorage if present.
+      // getSeasonMap already does this lazily; calling it here front-loads
+      // the work so the first getCategory() call is instant.
+      [year, year + 1].forEach(function (y) { getSeasonMap(y); });
+    }
+  }
+
+  // Auto-run once when the script is loaded.
+  initCalendarCache();
 
   // ═══════════════════════════════════════════════════════════════════════════
   // 4.  GET CATEGORY  —  what season / holiday is a given date?
@@ -321,7 +398,15 @@
     getDailyScripture: getDailyScripture,
 
     /** Pre-load the scripture JSON (optional; getDailyScripture auto-loads) */
-    loadScriptures:    loadScriptures,
+    loadScriptures:     loadScriptures,
+
+    /**
+     * Refresh localStorage season cache for the current + next year.
+     * Called automatically on script load; only does real work on Jan 1, 2029+.
+     * Expose so host apps can call it manually if needed (e.g. after a timezone
+     * change or if localStorage was cleared mid-year).
+     */
+    initCalendarCache:  initCalendarCache,
   };
 
   // Support both browser globals and CommonJS (Node.js for tests)
