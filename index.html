@@ -61,20 +61,22 @@ body{background:#1a1a1a;display:flex;justify-content:center;align-items:flex-sta
 
 /* ========== HOME ========== */
 #homeScreen{padding:0;}
-.settings-cog{position:absolute;right:0;background:rgba(255,255,255,0.35);border:1px solid rgba(0,0,0,0.15);border-radius:50%;width:32px;height:32px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
-.home-header{padding:72px 28px 16px;text-align:center;}
-.home-logo{margin-bottom:8px;line-height:0;}
-.home-greeting{font-size:34px;font-weight:700;color:rgba(0,0,0,0.75);letter-spacing:0.5px;margin-bottom:4px;}
-.home-name{font-family:'Lato',sans-serif;font-size:36px;color:#111111;font-weight:700;margin-bottom:10px;}
+.settings-cog{position:absolute;top:20px;right:20px;background:rgba(255,255,255,0.35);border:1px solid rgba(0,0,0,0.15);border-radius:50%;width:36px;height:36px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;}
+.home-header{padding:56px 28px 20px;text-align:center;position:relative;}
+.home-greeting-text{font-family:'Lato',sans-serif;font-size:36px;font-weight:700;color:rgba(0,0,0,0.82);line-height:1.2;}
 .daily-verse{max-width:300px;margin:0 auto;text-align:center;}
 .daily-verse-text{font-family:'Lato',sans-serif;font-style:italic;font-size:14px;font-weight:600;color:rgba(0,0,0,0.72);line-height:1.5;text-shadow:0 1px 3px rgba(255,255,255,0.5);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
 .daily-verse-ref{font-family:'Lato',sans-serif;font-size:12px;font-weight:600;color:rgba(0,0,0,0.50);margin-top:3px;text-shadow:0 1px 3px rgba(255,255,255,0.5);}
-.home-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:8px 20px 32px;}
-.grid-card{background:rgba(255,255,255,0.45);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.6);border-radius:20px;padding:28px 16px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;cursor:pointer;transition:all 0.2s;}
-.grid-card:hover{background:rgba(255,255,255,0.65);}.grid-card:active{transform:scale(0.96);background:rgba(255,255,255,0.18);}
-.card-icon{display:flex;align-items:center;justify-content:center;height:54px;}.card-icon img{object-fit:contain;background:transparent;}
-.card-label{font-family:'Lato',sans-serif;font-weight:800;font-size:16px;color:#111111;letter-spacing:0.3px;text-shadow:0 1px 2px rgba(255,255,255,0.5);}
-.card-desc{display:none;}
+.home-bars{display:flex;flex-direction:column;gap:12px;padding:0 16px;}
+.home-bar-card{display:flex;align-items:center;background:rgba(255,248,210,0.88);border-radius:20px;padding:16px 20px;cursor:pointer;transition:all 0.2s;touch-action:manipulation;}
+.home-bar-card:active{transform:scale(0.97);}
+.home-bar-icon{width:54px;height:54px;object-fit:contain;margin-right:18px;flex-shrink:0;}
+.home-bar-label{font-family:'Lato',sans-serif;font-size:22px;font-weight:700;color:rgba(0,0,0,0.82);}
+.home-tiles{display:flex;gap:10px;padding:12px 16px 0;}
+.home-tile{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(255,248,210,0.88);border-radius:20px;padding:18px 8px 14px;cursor:pointer;transition:all 0.2s;touch-action:manipulation;}
+.home-tile:active{transform:scale(0.97);}
+.home-tile-icon{width:52px;height:52px;object-fit:contain;margin-bottom:8px;}
+.home-tile-label{font-family:'Lato',sans-serif;font-size:14px;font-weight:700;color:rgba(0,0,0,0.75);}
 
 /* ========== GENERIC SCREEN HEADER ========== */
 .screen-top{display:flex;flex-direction:column;align-items:center;text-align:center;padding:28px 20px 8px;}
@@ -405,41 +407,45 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
 
 <!-- HOME -->
 <div class="screen" id="homeScreen">
-  <div class="screen-top">
-    <div class="screen-title-row">
-      <div class="screen-title" id="timeGreeting">Good Morning,</div>
-      <button class="settings-cog" onclick="showScreen('settingsScreen')">&#9881;</button>
-    </div>
-    <div class="screen-title" id="homeName" style="margin-top:2px;">Friend</div>
-    <div class="daily-verse" id="dailyVerse" style="margin-top:10px;">
+  <button class="settings-cog" onclick="showScreen('settingsScreen')">&#9881;</button>
+  <div class="home-header">
+    <div class="home-greeting-text" id="timeGreeting">Good Morning</div>
+    <div class="home-greeting-text" id="homeName">Friend</div>
+    <div class="daily-verse" id="dailyVerse" style="margin-top:14px;">
       <div class="daily-verse-text" id="dailyVerseText">&ldquo;Be still, and know that I am God.&rdquo;</div>
       <div class="daily-verse-ref" id="dailyVerseRef">&mdash; Psalm 46:10</div>
     </div>
   </div>
-  <div class="home-grid">
-    <div class="grid-card" onclick="showScreen('prayerScreen')">
-      <div class="card-icon"><img src="images/My_Prayer_Icon.png" alt="Personal Prayer" style="width:46px;height:46px;"></div>
-      <div class="card-label">Personal Prayer</div>
+  <div class="home-bars">
+    <div class="home-bar-card" onclick="showScreen('circleScreen')">
+      <img class="home-bar-icon" src="images/Prayer_Circle_Icon.png" alt="Manage My Circle"/>
+      <div class="home-bar-label">Manage My Circle</div>
     </div>
-    <div class="grid-card" onclick="showScreen('requestPrayerScreen')">
-      <div class="card-icon"><img src="images/Request_Prayer_Icon.png" alt="Request Prayer" style="width:54px;height:54px;"></div>
-      <div class="card-label">Request Prayer</div>
+    <div class="home-bar-card" onclick="showScreen('requestPrayerScreen')">
+      <img class="home-bar-icon" src="images/Request_Prayer_Icon.png" alt="Request Prayer"/>
+      <div class="home-bar-label">Request Prayer</div>
     </div>
-    <div class="grid-card" onclick="showScreen('sendPrayerScreen')">
-      <div class="card-icon"><img src="images/Send_Prayer_Icon.png" alt="Send Prayer" style="width:46px;height:46px;"></div>
-      <div class="card-label">Send Prayer</div>
+    <div class="home-bar-card" onclick="showScreen('sendPrayerScreen')">
+      <img class="home-bar-icon" src="images/Send_Prayer_Icon.png" alt="Send Prayer"/>
+      <div class="home-bar-label">Send Prayer</div>
     </div>
-    <div class="grid-card" onclick="showScreen('momentsScreen')">
-      <div class="card-icon"><img src="images/Moments_Icon.png" alt="Moments" style="width:54px;height:54px;"></div>
-      <div class="card-label">Moments</div>
+    <div class="home-bar-card" onclick="showScreen('prayerScreen')">
+      <img class="home-bar-icon" src="images/My_Prayer_Icon.png" alt="Personal Prayer"/>
+      <div class="home-bar-label">Personal Prayer</div>
     </div>
-    <div class="grid-card" onclick="showScreen('riseScreen')">
-      <div class="card-icon"><img src="images/Rise_Icon.png" alt="Rise" style="width:54px;height:54px;"></div>
-      <div class="card-label">Rise</div>
+  </div>
+  <div class="home-tiles">
+    <div class="home-tile" onclick="showScreen('momentsScreen')">
+      <img class="home-tile-icon" src="images/Moments_Icon.png" alt="Moments"/>
+      <div class="home-tile-label">Moments</div>
     </div>
-    <div class="grid-card" onclick="showScreen('restScreen')">
-      <div class="card-icon"><img src="images/Rest_Icon.png" alt="Rest" style="width:42px;height:42px;"></div>
-      <div class="card-label">Rest</div>
+    <div class="home-tile" onclick="showScreen('riseScreen')">
+      <img class="home-tile-icon" src="images/Rise_Icon.png" alt="Rise"/>
+      <div class="home-tile-label">Rise</div>
+    </div>
+    <div class="home-tile" onclick="showScreen('restScreen')">
+      <img class="home-tile-icon" src="images/Rest_Icon.png" alt="Rest"/>
+      <div class="home-tile-label">Rest</div>
     </div>
   </div>
   <div class="screen-footer">
@@ -1702,9 +1708,11 @@ async function setTimeGreeting() {
   } catch(e) { /* keep fallback */ }
 }
 function setDailyVerse(full) {
-  var sep = full.lastIndexOf(' — ');
-  var txt = sep > -1 ? full.substring(0, sep) : full;
-  var ref = sep > -1 ? '— ' + full.substring(sep + 3) : '';
+  // Find the last em-dash or en-dash regardless of surrounding spaces
+  var sep = full.lastIndexOf('—');
+  if (sep === -1) sep = full.lastIndexOf('–');
+  var txt = sep > -1 ? full.substring(0, sep).trim() : full;
+  var ref = sep > -1 ? '— ' + full.substring(sep + 1).trim() : '';
   var te = document.getElementById('dailyVerseText');
   var re = document.getElementById('dailyVerseRef');
   if (te) te.textContent = txt;
