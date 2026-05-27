@@ -266,17 +266,13 @@ input[type=range]{flex:1;accent-color:#f5c830;}
 /* ========== MOMENTS ========== */
 .add-moment-top-btn{display:block;width:100%;margin-bottom:14px;padding:13px;background:rgba(30,15,0,0.8);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;transition:transform 0.2s ease;}
 .add-moment-top-btn:hover{transform:scale(1.05);}
-.moment-item{display:flex;align-items:center;background:rgba(255,255,255,0.35);border-radius:14px;padding:12px 14px;margin-bottom:8px;}
-.moment-item-body{flex:1;}
-.moment-item-row{display:flex;align-items:center;gap:10px;}
-.moment-item-row2{margin-top:5px;}
-.moment-item-date{font-size:16px;font-weight:700;color:rgba(0,0,0,0.7);white-space:nowrap;}
-.moment-item-name{font-weight:700;color:#111111;font-size:16px;text-transform:uppercase;letter-spacing:0.5px;}
-.moment-item-years{font-size:15px;font-weight:600;color:rgba(0,0,0,0.75);}
-.moment-badge{display:inline-flex;align-items:center;gap:3px;font-size:12px;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(30,15,0,0.75);color:#f5c830;white-space:nowrap;}
+.moment-item{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.35);border-radius:14px;padding:10px 14px;margin-bottom:8px;}
+.moment-item-date{font-size:13px;font-weight:700;color:rgba(0,0,0,0.55);white-space:nowrap;flex-shrink:0;}
+.moment-item-name{font-weight:700;color:#111111;font-size:14px;text-transform:uppercase;letter-spacing:0.5px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.moment-item-years{font-size:12px;font-weight:600;color:rgba(0,0,0,0.5);white-space:nowrap;flex-shrink:0;}
+.moment-cat-select{margin-left:auto;flex-shrink:0;appearance:none;-webkit-appearance:none;background:rgba(30,15,0,0.78);color:#f5c830;border:none;border-radius:20px;padding:5px 12px;font-family:'Lato',sans-serif;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:0.3px;}
+.moment-cat-select option{background:#1e0f00;color:#f5f0e8;}
 .moment-empty{text-align:center;font-family:'Lato',sans-serif;font-style:italic;font-size:14px;color:rgba(0,0,0,0.5);padding:30px 0;}
-.pray-for-btn{background:rgba(30,15,0,0.75);border:1px solid rgba(30,15,0,0.2);color:#f5c830;font-size:13px;font-weight:700;padding:8px 14px;border-radius:20px;cursor:pointer;white-space:nowrap;margin-left:8px;transition:transform 0.2s ease;}
-.pray-for-btn:hover{transform:scale(1.05);}
 .modal-date-row{display:flex;gap:8px;}
 .modal-date-row .modal-input{flex:1;margin-bottom:12px;}
 .modal-date-row select.modal-input{flex:1.6;}
@@ -303,7 +299,7 @@ input[type=range]{flex:1;accent-color:#f5c830;}
 select.modal-input{background:rgba(30,15,0,0.85);color:#f5f0e8;}
 select.modal-input option{background:#1e0f00;color:#f5f0e8;}
 .modal-btns{display:flex;gap:10px;margin-top:8px;}
-.modal-save{flex:1;padding:14px;background:rgba(255,255,255,0.2);border:1.5px solid rgba(255,255,255,0.4);color:#fff;font-family:'Lato',sans-serif;font-weight:700;font-size:15px;border-radius:50px;cursor:pointer;}
+.modal-save{flex:1;padding:14px;background:rgba(30,15,0,0.88);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:15px;border-radius:50px;cursor:pointer;letter-spacing:0.5px;}
 .modal-cancel{padding:14px 20px;background:transparent;border:none;color:rgba(255,255,255,0.5);font-family:'Lato',sans-serif;font-size:14px;cursor:pointer;}
 
 /* ========== CONNECT ========== */
@@ -1120,7 +1116,6 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
       <option value="Grief & Loss">Grief &amp; Loss</option>
       <option value="Gratitude">Gratitude</option>
     </select>
-    <textarea class="modal-textarea" id="mNote" placeholder="A note or prayer intention (optional)"></textarea>
     <div class="modal-btns">
       <button class="modal-save" onclick="saveModal()">Save Moment</button>
       <button class="modal-cancel" onclick="closeModal()">Cancel</button>
@@ -1378,11 +1373,23 @@ async function dbSavePrayer(prayerFor, prayerText, scripture, tone) {
 }
 
 async function dbSaveMoment(m) {
-  if (!supaClient || !currentUser) return null;
+  if (!currentUser) return null;
   try {
-    var { data } = await supaClient.from('moments').insert({ user_id: currentUser.id, name: m.name, category: m.category || '', date: m.date || '', note: m.note || '' }).select().single();
-    return data;
+    var resp = await fetch(SUPA_URL + '/rest/v1/moments', {
+      method: 'POST',
+      headers: Object.assign(supaHeaders(), { 'Prefer': 'return=representation' }),
+      body: JSON.stringify({ user_id: currentUser.id, name: m.name, category: m.category || '', date: m.date || '', note: '' })
+    });
+    var data = await resp.json();
+    // Supabase returns an array when Prefer: return=representation is set
+    var row = Array.isArray(data) ? data[0] : data;
+    return (row && !row.code) ? row : null;
   } catch(e) { return null; }
+}
+
+async function dbUpdateMomentCategory(momentId, category) {
+  if (!currentUser || !momentId) return;
+  try { await supaPost('/rest/v1/moments?id=eq.' + momentId, { category: category }, 'PATCH'); } catch(e) {}
 }
 
 async function dbSaveRisePrefs(prefs) {
@@ -2733,7 +2740,7 @@ async function saveModal() {
   var day = document.getElementById('mDay').value;
   var year = document.getElementById('mYear').value || '0000';
   var dateStr = month && day ? (year + '-' + ('0'+month).slice(-2) + '-' + ('0'+day).slice(-2)) : '';
-  var m = { name: name, date: dateStr, category: category, note: document.getElementById('mNote').value.trim() };
+  var m = { name: name, date: dateStr, category: category, note: '' };
   var dbRow = await dbSaveMoment(m);
   if (dbRow) m.id = dbRow.id;
   moments.push(m);
@@ -2764,6 +2771,7 @@ function renderMoments() {
     el.innerHTML = '<div class="moment-empty">&ldquo;Lift up the names on your heart.<br/>God hears every one.&rdquo;</div>';
     return;
   }
+  var CATS = ['Birthday','Anniversary','Illness & Healing','Milestone','Grief & Loss','Gratitude'];
   var sorted = moments.slice().sort(function(a, b) { return nextOccurrence(a.date) - nextOccurrence(b.date); });
   el.innerHTML = '';
   sorted.forEach(function(m) {
@@ -2772,19 +2780,27 @@ function renderMoments() {
     if (m.date) {
       var parts = m.date.split('-');
       var d = new Date(2000, parseInt(parts[1])-1, parseInt(parts[2]));
-      dateLabel = d.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+      dateLabel = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     }
     var years = calcYears(m.date, m.category);
-    var icon = catIcons[m.category] || '';
-    el.innerHTML += '<div class="moment-item"><div class="moment-item-body">' +
-      '<div class="moment-item-row">' +
+    var opts = CATS.map(function(c) {
+      return '<option value="' + c + '"' + (c === m.category ? ' selected' : '') + '>' + c + '</option>';
+    }).join('');
+    el.innerHTML +=
+      '<div class="moment-item">' +
       (dateLabel ? '<span class="moment-item-date">' + dateLabel + '</span>' : '') +
-      '<span class="moment-item-name">' + m.name + '</span>' +
-      (years !== '' ? '<span class="moment-item-years">' + years + '</span>' : '') +
-      '</div>' +
-      '<div class="moment-item-row2"><span class="moment-badge">' + icon + ' ' + m.category + '</span></div>' +
-      '</div><button class="pray-for-btn" onclick="prayForMoment(' + origIdx + ')">Pray</button></div>';
+      '<span class="moment-item-name">' + escHtml(m.name) + '</span>' +
+      (years !== '' ? '<span class="moment-item-years">&middot;&nbsp;' + years + ' yrs</span>' : '') +
+      '<select class="moment-cat-select" onchange="changeMomentCategory(' + origIdx + ',this.value)">' + opts + '</select>' +
+      '</div>';
   });
+}
+
+function changeMomentCategory(idx, newCat) {
+  if (!moments[idx]) return;
+  moments[idx].category = newCat;
+  dbUpdateMomentCategory(moments[idx].id, newCat);
+  renderMoments();
 }
 
 function prayForMoment(i) {
