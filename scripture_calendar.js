@@ -131,7 +131,12 @@
     var veteransDay = ymd(year, 11, 11);
     var newYearsEve = ymd(year, 12, 31);
 
-    // ── Seasonal ranges (fixed) ────────────────────────────────────────────
+    // ── Thanksgiving: Monday of Thanksgiving week → Nov 30 ────────────────
+    var thanksgivingDay = nthWeekday(year, 11, 4, 4); // 4th Thursday in Nov
+    var thanksStart     = addDays(thanksgivingDay, -3); // Monday of that week
+    var thanksEnd       = ymd(year, 11, 30);
+
+    // ── Seasonal ranges ────────────────────────────────────────────────────
     var newYearStart  = ymd(year,  1,  1);
     var newYearEnd    = ymd(year,  1,  7);
     var winterStart   = ymd(year,  1,  8);         // day after New Year week
@@ -148,9 +153,7 @@
     var btsStart      = ymd(year,  8, 14);          // Back to School
     var btsEnd        = ymd(year,  8, 31);
     var fallStart     = ymd(year,  9,  1);
-    var fallEnd       = ymd(year, 11,  6);
-    var thanksStart   = ymd(year, 11,  7);
-    var thanksEnd     = ymd(year, 11, 30);
+    var fallEnd       = addDays(thanksStart, -1);   // day before Thanksgiving week
     var adventStart   = ymd(year, 12,  1);
     var adventEnd     = ymd(year, 12, 24);
     var christmasStart = ymd(year, 12, 25);
