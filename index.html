@@ -3071,7 +3071,7 @@ function renderCircleSubpageBody() {
     var memberIds = members.map(function(m){ return m.userId; });
     body.innerHTML = '<div style="padding:0 20px;">' +
       '<div style="display:flex;gap:8px;margin-bottom:10px;">' +
-      '<input class="circle-search-input" id="groupSubSearch" type="text" placeholder="Search your circle..." onkeydown="if(event.key==='Enter')groupSubDoSearch()"/>' +
+      '<input class="circle-search-input" id="groupSubSearch" type="text" placeholder="Search your circle..." onkeydown="if(event.keyCode===13)groupSubDoSearch()"/>' +
       '<button class="circle-slim-btn" onclick="groupSubDoSearch()">Search</button></div>' +
       '<div id="groupSubSearchResult" style="margin-bottom:10px;"></div>' +
       '<div class="circle-section-label">Members</div>' +
