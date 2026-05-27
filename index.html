@@ -3113,7 +3113,7 @@ function renderCircleSubpageBody() {
         : members.map(function(m){
             return '<div class="circle-slim-bar">' +
               '<div style="flex:1;font-weight:700;color:#111;font-size:14px;font-family:Lato,sans-serif;">' + escHtml(m.name) + '</div>' +
-              '<button class="circle-slim-btn" onclick="removeGroupMemberFromSubpage(\'' + (group ? group.id : '') + '\',\'' + m.userId + '\',this)" style="background:rgba(150,20,20,0.75);padding:7px 14px;">Remove</button>' +
+              '<button class="circle-slim-btn" onclick="removeGroupMemberFromSubpage(\'' + (group ? group.id : '') + '\',\'' + m.userId + '\',this)" style="background:rgba(150,20,20,0.75);padding:7px 12px;">✕</button>' +
               '</div>';
           }).join('')
       ) +
