@@ -1630,7 +1630,7 @@ function showScreen(id, isBack) {
   // Clear auth error messages when switching screens
   if (id === 'loginScreen') { var le = document.getElementById('loginError'); if (le) { le.textContent = ''; le.style.display = 'none'; } var lb = document.getElementById('loginBtn'); if (lb) { lb.disabled = false; lb.textContent = 'SIGN IN'; } }
   if (id === 'signupScreen') { var se = document.getElementById('signupError'); if (se) { se.textContent = ''; se.style.display = 'none'; } var sb = document.getElementById('signupBtn'); if (sb) { sb.disabled = false; sb.textContent = 'CREATE ACCOUNT'; } }
-  if (id === 'homeScreen') { var hn = document.getElementById('homeName'); if (hn) hn.textContent = userName.split(' ')[0]; }
+  if (id === 'homeScreen') { var hn = document.getElementById('homeName'); if (hn) hn.textContent = userName.split(' ')[0]; playHomeAnimation(); }
   if (id === 'circleScreen' && !canUseTier('devotion')) {
     showTierModal('circle');
     return;
@@ -1699,6 +1699,54 @@ function saveName() {
   document.getElementById('notifyTitle').textContent = 'Welcome ' + userName.split(' ')[0] + '!';
   document.getElementById('homeName').textContent = userName.split(' ')[0];
   showScreen('notifyScreen');
+}
+
+// ========== HOME ENTRANCE ANIMATION ==========
+function playHomeAnimation() {
+  var isFirst = !localStorage.getItem('emf_first_load');
+  if (isFirst) localStorage.setItem('emf_first_load', '1');
+
+  // Timing arrays: [greeting, verse, bar0, bar1, bar2, bar3, tiles]
+  var t = isFirst
+    ? [0.0, 0.5, 1.2, 2.0, 2.8, 3.6, 4.2]
+    : [0.0, 0.2, 0.5, 0.9, 1.3, 1.7, 2.0];
+
+  var dur = isFirst ? 0.7 : 0.5;
+
+  var greetingEls = [
+    document.getElementById('timeGreeting'),
+    document.getElementById('homeName'),
+    document.querySelector('#homeScreen .settings-cog')
+  ];
+  var verseEl   = document.getElementById('dailyVerse');
+  var bars      = Array.from(document.querySelectorAll('#homeScreen .home-bar-card'));
+  var tiles     = Array.from(document.querySelectorAll('#homeScreen .home-tile'));
+  var footer    = document.querySelector('#homeScreen .screen-footer');
+
+  var allEls = greetingEls.concat([verseEl]).concat(bars).concat(tiles).concat([footer]);
+
+  // Hide everything immediately (before screen becomes active)
+  allEls.forEach(function(el) {
+    if (!el) return;
+    el.style.transition = 'none';
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+  });
+
+  function reveal(el, delay) {
+    if (!el) return;
+    setTimeout(function() {
+      el.style.transition = 'opacity ' + dur + 's ease-out, transform ' + dur + 's ease-out';
+      el.style.opacity = '1';
+      el.style.transform = 'translateY(0)';
+    }, Math.round(delay * 1000));
+  }
+
+  greetingEls.forEach(function(el) { reveal(el, t[0]); });
+  reveal(verseEl, t[1]);
+  bars.forEach(function(bar, i) { reveal(bar, t[2 + i]); });
+  tiles.forEach(function(tile) { reveal(tile, t[6]); });
+  reveal(footer, t[6]);
 }
 
 async function setTimeGreeting() {
