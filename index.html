@@ -215,7 +215,7 @@ input[type=range]{flex:1;accent-color:#f5c830;}
 /* ========== SETTINGS ========== */
 .settings-card{background:rgba(255,248,210,0.68);border-radius:20px;padding:20px;margin-bottom:16px;}
 .settings-card-title{font-size:13px;font-weight:800;color:#111;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
-.settings-card-sub{font-size:13px;color:rgba(0,0,0,0.6);margin-bottom:14px;line-height:1.5;}
+.settings-card-sub{font-size:13px;color:rgba(0,0,0,0.6);margin-bottom:14px;line-height:1.5;}.settings-nav-btn{display:flex;align-items:center;justify-content:space-between;width:100%;padding:16px 20px;background:rgba(30,15,0,0.80);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:15px;border-radius:14px;cursor:pointer;margin-bottom:10px;touch-action:manipulation;letter-spacing:0.5px;transition:background 0.12s ease;box-sizing:border-box;}.settings-nav-btn:active{background:rgba(30,15,0,0.60);}.settings-nav-chevron{font-size:22px;font-weight:300;opacity:0.65;line-height:1;}
 .settings-toggle-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid rgba(0,0,0,0.08);}
 .settings-toggle-row:last-child{border-bottom:none;padding-bottom:0;}
 .settings-toggle-label{font-size:14px;font-weight:600;color:#111;margin-bottom:2px;}
@@ -893,27 +893,94 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
 <!-- SETTINGS -->
 <div class="screen" id="settingsScreen">
 <div class="screen-top">
-  <div class="screen-title-row"><button class="back-arrow-btn" onclick="goBack()">&lt;</button><div class="screen-title">Settings</div></div>
+  <div class="screen-title-row"><button class="back-arrow-btn" onclick="goBack()">&lt;</button><div class="screen-title">Preferences</div></div>
 </div>
   <div class="screen-body">
-    <div class="section-label">Your Preferences</div>
-    <div class="section-sub">Personalize your Embrace My Faith experience.</div>
+    <button class="settings-nav-btn" onclick="showScreen('accountScreen')">
+      <span>Account &amp; Profile</span><span class="settings-nav-chevron">&#8250;</span>
+    </button>
+    <button class="settings-nav-btn" onclick="showScreen('securityScreen')">
+      <span>Security &amp; Privacy</span><span class="settings-nav-chevron">&#8250;</span>
+    </button>
+    <button class="settings-nav-btn" onclick="showScreen('notificationsScreen')">
+      <span>Notifications &amp; Alerts</span><span class="settings-nav-chevron">&#8250;</span>
+    </button>
+    <button class="settings-nav-btn" onclick="showScreen('supportScreen')">
+      <span>Help &amp; Support</span><span class="settings-nav-chevron">&#8250;</span>
+    </button>
+    <div class="screen-footer"><div class="emf-copyright">&copy; 2026 Embrace My Faith LLC</div></div>
+  </div>
+</div>
 
+<!-- ACCOUNT & PROFILE -->
+<div class="screen" id="accountScreen">
+<div class="screen-top">
+  <div class="screen-title-row"><button class="back-arrow-btn" onclick="goBack()">&lt;</button><div class="screen-title">Account &amp; Profile</div></div>
+</div>
+  <div class="screen-body">
     <div class="settings-card">
-      <div class="settings-card-title">Default Prayer Voice</div>
-      <div class="settings-card-sub">The voice that reads your prayers. Change per prayer anytime.</div>
-      <div style="display:flex;gap:10px;">
-        <button id="settingsFemale" onclick="saveGenderPref('female')" style="flex:1;padding:14px;background:rgba(30,15,0,0.75);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:15px;border-radius:50px;cursor:pointer;transition:background 0.2s;">Female</button>
-        <button id="settingsMale" onclick="saveGenderPref('male')" style="flex:1;padding:14px;background:rgba(255,255,255,0.4);border:1.5px solid rgba(0,0,0,0.15);color:#111;font-family:'Lato',sans-serif;font-weight:700;font-size:15px;border-radius:50px;cursor:pointer;transition:background 0.2s;">Male</button>
+      <div class="settings-card-title">Profile</div>
+      <div style="font-size:15px;font-weight:700;color:#111;margin-bottom:2px;font-family:'Lato',sans-serif;" id="settingsName">Friend</div>
+      <div style="font-size:13px;color:rgba(0,0,0,0.5);margin-bottom:14px;font-family:'Lato',sans-serif;" id="settingsEmail"></div>
+      <div id="settingsNameView">
+        <button onclick="showSettingsNameEdit()" style="width:100%;padding:13px;background:rgba(255,248,210,0.68);border:1px solid rgba(0,0,0,0.13);color:rgba(0,0,0,0.82);font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;transition:background 0.12s ease;touch-action:manipulation;">Edit Name</button>
+      </div>
+      <div id="settingsNameEdit" style="display:none;margin-top:12px;">
+        <input id="settingsNameInput" class="form-input" type="text" placeholder="Enter your name" style="margin-bottom:10px;"/>
+        <div style="display:flex;gap:10px;">
+          <button onclick="saveSettingsName()" style="flex:1;padding:12px;background:rgba(30,15,0,0.85);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;transition:background 0.12s ease;touch-action:manipulation;">Save</button>
+          <button onclick="cancelSettingsNameEdit()" style="flex:1;padding:12px;background:rgba(255,248,210,0.68);border:1px solid rgba(0,0,0,0.13);color:rgba(0,0,0,0.82);font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;transition:background 0.12s ease;touch-action:manipulation;">Cancel</button>
+        </div>
       </div>
     </div>
 
     <div class="settings-card">
-      <div class="settings-card-title">Prayers Today</div>
-      <div style="font-size:15px;font-weight:600;color:#111;" id="settingsPrayerCount">0 of 15 prayers used today</div>
-      <div class="prayer-bar-track"><div class="prayer-bar-fill" id="settingsPrayerBar" style="width:0%;"></div></div>
+      <div class="settings-card-title">Subscription</div>
+      <div style="font-size:15px;font-weight:700;color:#111;margin-bottom:4px;font-family:'Lato',sans-serif;" id="settingsTierName">Grace (Free)</div>
+      <div style="font-size:13px;color:rgba(0,0,0,0.55);margin-bottom:14px;font-family:'Lato',sans-serif;" id="settingsTierDesc">1 prayer per day</div>
+      <button onclick="showScreen('pricingScreen')" style="width:100%;padding:13px;background:linear-gradient(135deg,#c8900a,#3d1f00);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;touch-action:manipulation;" id="settingsUpgradeBtn">View Plans</button>
     </div>
 
+    <div class="settings-card">
+      <div class="settings-card-title">Saved Prayers</div>
+      <div class="settings-card-sub" id="settingsSavedCount">0 prayers saved</div>
+      <button onclick="showScreen('savedScreen')" style="width:100%;padding:13px;background:rgba(255,248,210,0.68);border:1px solid rgba(0,0,0,0.13);color:rgba(0,0,0,0.82);font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;touch-action:manipulation;margin-top:10px;transition:background 0.12s ease;">View Saved Prayers</button>
+    </div>
+
+    <button class="auth-signout-btn" onclick="authSignOut()">Sign Out</button>
+    <div class="screen-footer"><div class="emf-copyright">&copy; 2026 Embrace My Faith LLC</div></div>
+  </div>
+</div>
+
+<!-- SECURITY & PRIVACY -->
+<div class="screen" id="securityScreen">
+<div class="screen-top">
+  <div class="screen-title-row"><button class="back-arrow-btn" onclick="goBack()">&lt;</button><div class="screen-title">Security &amp; Privacy</div></div>
+</div>
+  <div class="screen-body">
+    <div class="settings-card">
+      <div class="settings-card-title">Password</div>
+      <div class="settings-card-sub">To change your password, sign out and use &ldquo;Forgot Password&rdquo; on the sign-in screen.</div>
+    </div>
+    <div class="settings-card">
+      <div class="settings-card-title">Your Data</div>
+      <div class="settings-card-sub">Embrace My Faith stores only what&rsquo;s needed to personalize your experience. We never sell your data.</div>
+    </div>
+    <div class="screen-footer"><div class="emf-copyright">&copy; 2026 Embrace My Faith LLC</div></div>
+  </div>
+</div>
+
+<!-- NOTIFICATIONS & ALERTS -->
+<div class="screen" id="notificationsScreen">
+<div class="screen-top">
+  <div class="screen-title-row"><button class="back-arrow-btn" onclick="goBack()">&lt;</button><div class="screen-title">Notifications &amp; Alerts</div></div>
+</div>
+  <div class="screen-body">
+    <div class="settings-card">
+      <div class="settings-card-title">Prayers Today</div>
+      <div style="font-size:15px;font-weight:600;color:#111;font-family:'Lato',sans-serif;" id="settingsPrayerCount">0 of 15 prayers used today</div>
+      <div class="prayer-bar-track"><div class="prayer-bar-fill" id="settingsPrayerBar" style="width:0%;"></div></div>
+    </div>
     <div class="settings-card">
       <div class="settings-card-title">Notifications</div>
       <div class="settings-toggle-row">
@@ -937,38 +1004,25 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
         </div>
       </div>
     </div>
+    <div class="screen-footer"><div class="emf-copyright">&copy; 2026 Embrace My Faith LLC</div></div>
+  </div>
+</div>
 
+<!-- HELP & SUPPORT -->
+<div class="screen" id="supportScreen">
+<div class="screen-top">
+  <div class="screen-title-row"><button class="back-arrow-btn" onclick="goBack()">&lt;</button><div class="screen-title">Help &amp; Support</div></div>
+</div>
+  <div class="screen-body">
     <div class="settings-card">
-      <div class="settings-card-title">Account</div>
-      <div style="font-size:15px;font-weight:600;color:#111;margin-bottom:2px;" id="settingsName">Friend</div>
-      <div style="font-size:12px;color:rgba(0,0,0,0.5);margin-bottom:14px;" id="settingsEmail"></div>
-      <div id="settingsNameView">
-        <button onclick="showSettingsNameEdit()" style="width:100%;padding:13px;background:rgba(255,255,255,0.4);border:1.5px solid rgba(0,0,0,0.15);color:#111;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;transition:background 0.2s;">Edit Name</button>
-      </div>
-      <div id="settingsNameEdit" style="display:none;margin-top:12px;">
-        <input id="settingsNameInput" class="form-input" type="text" placeholder="Enter your name" style="margin-bottom:10px;"/>
-        <div style="display:flex;gap:10px;">
-          <button onclick="saveSettingsName()" style="flex:1;padding:12px;background:rgba(30,15,0,0.85);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;">Save</button>
-          <button onclick="cancelSettingsNameEdit()" style="flex:1;padding:12px;background:rgba(255,255,255,0.4);border:1.5px solid rgba(0,0,0,0.15);color:#111;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;">Cancel</button>
-        </div>
-      </div>
-      <button class="auth-signout-btn" onclick="authSignOut()">Sign Out</button>
+      <div class="settings-card-title">Contact Us</div>
+      <div class="settings-card-sub">Have a question or need help? We&rsquo;d love to hear from you.</div>
+      <button onclick="window.location.href='mailto:support@embracemyfaith.app'" style="width:100%;padding:13px;background:rgba(30,15,0,0.80);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;touch-action:manipulation;transition:background 0.12s ease;margin-top:4px;">Email Support</button>
     </div>
-
     <div class="settings-card">
-      <div class="settings-card-title">Subscription</div>
-      <div style="font-size:15px;font-weight:700;color:#111;margin-bottom:4px;" id="settingsTierName">Grace (Free)</div>
-      <div style="font-size:13px;color:rgba(0,0,0,0.55);margin-bottom:14px;" id="settingsTierDesc">1 prayer per day</div>
-      <button onclick="showScreen('pricingScreen')" style="width:100%;padding:13px;background:linear-gradient(135deg,#c8900a,#3d1f00);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;touch-action:manipulation;" id="settingsUpgradeBtn">View Plans</button>
+      <div class="settings-card-title">About</div>
+      <div class="settings-card-sub">Embrace My Faith v1.1<br/>Built with faith &amp; love.</div>
     </div>
-
-    <div class="settings-card">
-      <div class="settings-card-title">Saved Prayers</div>
-      <div class="settings-card-sub" id="settingsSavedCount">0 prayers saved</div>
-      <button onclick="showScreen('savedScreen')" style="width:100%;padding:13px;background:rgba(255,255,255,0.4);border:1.5px solid rgba(0,0,0,0.15);color:#111;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;touch-action:manipulation;margin-top:10px;">View Saved Prayers</button>
-    </div>
-
-    <div style="text-align:center;margin-top:8px;font-size:11px;color:rgba(0,0,0,0.4);">Embrace My Faith v1.1 &#8212; Built with faith &amp; love</div>
     <div class="screen-footer"><div class="emf-copyright">&copy; 2026 Embrace My Faith LLC</div></div>
   </div>
 </div>
@@ -1641,17 +1695,10 @@ function showScreen(id, isBack) {
     showTierModal('circle');
     return;
   }
-  if (id === 'settingsScreen') {
+  if (id === 'accountScreen') {
     document.getElementById('settingsName').textContent = userName;
     var emailEl = document.getElementById('settingsEmail');
     if (emailEl && currentUser) emailEl.textContent = currentUser.email;
-    saveGenderPref(defaultGender);
-    var limit = getDailyLimit();
-    var used = limit - prayersLeft;
-    document.getElementById('settingsPrayerCount').textContent = used + ' of ' + limit + ' prayers used today';
-    document.getElementById('settingsPrayerBar').style.width = Math.min(100, (used / limit) * 100) + '%';
-    document.getElementById('notifScripture').checked = localStorage.getItem('emf_notif_scripture') !== '0';
-    document.getElementById('notifMoments').checked = localStorage.getItem('emf_notif_moments') === '1';
     var tierNames = { grace: 'Grace (Free)', devotion: 'Devotion', divine: 'Divine' };
     var tierDescs = { grace: '1 prayer per day', devotion: '5 prayers per day · voice audio · Prayer Circle', divine: '15 prayers per day · all voices · unlimited saves' };
     var eff = getEffectiveTier();
@@ -1663,6 +1710,14 @@ function showScreen(id, isBack) {
     if (upBtn) upBtn.textContent = canUseTier('divine') && !isTrialing() ? 'Manage Plan' : 'View Plans';
     var scEl = document.getElementById('settingsSavedCount');
     if (scEl) { var lim = getSavedLimit(); scEl.textContent = savedPrayers.length + ' prayer' + (savedPrayers.length !== 1 ? 's' : '') + ' saved' + (lim !== Infinity ? ' (max ' + lim + ')' : ''); }
+  }
+  if (id === 'notificationsScreen') {
+    var limit = getDailyLimit();
+    var used = limit - prayersLeft;
+    document.getElementById('settingsPrayerCount').textContent = used + ' of ' + limit + ' prayers used today';
+    document.getElementById('settingsPrayerBar').style.width = Math.min(100, (used / limit) * 100) + '%';
+    document.getElementById('notifScripture').checked = localStorage.getItem('emf_notif_scripture') !== '0';
+    document.getElementById('notifMoments').checked = localStorage.getItem('emf_notif_moments') === '1';
   }
   if (id === 'sendPrayerScreen') {
     var el = document.getElementById('sendPrayersRemaining');
