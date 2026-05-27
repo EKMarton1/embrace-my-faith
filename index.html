@@ -1118,6 +1118,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
   </div>
 </div>
 
+<script src="scripture_calendar.js"></script>
 <script>
 // ========== SUPABASE ==========
 var SUPA_URL = 'https://fubmjytqfucnudpupynw.supabase.co';
@@ -1750,26 +1751,16 @@ function playHomeAnimation() {
 }
 
 async function setTimeGreeting() {
+  // Set greeting based on time of day
   var h = new Date().getHours();
   var win = getVerseWindow(h);
   var cfg = verseWindows[win];
   document.getElementById('timeGreeting').textContent = cfg.greeting;
 
-  // Load today's verse from daily_scriptures.json (MM-DD matching)
-  var d = new Date();
-  var mm = String(d.getMonth() + 1).padStart(2, '0');
-  var dd = String(d.getDate()).padStart(2, '0');
-  var today = mm + '-' + dd;
-
+  // Load today's scripture via the liturgical calendar (category shifts with Easter)
   try {
-    var resp = await fetch('/daily_scriptures.json');
-    var scriptures = await resp.json();
-    var entry = scriptures.find(function(s) { return s.date === today; });
-    if (entry) {
-      setDailyVerse('“' + entry.verse + '” — ' + entry.reference);
-    } else {
-      setDailyVerse('“Be still, and know that I am God.” — Psalm 46:10');
-    }
+    var scripture = await EMFCalendar.getDailyScripture(new Date());
+    setDailyVerse('“' + scripture.verse + '” — ' + scripture.reference);
   } catch(e) {
     setDailyVerse('“Be still, and know that I am God.” — Psalm 46:10');
   }
