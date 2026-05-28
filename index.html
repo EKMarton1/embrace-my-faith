@@ -86,6 +86,289 @@ function openManageSubscription() {
 function upgradeToAnnual() {
   alert('Annual plan upgrade coming soon. Email support@embracemyfaith.app to upgrade manually.');
 }
+
+// ══════════════════════════════════════════════════════
+// PERSONAL PRAYER — TYPE SELECTOR + GENERATE
+// ══════════════════════════════════════════════════════
+var activePrayerType = 0;
+var expPrayerText = '';
+var expPrayerType = 0;
+var expPrayerTone = 'hopeful and uplifting';
+var expPrayerSubject = '';
+var expProgressInterval = null;
+
+var TONE_BG = {
+  'hopeful and uplifting':   'linear-gradient(160deg,#c8900a 0%,#3d1f00 100%)',
+  'comforting and peaceful': 'linear-gradient(160deg,#4a6fa5 0%,#1a2840 100%)',
+  'bold and courageous':     'linear-gradient(160deg,#8b2020 0%,#250808 100%)',
+  'grateful and thankful':   'linear-gradient(160deg,#b8860b 0%,#4a3000 100%)',
+  'healing and restoration': 'linear-gradient(160deg,#2d7a5e 0%,#0a2a1e 100%)',
+  'default':                 'linear-gradient(160deg,#c8900a 0%,#3d1f00 100%)'
+};
+
+function selectPrayerType(n) {
+  activePrayerType = n;
+  [1,2,3].forEach(function(i) {
+    var btn = document.getElementById('ptype'+i);
+    var form = document.getElementById('prayerForm'+i);
+    if (btn) btn.classList.toggle('selected', i === n);
+    if (form) form.style.display = (i === n) ? '' : 'none';
+  });
+  document.getElementById('prayerLoadingWrap').classList.remove('visible');
+}
+
+async function generatePrayerTyped(type) {
+  if (prayersLeft <= 0) { showTierModal('limit'); return; }
+  var situation = '';
+  var subject = '';
+  var tone = 'hopeful and uplifting';
+
+  if (type === 1) {
+    situation = (document.getElementById('pSituation1') || {}).value || '';
+    if (!situation.trim()) { alert('Please share what is on your heart.'); return; }
+  } else if (type === 2) {
+    situation = (document.getElementById('pSituation2') || {}).value || '';
+    if (!situation.trim()) { alert('Please share what is on your heart.'); return; }
+  } else if (type === 3) {
+    subject = (document.getElementById('pSubject3') || {}).value || '';
+    situation = (document.getElementById('pSituation3') || {}).value || '';
+    tone = (document.getElementById('pTone3') || {}).value || 'hopeful and uplifting';
+    if (!subject.trim()) { alert('Please enter who or what you are lifting up.'); return; }
+  }
+
+  var genBtn = document.getElementById('pGenBtn'+type);
+  if (genBtn) genBtn.disabled = true;
+  document.getElementById('prayerLoadingWrap').classList.add('visible');
+  stopAudio();
+
+  var systemMsg = 'You are a heartfelt Christian prayer minister. Write prayers that are warm, specific, and concise. Every word must count. Hard limit: 120 words maximum.';
+  var userMsg = '';
+  var firstName = userName ? userName.split(' ')[0] : 'Friend';
+
+  if (type === 1) {
+    userMsg = [
+      'Write a heartfelt personal prayer of 100-120 words that I can speak directly to God.',
+      'SITUATION: ' + situation.trim(),
+      'TONE: hopeful and uplifting',
+      'Write entirely in first person using I, me, my throughout. Never use any name.',
+      'Start with Heavenly Father or Dear Lord. End with Amen. Respond ONLY with the prayer.'
+    ].join('\n');
+  } else if (type === 2) {
+    userMsg = [
+      'Write a blessing prayer of 100-120 words spoken over ' + firstName + ' by name.',
+      'SITUATION: ' + situation.trim(),
+      'Use ' + firstName + ' naturally throughout, at least 3 times.',
+      'Write as a blessing spoken over the person — warm, affirming, personal.',
+      'Start with Heavenly Father or Dear Lord. End with Amen. Respond ONLY with the prayer.'
+    ].join('\n');
+  } else {
+    userMsg = [
+      'Write an intercessory prayer of 100-120 words for ' + subject.trim() + '.',
+      situation.trim() ? 'SITUATION: ' + situation.trim() : '',
+      'TONE: ' + tone,
+      'Write in third person for ' + subject.trim() + '. Be specific to any details provided.',
+      'Start with Heavenly Father or Dear Lord. End with Amen. Respond ONLY with the prayer.'
+    ].filter(Boolean).join('\n');
+  }
+
+  var prayerText = '';
+  try {
+    var resp = await fetch('/api/claude', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ system: systemMsg, messages: [{ role: 'user', content: userMsg }], max_tokens: 350 })
+    });
+    var data = await resp.json();
+    prayerText = (data.content && data.content[0] && data.content[0].text) ? data.content[0].text.trim() : '';
+    if (!prayerText) throw new Error('Empty response');
+  } catch(e) {
+    var fallbackName = type === 2 ? firstName : (type === 3 ? subject.trim() : '');
+    prayerText = 'Heavenly Father, we come before You now' + (fallbackName ? ', lifting up ' + fallbackName : '') + '. ' + situation.trim() + ' — Lord, You see every detail, every need, every longing of the heart. Move in Your perfect wisdom and love. Grant peace that surpasses understanding, and let Your will be done in this moment. We trust You completely. In Jesus’ name, Amen.';
+  }
+
+  prayersLeft--;
+  dbDecrementCounter();
+  updateCounterUI();
+  document.getElementById('prayerLoadingWrap').classList.remove('visible');
+  if (genBtn) genBtn.disabled = false;
+
+  expPrayerText = prayerText;
+  expPrayerType = type;
+  expPrayerTone = tone;
+  expPrayerSubject = type === 3 ? subject.trim() : (type === 2 ? firstName : '');
+
+  launchPrayerExperience();
+}
+
+// ══════════════════════════════════════════════════════
+// PRAYER EXPERIENCE OVERLAY
+// ══════════════════════════════════════════════════════
+function launchPrayerExperience() {
+  var overlay = document.getElementById('prayerExpOverlay');
+  if (!overlay) return;
+
+  // Background
+  var bg = document.getElementById('prayerExpBg');
+  if (bg) bg.style.background = (expPrayerType === 3 ? (TONE_BG[expPrayerTone] || TONE_BG.default) : TONE_BG.default);
+
+  // Show/hide listen + share buttons based on type
+  var listenBtn = document.getElementById('prayerExpListenBtn');
+  var shareBtn  = document.getElementById('prayerExpShareBtn');
+  if (listenBtn) listenBtn.style.display = (expPrayerType === 2 || expPrayerType === 3) ? '' : 'none';
+  if (shareBtn)  shareBtn.style.display  = (expPrayerType === 3) ? '' : 'none';
+
+  // Audio bar hidden
+  var audioBar = document.getElementById('prayerExpAudioBar');
+  if (audioBar) audioBar.style.display = 'none';
+  if (listenBtn) { listenBtn.disabled = false; listenBtn.textContent = 'LISTEN'; }
+
+  // Animate prayer lines
+  var container = document.getElementById('prayerExpLines');
+  if (container) {
+    container.innerHTML = '';
+    var sentences = expPrayerText.replace(/([.!?])\s+/g, '$1\n').split('\n').filter(function(s){ return s.trim(); });
+    sentences.forEach(function(s, i) {
+      var p = document.createElement('p');
+      p.textContent = s.trim();
+      container.appendChild(p);
+      setTimeout(function() {
+        p.style.opacity = '1';
+        p.style.transform = 'translateY(0)';
+      }, 300 + i * 650);
+    });
+  }
+
+  overlay.style.display = 'block';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeExpPrayer() {
+  var overlay = document.getElementById('prayerExpOverlay');
+  if (overlay) overlay.style.display = 'none';
+  document.body.style.overflow = '';
+  stopExpPrayer();
+}
+
+// ── TTS for experience overlay ──
+async function toggleExpListen() {
+  if (isPlaying || currentAudio) { stopExpPrayer(); return; }
+  if (!canUseTier('devotion')) { showTierModal('listen'); return; }
+  if (!expPrayerText) return;
+  var listenBtn = document.getElementById('prayerExpListenBtn');
+  if (listenBtn) {
+    listenBtn.disabled = true;
+    listenBtn.textContent = 'GIVE ME A MOMENT';
+  }
+  // Option 2 always uses Tess; option 3 uses tone-matched voice
+  var voiceId = (expPrayerType === 2) ? TESS_ID : getVoiceForTone(expPrayerTone, defaultGender);
+  isPlaying = true;
+  try {
+    var resp = await fetch('/api/speak', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: expPrayerText, voiceId: voiceId })
+    });
+    if (!resp.ok) throw new Error('TTS failed');
+    var blob = await resp.blob();
+    var url = URL.createObjectURL(blob);
+    currentAudio = new Audio(url);
+    currentAudio.volume = 0.9;
+    currentAudio.onended = function() {
+      isPlaying = false;
+      URL.revokeObjectURL(url);
+      stopExpProgressBar();
+      hideExpAudioBar();
+    };
+    showExpAudioBar();
+    startExpProgressBar();
+    currentAudio.play().catch(function() {
+      var pb = document.getElementById('prayerExpPauseBtn');
+      if (pb) pb.textContent = 'Play';
+    });
+  } catch(e) {
+    isPlaying = false;
+    var lb = document.getElementById('prayerExpListenBtn');
+    if (lb) { lb.disabled = false; lb.textContent = 'LISTEN'; }
+    alert('Voice is resting. Please try again in a moment.');
+  }
+}
+
+function showExpAudioBar() {
+  var ab = document.getElementById('prayerExpAudioBar');
+  var lb = document.getElementById('prayerExpListenBtn');
+  var pb = document.getElementById('prayerExpPauseBtn');
+  if (ab) ab.style.display = 'flex';
+  if (lb) lb.style.display = 'none';
+  if (pb) pb.textContent = 'Pause';
+}
+
+function hideExpAudioBar() {
+  var ab = document.getElementById('prayerExpAudioBar');
+  var lb = document.getElementById('prayerExpListenBtn');
+  if (ab) ab.style.display = 'none';
+  if (lb) { lb.style.display = ''; lb.disabled = false; lb.textContent = 'LISTEN'; }
+}
+
+function pauseResumeExpPrayer() {
+  if (!currentAudio) return;
+  var btn = document.getElementById('prayerExpPauseBtn');
+  if (currentAudio.paused) { currentAudio.play(); if (btn) btn.textContent = 'Pause'; }
+  else { currentAudio.pause(); if (btn) btn.textContent = 'Resume'; }
+}
+
+function stopExpPrayer() {
+  stopAudio();
+  stopExpProgressBar();
+  hideExpAudioBar();
+}
+
+function startExpProgressBar() {
+  stopExpProgressBar();
+  expProgressInterval = setInterval(function() {
+    if (!currentAudio || !currentAudio.duration) return;
+    var pct = (currentAudio.currentTime / currentAudio.duration) * 100;
+    var fill = document.getElementById('prayerExpProgressFill');
+    if (fill) fill.style.width = pct + '%';
+  }, 400);
+}
+
+function stopExpProgressBar() {
+  if (expProgressInterval) { clearInterval(expProgressInterval); expProgressInterval = null; }
+  var fill = document.getElementById('prayerExpProgressFill');
+  if (fill) fill.style.width = '0%';
+}
+
+// ── Save ──
+async function saveExpPrayer() {
+  if (!canUseTier('devotion')) { showTierModal('save'); return; }
+  var limit = getSavedLimit();
+  if (savedPrayers.length >= limit) { showTierModal('unlimitedsaves'); return; }
+  if (!expPrayerText) return;
+  var entry = { for: expPrayerSubject, scripture: '', prayer: expPrayerText, date: new Date().toLocaleDateString() };
+  var dbRow = await dbSavePrayer(expPrayerSubject, expPrayerText, '', expPrayerTone);
+  if (dbRow) entry.id = dbRow.id;
+  savedPrayers.unshift(entry);
+  var toast = document.getElementById('prayerExpToast');
+  if (toast) {
+    toast.textContent = 'Prayer saved ✨';
+    toast.style.opacity = '1';
+    setTimeout(function() { toast.style.opacity = '0'; }, 2200);
+  }
+}
+
+// ── Share (Option 3 only) ──
+function shareExpPrayer() {
+  if (!expPrayerText) return;
+  var text = expPrayerText;
+  if (navigator.share) {
+    navigator.share({ title: 'A Prayer', text: text }).catch(function(){});
+  } else if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(function() {
+      var toast = document.getElementById('prayerExpToast');
+      if (toast) { toast.textContent = 'Prayer copied'; toast.style.opacity = '1'; setTimeout(function(){ toast.style.opacity = '0'; }, 2000); }
+    });
+  }
+}
 </script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
@@ -220,7 +503,7 @@ body{background:#1a1a1a;display:flex;justify-content:center;align-items:flex-sta
 .prayer-actions{display:flex;gap:8px;width:100%;}
 .prayer-action-btn{flex:1;padding:13px 4px;background:rgba(30,15,0,0.75);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:12px;letter-spacing:1.5px;border-radius:12px;cursor:pointer;transition:background 0.12s ease;touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
 .prayer-action-btn:active{background:rgba(30,15,0,0.55);}
-.copy-toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(30,15,0,0.88);color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:13px;letter-spacing:1px;padding:10px 24px;border-radius:50px;pointer-events:none;opacity:0;transition:opacity 0.3s;z-index:9999;}
+.copy-toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(30,15,0,0.88);color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:13px;letter-spacing:1px;padding:10px 24px;border-radius:50px;pointer-events:none;opacity:0;transition:opacity 0.3s;z-index:9999;}/* ===== PRAYER TYPE SELECTOR ===== */.prayer-type-btn{display:flex;align-items:center;background:rgba(255,248,210,0.68);border:none;border-radius:20px;padding:14px 18px;margin-bottom:10px;cursor:pointer;touch-action:manipulation;transition:background 0.12s ease;width:100%;text-align:left;box-sizing:border-box;}.prayer-type-btn.selected{background:rgba(255,248,210,0.92);box-shadow:0 0 0 1.5px rgba(61,31,0,0.22);}.prayer-type-btn:active{background:rgba(255,248,210,0.92);}.prayer-type-text{font-family:'Lato',sans-serif;font-size:13px;font-weight:600;color:rgba(0,0,0,0.82);line-height:1.4;flex:1;}.prayer-type-check{font-size:18px;color:rgba(61,31,0,0.7);margin-left:12px;opacity:0;transition:opacity 0.15s;flex-shrink:0;}.prayer-type-btn.selected .prayer-type-check{opacity:1;}/* ===== PRAYER EXPERIENCE OVERLAY ===== */#prayerExpOverlay{display:none;position:fixed;inset:0;z-index:200;overflow:hidden;}.prayer-exp-bg{position:absolute;inset:0;}.prayer-exp-grad-top{position:absolute;top:0;left:0;right:0;height:130px;background:linear-gradient(to bottom,rgba(0,0,0,0.62),transparent);z-index:1;pointer-events:none;}.prayer-exp-grad-bot{position:absolute;bottom:0;left:0;right:0;height:220px;background:linear-gradient(to top,rgba(0,0,0,0.78),transparent);z-index:1;pointer-events:none;}.prayer-exp-scroll{position:absolute;inset:0;overflow-y:auto;z-index:2;padding:100px 36px 230px;box-sizing:border-box;}.prayer-exp-lines{font-family:Georgia,'Times New Roman',serif;font-size:20px;line-height:1.95;color:#fff;text-align:center;text-shadow:0 2px 10px rgba(0,0,0,0.35);}.prayer-exp-lines p{margin:0 0 18px;opacity:0;transform:translateY(14px);transition:opacity 0.9s ease,transform 0.9s ease;}.prayer-exp-actions{position:absolute;bottom:0;left:0;right:0;z-index:3;padding:14px 24px 44px;display:flex;flex-direction:column;align-items:center;gap:10px;}.prayer-exp-audio-bar{display:none;width:100%;max-width:380px;background:rgba(0,0,0,0.42);border-radius:14px;padding:12px 16px;flex-direction:row;align-items:center;gap:10px;box-sizing:border-box;}.prayer-exp-btns{display:flex;gap:10px;width:100%;max-width:380px;}.prayer-exp-outline{flex:1;padding:14px;background:rgba(0,0,0,0.42);border:1.5px solid rgba(255,255,255,0.35);color:#fff;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;touch-action:manipulation;transition:background 0.12s ease;}.prayer-exp-outline:active{background:rgba(0,0,0,0.65);}.prayer-exp-save{flex:1;padding:14px;background:rgba(30,15,0,0.82);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;touch-action:manipulation;transition:background 0.12s ease;}.prayer-exp-save:active{background:rgba(30,15,0,0.60);}.prayer-exp-close{position:absolute;top:20px;right:20px;z-index:4;background:rgba(0,0,0,0.35);border:none;color:#fff;font-size:20px;width:40px;height:40px;border-radius:50%;cursor:pointer;touch-action:manipulation;display:flex;align-items:center;justify-content:center;}.prayer-exp-toast{position:absolute;bottom:120px;left:50%;transform:translateX(-50%);background:rgba(30,15,0,0.90);color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:13px;padding:10px 24px;border-radius:50px;pointer-events:none;opacity:0;transition:opacity 0.3s;z-index:5;white-space:nowrap;}
 .prayer-tab-bar{display:flex;gap:0;padding:6px 16px 0;border-bottom:1.5px solid rgba(0,0,0,0.10);}
 .prayer-tab{flex:1;padding:9px 8px;background:none;border:none;border-bottom:2.5px solid transparent;font-family:'Lato',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.5px;color:rgba(0,0,0,0.42);cursor:pointer;transition:color 0.15s,border-color 0.15s;touch-action:manipulation;}
 .prayer-tab.active{color:rgba(61,31,0,0.88);border-bottom-color:rgba(61,31,0,0.75);}
@@ -535,53 +818,88 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
   <div class="screen-title-row"><button class="back-arrow-btn" onclick="goBack()">&lt;</button><div class="screen-title">Personal Prayer</div></div>
 </div>
   <div class="screen-body">
-    <div class="section-label" style="font-size:26.4px;">Lift Your Heart</div>
-    <div class="section-sub">Share details of what&rsquo;s on your mind and a personalized prayer will be crafted for you</div>
-    <label class="form-label">Who is this prayer for?</label>
-    <input class="form-input" id="prayerFor" type="text" placeholder="Name"/>
-    <label class="form-label">What&rsquo;s on your heart?</label>
-    <textarea class="form-textarea" id="prayerSituation" placeholder="Share what your personal prayer is about" maxlength="150" oninput="document.getElementById('prayerCharCount').textContent=this.value.length+'/150'"></textarea>
-    <div id="prayerCharCount" style="text-align:right;font-size:12px;color:rgba(0,0,0,0.5);margin-top:4px;font-family:'Lato',sans-serif;">0/150</div>
-    <label class="form-label">Prayer tone</label>
-    <select class="form-select" id="prayerTone" onchange="onToneChange()">
-      <option value="hopeful and uplifting">Hopeful &amp; Uplifting</option>
-      <option value="comforting and peaceful">Comforting &amp; Peaceful</option>
-      <option value="bold and courageous">Bold &amp; Courageous</option>
-      <option value="grateful and thankful">Grateful &amp; Thankful</option>
-      <option value="healing and restoration">Healing &amp; Restoration</option>
-    </select>
-    <button class="generate-btn" id="generateBtn" onclick="generatePrayer()">Create My Prayer &#10022;</button>
-    <div class="prayers-remaining" id="prayersRemainingBar">15 of 15 prayers remaining today &#8212; <span onclick="showScreen('pricingScreen')" style="cursor:pointer;text-decoration:underline;color:#3d1f00;font-weight:700;">get more for $0.99</span></div>
-    <div class="loading-wrap" id="loadingWrap">
+
+    <!-- ── Type selector ── -->
+    <button class="prayer-type-btn" id="ptype1" onclick="selectPrayerType(1)">
+      <span class="prayer-type-text">A prayer I will speak directly to God &mdash; written as my own words</span>
+      <span class="prayer-type-check">&#10003;</span>
+    </button>
+    <button class="prayer-type-btn" id="ptype2" onclick="selectPrayerType(2)">
+      <span class="prayer-type-text">A prayer spoken over me by name &mdash; to be read or heard as a blessing</span>
+      <span class="prayer-type-check">&#10003;</span>
+    </button>
+    <button class="prayer-type-btn" id="ptype3" onclick="selectPrayerType(3)">
+      <span class="prayer-type-text">A prayer I will offer to God for a person, cause, or intention on my heart</span>
+      <span class="prayer-type-check">&#10003;</span>
+    </button>
+
+    <!-- ── Form 1: First Person ── -->
+    <div id="prayerForm1" style="display:none;margin-top:6px;">
+      <label class="form-label">What is on your heart?</label>
+      <textarea class="form-textarea" id="pSituation1" placeholder="Share what your prayer is about" maxlength="150" oninput="document.getElementById('pCount1').textContent=this.value.length+'/150'"></textarea>
+      <div id="pCount1" style="text-align:right;font-size:12px;color:rgba(0,0,0,0.5);margin-top:4px;font-family:'Lato',sans-serif;">0/150</div>
+      <button class="generate-btn" id="pGenBtn1" onclick="generatePrayerTyped(1)">Create My Prayer &#10022;</button>
+    </div>
+
+    <!-- ── Form 2: Named Blessing ── -->
+    <div id="prayerForm2" style="display:none;margin-top:6px;">
+      <label class="form-label">What is on your heart?</label>
+      <textarea class="form-textarea" id="pSituation2" placeholder="Share what your prayer is about" maxlength="150" oninput="document.getElementById('pCount2').textContent=this.value.length+'/150'"></textarea>
+      <div id="pCount2" style="text-align:right;font-size:12px;color:rgba(0,0,0,0.5);margin-top:4px;font-family:'Lato',sans-serif;">0/150</div>
+      <button class="generate-btn" id="pGenBtn2" onclick="generatePrayerTyped(2)">Create My Prayer &#10022;</button>
+    </div>
+
+    <!-- ── Form 3: Intercession ── -->
+    <div id="prayerForm3" style="display:none;margin-top:6px;">
+      <label class="form-label">Who or what are you lifting up?</label>
+      <input class="form-input" id="pSubject3" type="text" placeholder="Name, cause, or intention" style="margin-bottom:12px;"/>
+      <label class="form-label">Share more if you&rsquo;d like</label>
+      <textarea class="form-textarea" id="pSituation3" placeholder="What is on your heart for them?" maxlength="150" oninput="document.getElementById('pCount3').textContent=this.value.length+'/150'"></textarea>
+      <div id="pCount3" style="text-align:right;font-size:12px;color:rgba(0,0,0,0.5);margin-top:4px;font-family:'Lato',sans-serif;">0/150</div>
+      <label class="form-label" style="margin-top:12px;">Prayer tone</label>
+      <select class="form-select" id="pTone3">
+        <option value="hopeful and uplifting">Hopeful &amp; Uplifting</option>
+        <option value="comforting and peaceful">Comforting &amp; Peaceful</option>
+        <option value="bold and courageous">Bold &amp; Courageous</option>
+        <option value="grateful and thankful">Grateful &amp; Thankful</option>
+        <option value="healing and restoration">Healing &amp; Restoration</option>
+      </select>
+      <button class="generate-btn" id="pGenBtn3" onclick="generatePrayerTyped(3)">Create This Prayer &#10022;</button>
+    </div>
+
+    <!-- ── Loading ── -->
+    <div class="loading-wrap" id="prayerLoadingWrap">
       <img src="images/My_Prayer_Icon.png" alt="" style="width:72px;height:72px;object-fit:contain;margin-bottom:12px;opacity:0.85;">
       <div class="loading-dots">Lifting your prayer heavenward...</div>
     </div>
-    <div class="prayer-result" id="prayerResult">
-      <div class="result-label">Your Personal Prayer</div>
-      <div class="prayer-text" id="prayerText"></div>
-      <div style="text-align:center;font-family:'Lato',sans-serif;font-style:italic;font-size:12px;color:rgb(61,31,0);margin:-8px 0 16px;">This prayer was created just for you — save it to revisit anytime.</div>
-      <div id="voiceRow" style="display:flex;gap:10px;margin-bottom:14px;align-items:center;">
-        <span style="font-size:12px;font-weight:700;color:rgba(0,0,0,0.6);letter-spacing:1px;text-transform:uppercase;">Voice:</span>
-        <button class="action-btn" id="vbFemale" onclick="selectVoiceGender('female')" style="background:rgba(30,15,0,0.75);color:#f5c830;flex:unset;padding:10px 24px;font-size:14px;">Female</button>
-        <button class="action-btn" id="vbMale" onclick="selectVoiceGender('male')" style="background:rgba(255,255,255,0.4);color:#111;flex:unset;padding:10px 24px;font-size:14px;">Male</button>
-      </div>
-      <button class="listen-full-btn" id="listenBtn" onclick="toggleListen()">LISTEN</button>
-      <div id="prayerAudioBar" class="listen-player-bar" style="display:none;">
-        <button class="listen-player-btn" id="prayerPauseBtn" onclick="pauseResumePrayer()">Pause</button>
-        <div class="listen-progress-wrap">
-          <div class="listen-progress-fill" id="prayerProgressFill"></div>
-        </div>
-        <button class="listen-player-btn" onclick="stopPrayer()">Stop</button>
-      </div>
-      <div class="prayer-actions" id="prayerActions">
-        <button class="prayer-action-btn" onclick="copyPrayer()">COPY</button>
-        <button class="prayer-action-btn" id="savePrayerBtn" onclick="savePrayer()">SAVE</button>
-        <button class="prayer-action-btn" onclick="newPrayer()">NEW</button>
-      </div>
-      <div class="copy-toast" id="copyToast">Prayer copied</div>
-    </div>
+
+    <div class="prayers-remaining" id="prayersRemainingBar">15 of 15 prayers remaining today</div>
     <div class="screen-footer"><div class="emf-copyright">&copy; 2026 Embrace My Faith LLC</div></div>
   </div>
+</div>
+
+<!-- PRAYER EXPERIENCE OVERLAY -->
+<div id="prayerExpOverlay">
+  <div class="prayer-exp-bg" id="prayerExpBg" style="background:linear-gradient(160deg,#c8900a,#3d1f00);"></div>
+  <div class="prayer-exp-grad-top"></div>
+  <div class="prayer-exp-grad-bot"></div>
+  <div class="prayer-exp-scroll">
+    <div class="prayer-exp-lines" id="prayerExpLines"></div>
+  </div>
+  <div class="prayer-exp-actions">
+    <div class="prayer-exp-audio-bar" id="prayerExpAudioBar">
+      <button class="listen-player-btn" id="prayerExpPauseBtn" onclick="pauseResumeExpPrayer()">Pause</button>
+      <div class="listen-progress-wrap"><div class="listen-progress-fill" id="prayerExpProgressFill"></div></div>
+      <button class="listen-player-btn" onclick="stopExpPrayer()">Stop</button>
+    </div>
+    <div class="prayer-exp-btns">
+      <button class="prayer-exp-outline" id="prayerExpListenBtn" style="display:none;" onclick="toggleExpListen()">LISTEN</button>
+      <button class="prayer-exp-outline" id="prayerExpShareBtn" style="display:none;" onclick="shareExpPrayer()">SHARE</button>
+      <button class="prayer-exp-save" id="prayerExpSaveBtn" onclick="saveExpPrayer()">SAVE</button>
+    </div>
+    <div class="prayer-exp-toast" id="prayerExpToast">Prayer saved</div>
+  </div>
+  <button class="prayer-exp-close" onclick="closeExpPrayer()">&#10005;</button>
 </div>
 
 <!-- RISE -->
@@ -2209,14 +2527,14 @@ function stopAudio() {
 }
 
 function showPrayerAudioBar() {
-  document.getElementById('listenBtn').style.display = 'none';
-  document.getElementById('prayerAudioBar').style.display = 'flex';
-  document.getElementById('prayerPauseBtn').textContent = 'Pause';
+  var lb=document.getElementById('listenBtn'); if(lb) lb.style.display='none';
+  var ab=document.getElementById('prayerAudioBar'); if(ab) ab.style.display='flex';
+  var pb=document.getElementById('prayerPauseBtn'); if(pb) pb.textContent='Pause';
 }
 
 function hidePrayerAudioBar() {
-  document.getElementById('prayerAudioBar').style.display = 'none';
-  document.getElementById('listenBtn').style.display = '';
+  var ab=document.getElementById('prayerAudioBar'); if(ab) ab.style.display='none';
+  var lb=document.getElementById('listenBtn'); if(lb) lb.style.display='';
 }
 
 function pauseResumePrayer() {
