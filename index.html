@@ -7,7 +7,86 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;600;700&display=swap" rel="stylesheet"/>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js">
+// ── Preferences: inline pencil editing ──
+function togglePrefEdit(field) {
+  var valEl = document.getElementById('prefVal_' + field);
+  var inpEl = document.getElementById('prefInp_' + field);
+  var pencil = document.getElementById('prefPencil_' + field);
+  if (!valEl || !inpEl || !pencil) return;
+  var editing = (inpEl.style.display === 'block');
+  if (!editing) {
+    inpEl.value = valEl.textContent.trim();
+    valEl.style.display = 'none';
+    inpEl.style.display = 'block';
+    pencil.innerHTML = '&#10003;';
+    inpEl.focus();
+  } else {
+    var newVal = inpEl.value.trim();
+    if (newVal) {
+      valEl.textContent = newVal;
+      if (field === 'name') savePrefName(newVal);
+      else if (field === 'email') savePrefEmail(newVal);
+    }
+    valEl.style.display = '';
+    inpEl.style.display = 'none';
+    pencil.innerHTML = '&#9998;';
+  }
+}
+function savePrefName(name) {
+  if (!name) return;
+  userName = name;
+  localStorage.setItem('emf_user_name', name);
+  var hn = document.getElementById('homeName');
+  if (hn) hn.textContent = name.split(' ')[0];
+  if (currentUser) supaPost('/rest/v1/users?id=eq.' + currentUser.id, {name: name}, 'PATCH');
+}
+async function savePrefEmail(email) {
+  if (!email || !currentUser) return;
+  try {
+    await fetch(SUPA_URL + '/auth/v1/user', {
+      method: 'PUT',
+      headers: Object.assign(supaHeaders(), {'Content-Type': 'application/json'}),
+      body: JSON.stringify({email: email})
+    });
+    alert('A confirmation link has been sent to ' + email + '. Check your inbox to complete the change.');
+  } catch(e) { console.error('Email update failed', e); }
+}
+// ── Password reset ──
+async function sendPasswordReset() {
+  if (!currentUser || !currentUser.email) { alert('No account email found.'); return; }
+  try {
+    await fetch(SUPA_URL + '/auth/v1/recover', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', 'apikey': SUPA_ANON},
+      body: JSON.stringify({email: currentUser.email})
+    });
+    alert('Password reset link sent to ' + currentUser.email);
+  } catch(e) { alert('Could not send reset email. Please try again.'); }
+}
+// ── Delete account ──
+function confirmDeleteAccount() {
+  if (!confirm('Are you sure you want to permanently delete your account? This cannot be undone.')) return;
+  deleteAccount();
+}
+async function deleteAccount() {
+  if (!currentUser) return;
+  try {
+    await fetch(SUPA_URL + '/auth/v1/user', {
+      method: 'DELETE',
+      headers: supaHeaders()
+    });
+  } catch(e) {}
+  authSignOut();
+}
+// ── Subscription management stubs ──
+function openManageSubscription() {
+  alert('Subscription management coming soon. Email support@embracemyfaith.app for help.');
+}
+function upgradeToAnnual() {
+  alert('Annual plan upgrade coming soon. Email support@embracemyfaith.app to upgrade manually.');
+}
+</script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 body{background:#1a1a1a;display:flex;justify-content:center;align-items:flex-start;min-height:100vh;font-family:'Lato',sans-serif;padding:20px 0;}
@@ -166,7 +245,6 @@ body{background:#1a1a1a;display:flex;justify-content:center;align-items:flex-sta
 .auth-pw-toggle{position:absolute;right:14px;top:50%;transform:translateY(-50%);appearance:none;-webkit-appearance:none;width:18px;height:18px;border:2px solid rgba(61,31,0,0.35);border-radius:50%;cursor:pointer;background:transparent;transition:background 0.15s,border-color 0.15s;flex-shrink:0;}
 .auth-pw-toggle:checked{background:#3d1f00;border-color:#3d1f00;}
 .auth-signout-btn{width:100%;padding:13px;background:rgba(180,50,30,0.12);border:1.5px solid rgba(180,50,30,0.25);color:#8b2218;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;margin-top:8px;transition:background 0.15s;}
-.auth-signout-btn
 
 /* ========== COMING SOON / FEATURE SCREEN ========== */
 .coming-soon{padding:32px 24px;text-align:center;}
@@ -215,7 +293,7 @@ input[type=range]{flex:1;accent-color:#f5c830;}
 /* ========== SETTINGS ========== */
 .settings-card{background:rgba(255,248,210,0.68);border-radius:20px;padding:20px;margin-bottom:16px;}
 .settings-card-title{font-size:13px;font-weight:800;color:#111;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
-.settings-card-sub{font-size:13px;color:rgba(0,0,0,0.6);margin-bottom:14px;line-height:1.5;}.settings-nav-btn{display:flex;align-items:center;justify-content:space-between;width:100%;padding:16px 20px;background:rgba(30,15,0,0.80);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:15px;border-radius:14px;cursor:pointer;margin-bottom:10px;touch-action:manipulation;letter-spacing:0.5px;transition:background 0.12s ease;box-sizing:border-box;}.settings-nav-btn:active{background:rgba(30,15,0,0.60);}.settings-nav-chevron{font-size:22px;font-weight:300;opacity:0.65;line-height:1;}
+.settings-card-sub{font-size:13px;color:rgba(0,0,0,0.6);margin-bottom:14px;line-height:1.5;}.settings-nav-btn{display:flex;align-items:center;justify-content:space-between;width:100%;padding:14px 20px;background:rgba(255,248,210,0.68);border:none;color:rgba(0,0,0,0.82);font-family:'Lato',sans-serif;font-weight:700;font-size:15px;border-radius:20px;cursor:pointer;margin-bottom:10px;touch-action:manipulation;transition:background 0.12s ease;box-sizing:border-box;}.settings-nav-btn:active{background:rgba(255,248,210,0.92);}.settings-nav-chevron{font-size:22px;font-weight:300;opacity:0.45;line-height:1;}.pref-field-row{display:flex;align-items:center;padding:13px 0;border-bottom:1px solid rgba(0,0,0,0.07);}.pref-field-row:last-of-type{border-bottom:none;}.pref-field-label{font-family:'Lato',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(0,0,0,0.45);min-width:60px;flex-shrink:0;}.pref-field-value{flex:1;font-family:'Lato',sans-serif;font-size:14px;font-weight:600;color:#111;padding:0 8px;}.pref-field-input{flex:1;border:none;border-bottom:1.5px solid rgba(30,15,0,0.45);background:transparent;font-family:'Lato',sans-serif;font-size:14px;font-weight:600;color:#111;padding:0 8px 2px;outline:none;display:none;}.pref-pencil{font-size:15px;cursor:pointer;padding:4px 6px;color:rgba(0,0,0,0.38);touch-action:manipulation;background:none;border:none;flex-shrink:0;}.acct-link{display:block;width:100%;text-align:center;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;color:rgba(0,0,0,0.52);cursor:pointer;padding:12px 0;background:none;border:none;touch-action:manipulation;}.acct-link-red{display:block;width:100%;text-align:center;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;color:rgba(160,40,30,0.60);cursor:pointer;padding:8px 0;background:none;border:none;touch-action:manipulation;}.sub-upgrade-link{font-family:'Lato',sans-serif;font-size:12px;font-style:italic;color:rgba(30,15,0,0.58);cursor:pointer;margin:6px 0 14px;display:block;text-decoration:underline;background:none;border:none;padding:0;text-align:left;touch-action:manipulation;}.sub-plan-name{font-family:'Lato',sans-serif;font-size:16px;font-weight:700;color:#111;margin-bottom:4px;}.sub-plan-desc{font-family:'Lato',sans-serif;font-size:13px;color:rgba(0,0,0,0.55);margin-bottom:2px;}.settings-action-btn{width:100%;padding:14px;background:rgba(30,15,0,0.80);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;touch-action:manipulation;transition:background 0.12s ease;margin-top:8px;display:block;box-sizing:border-box;}.settings-action-btn:active{background:rgba(30,15,0,0.60);}
 .settings-toggle-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid rgba(0,0,0,0.08);}
 .settings-toggle-row:last-child{border-bottom:none;padding-bottom:0;}
 .settings-toggle-label{font-size:14px;font-weight:600;color:#111;margin-bottom:2px;}
@@ -918,36 +996,56 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
   <div class="screen-title-row"><button class="back-arrow-btn" onclick="goBack()">&lt;</button><div class="screen-title">Account &amp; Profile</div></div>
 </div>
   <div class="screen-body">
+
     <div class="settings-card">
       <div class="settings-card-title">Profile</div>
-      <div style="font-size:15px;font-weight:700;color:#111;margin-bottom:2px;font-family:'Lato',sans-serif;" id="settingsName">Friend</div>
-      <div style="font-size:13px;color:rgba(0,0,0,0.5);margin-bottom:14px;font-family:'Lato',sans-serif;" id="settingsEmail"></div>
-      <div id="settingsNameView">
-        <button onclick="showSettingsNameEdit()" style="width:100%;padding:13px;background:rgba(255,248,210,0.68);border:1px solid rgba(0,0,0,0.13);color:rgba(0,0,0,0.82);font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;transition:background 0.12s ease;touch-action:manipulation;">Edit Name</button>
+      <div class="pref-field-row">
+        <span class="pref-field-label">Name</span>
+        <span class="pref-field-value" id="prefVal_name"></span>
+        <input class="pref-field-input" id="prefInp_name" type="text" autocomplete="name"/>
+        <button class="pref-pencil" id="prefPencil_name" onclick="togglePrefEdit('name')" aria-label="Edit name">&#9998;</button>
       </div>
-      <div id="settingsNameEdit" style="display:none;margin-top:12px;">
-        <input id="settingsNameInput" class="form-input" type="text" placeholder="Enter your name" style="margin-bottom:10px;"/>
-        <div style="display:flex;gap:10px;">
-          <button onclick="saveSettingsName()" style="flex:1;padding:12px;background:rgba(30,15,0,0.85);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;transition:background 0.12s ease;touch-action:manipulation;">Save</button>
-          <button onclick="cancelSettingsNameEdit()" style="flex:1;padding:12px;background:rgba(255,248,210,0.68);border:1px solid rgba(0,0,0,0.13);color:rgba(0,0,0,0.82);font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;transition:background 0.12s ease;touch-action:manipulation;">Cancel</button>
-        </div>
+      <div class="pref-field-row">
+        <span class="pref-field-label">Email</span>
+        <span class="pref-field-value" id="prefVal_email"></span>
+        <input class="pref-field-input" id="prefInp_email" type="email" autocomplete="email"/>
+        <button class="pref-pencil" id="prefPencil_email" onclick="togglePrefEdit('email')" aria-label="Edit email">&#9998;</button>
       </div>
     </div>
 
     <div class="settings-card">
       <div class="settings-card-title">Subscription</div>
-      <div style="font-size:15px;font-weight:700;color:#111;margin-bottom:4px;font-family:'Lato',sans-serif;" id="settingsTierName">Grace (Free)</div>
-      <div style="font-size:13px;color:rgba(0,0,0,0.55);margin-bottom:14px;font-family:'Lato',sans-serif;" id="settingsTierDesc">1 prayer per day</div>
-      <button onclick="showScreen('pricingScreen')" style="width:100%;padding:13px;background:linear-gradient(135deg,#c8900a,#3d1f00);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;touch-action:manipulation;" id="settingsUpgradeBtn">View Plans</button>
+      <!-- State 1: Trial -->
+      <div id="subStateTrial" style="display:none;">
+        <div class="sub-plan-name">Divine Plan</div>
+        <div class="sub-plan-desc" id="subTrialDesc">Free trial &mdash; X days left, then $9.99/mo</div>
+        <button class="sub-upgrade-link" onclick="upgradeToAnnual()">Click here to save 2 months at $99.90/yr</button>
+        <button class="settings-action-btn" onclick="openManageSubscription()">Manage Subscription</button>
+      </div>
+      <!-- State 2: Active paid -->
+      <div id="subStatePaid" style="display:none;">
+        <div class="sub-plan-name">Divine Plan</div>
+        <div class="sub-plan-desc">$9.99/mo</div>
+        <button class="sub-upgrade-link" onclick="upgradeToAnnual()">Click here to save 2 months at $99.90/yr</button>
+        <button class="settings-action-btn" onclick="openManageSubscription()">Manage Subscription</button>
+      </div>
+      <!-- State 3: Grace free -->
+      <div id="subStateGrace" style="display:none;">
+        <div class="sub-plan-name">Grace Plan &mdash; Free</div>
+        <button class="settings-action-btn" onclick="showScreen('pricingScreen')">View Devotion and Divine Features</button>
+      </div>
     </div>
 
     <div class="settings-card">
       <div class="settings-card-title">Saved Prayers</div>
       <div class="settings-card-sub" id="settingsSavedCount">0 prayers saved</div>
-      <button onclick="showScreen('savedScreen')" style="width:100%;padding:13px;background:rgba(255,248,210,0.68);border:1px solid rgba(0,0,0,0.13);color:rgba(0,0,0,0.82);font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;touch-action:manipulation;margin-top:10px;transition:background 0.12s ease;">View Saved Prayers</button>
+      <button onclick="showScreen('savedScreen')" style="width:100%;padding:14px;background:rgba(30,15,0,0.80);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;touch-action:manipulation;transition:background 0.12s ease;margin-top:6px;">View Saved Prayers</button>
     </div>
 
-    <button class="auth-signout-btn" onclick="authSignOut()">Sign Out</button>
+    <div style="margin-top:8px;">
+      <button class="acct-link" onclick="authSignOut()">Sign Out</button>
+      <button class="acct-link-red" onclick="confirmDeleteAccount()">Delete Account</button>
+    </div>
     <div class="screen-footer"><div class="emf-copyright">&copy; 2026 Embrace My Faith LLC</div></div>
   </div>
 </div>
@@ -960,7 +1058,8 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
   <div class="screen-body">
     <div class="settings-card">
       <div class="settings-card-title">Password</div>
-      <div class="settings-card-sub">To change your password, sign out and use &ldquo;Forgot Password&rdquo; on the sign-in screen.</div>
+      <div class="settings-card-sub">A reset link will be sent to your email address.</div>
+      <button onclick="sendPasswordReset()" style="width:100%;padding:14px;background:rgba(30,15,0,0.80);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;touch-action:manipulation;transition:background 0.12s ease;margin-top:6px;">Change Password</button>
     </div>
     <div class="settings-card">
       <div class="settings-card-title">Your Data</div>
@@ -989,7 +1088,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
           <div class="settings-toggle-sub">Receive a verse each morning</div>
         </div>
         <div class="toggle-wrap">
-          <input type="checkbox" id="notifScripture" onchange="saveNotifPref('scripture',this.checked)"/>
+          <input type="checkbox" id="notifScripture" checked onchange="saveNotifPref('scripture',this.checked)"/>
           <label class="toggle-track" for="notifScripture"></label>
         </div>
       </div>
@@ -999,7 +1098,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
           <div class="settings-toggle-sub">Reminders for upcoming moments</div>
         </div>
         <div class="toggle-wrap">
-          <input type="checkbox" id="notifMoments" onchange="saveNotifPref('moments',this.checked)"/>
+          <input type="checkbox" id="notifMoments" checked onchange="saveNotifPref('moments',this.checked)"/>
           <label class="toggle-track" for="notifMoments"></label>
         </div>
       </div>
@@ -1017,7 +1116,12 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
     <div class="settings-card">
       <div class="settings-card-title">Contact Us</div>
       <div class="settings-card-sub">Have a question or need help? We&rsquo;d love to hear from you.</div>
-      <button onclick="window.location.href='mailto:support@embracemyfaith.app'" style="width:100%;padding:13px;background:rgba(30,15,0,0.80);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;touch-action:manipulation;transition:background 0.12s ease;margin-top:4px;">Email Support</button>
+      <a href="tel:+18005550100" style="display:block;margin-top:6px;">
+        <button style="width:100%;padding:14px;background:rgba(30,15,0,0.80);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;touch-action:manipulation;transition:background 0.12s ease;margin-top:0;" style="width:100%;padding:14px;background:rgba(30,15,0,0.80);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;touch-action:manipulation;transition:background 0.12s ease;">Call Support</button>
+      </a>
+      <a href="mailto:support@embracemyfaith.app" style="display:block;margin-top:10px;">
+        <button style="width:100%;padding:14px;background:rgba(30,15,0,0.80);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;touch-action:manipulation;transition:background 0.12s ease;">Send Email</button>
+      </a>
     </div>
     <div class="settings-card">
       <div class="settings-card-title">About</div>
@@ -1696,18 +1800,26 @@ function showScreen(id, isBack) {
     return;
   }
   if (id === 'accountScreen') {
-    document.getElementById('settingsName').textContent = userName;
-    var emailEl = document.getElementById('settingsEmail');
-    if (emailEl && currentUser) emailEl.textContent = currentUser.email;
-    var tierNames = { grace: 'Grace (Free)', devotion: 'Devotion', divine: 'Divine' };
-    var tierDescs = { grace: '1 prayer per day', devotion: '5 prayers per day · voice audio · Prayer Circle', divine: '15 prayers per day · all voices · unlimited saves' };
-    var eff = getEffectiveTier();
-    var tnEl = document.getElementById('settingsTierName');
-    var tdEl = document.getElementById('settingsTierDesc');
-    if (tnEl) tnEl.textContent = isTrialing() ? 'Divine (Trial — ' + trialDaysLeft() + ' days left)' : (tierNames[userTier] || 'Grace');
-    if (tdEl) tdEl.textContent = tierDescs[eff] || '';
-    var upBtn = document.getElementById('settingsUpgradeBtn');
-    if (upBtn) upBtn.textContent = canUseTier('divine') && !isTrialing() ? 'Manage Plan' : 'View Plans';
+    // Profile fields
+    var nv = document.getElementById('prefVal_name');
+    var ev = document.getElementById('prefVal_email');
+    if (nv) nv.textContent = userName || 'Friend';
+    if (ev && currentUser) ev.textContent = currentUser.email || '';
+    // Subscription state
+    var subEl = document.getElementById('subscriptionState');
+    if (subEl) {
+      // Show correct subscription state
+      ['subStateTrial','subStatePaid','subStateGrace'].forEach(function(id){ var el=document.getElementById(id); if(el) el.style.display='none'; });
+      if (isTrialing()) {
+        var td = document.getElementById('subTrialDesc');
+        if (td) td.textContent = 'Free trial — ' + trialDaysLeft() + ' day' + (trialDaysLeft() !== 1 ? 's' : '') + ' left, then $9.99/mo';
+        var el = document.getElementById('subStateTrial'); if (el) el.style.display = '';
+      } else if (canUseTier('devotion')) {
+        var el = document.getElementById('subStatePaid'); if (el) el.style.display = '';
+      } else {
+        var el = document.getElementById('subStateGrace'); if (el) el.style.display = '';
+      }
+    }
     var scEl = document.getElementById('settingsSavedCount');
     if (scEl) { var lim = getSavedLimit(); scEl.textContent = savedPrayers.length + ' prayer' + (savedPrayers.length !== 1 ? 's' : '') + ' saved' + (lim !== Infinity ? ' (max ' + lim + ')' : ''); }
   }
@@ -1716,8 +1828,9 @@ function showScreen(id, isBack) {
     var used = limit - prayersLeft;
     document.getElementById('settingsPrayerCount').textContent = used + ' of ' + limit + ' prayers used today';
     document.getElementById('settingsPrayerBar').style.width = Math.min(100, (used / limit) * 100) + '%';
+    // Default on; respect saved pref if explicitly set to off
     document.getElementById('notifScripture').checked = localStorage.getItem('emf_notif_scripture') !== '0';
-    document.getElementById('notifMoments').checked = localStorage.getItem('emf_notif_moments') === '1';
+    document.getElementById('notifMoments').checked = localStorage.getItem('emf_notif_moments') !== '0';
   }
   if (id === 'sendPrayerScreen') {
     var el = document.getElementById('sendPrayersRemaining');
