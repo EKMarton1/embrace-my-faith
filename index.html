@@ -108,6 +108,7 @@ var TONE_BG = {
 
 function selectPrayerType(n) {
   activePrayerType = n;
+  hideInlinePrayerResult();
   [1,2,3].forEach(function(i) {
     var btn = document.getElementById('ptype'+i);
     var form = document.getElementById('prayerForm'+i);
@@ -197,7 +198,7 @@ async function generatePrayerTyped(type) {
   expPrayerTone = tone;
   expPrayerSubject = type === 3 ? subject.trim() : (type === 2 ? firstName : '');
 
-  launchPrayerExperience();
+  showInlinePrayerResult(type);
 }
 
 // ══════════════════════════════════════════════════════
@@ -369,6 +370,129 @@ function shareExpPrayer() {
     });
   }
 }
+
+// ══════════════════════════════════════════════════════
+// INLINE PRAYER RESULT (types 1-3 displayed in-screen)
+// ══════════════════════════════════════════════════════
+var inlineProgressInterval = null;
+
+function showInlinePrayerResult(type) {
+  var el   = document.getElementById('prayerInlineResult');
+  var textEl = document.getElementById('prayerInlineText');
+  var a1   = document.getElementById('prayerInlineActions1');
+  var a23  = document.getElementById('prayerInlineActions23');
+  var toast = document.getElementById('prayerInlineToast');
+  if (textEl) textEl.textContent = expPrayerText;
+  if (a1)  a1.style.display  = (type === 1) ? 'flex' : 'none';
+  if (a23) a23.style.display = (type !== 1) ? 'flex' : 'none';
+  if (el)  el.style.display  = '';
+  stopInlinePrayer();
+  var lb = document.getElementById('pInlineListenBtn');
+  if (lb) { lb.disabled = false; lb.textContent = 'LISTEN'; lb.style.display = ''; }
+  if (toast) { toast.textContent = ''; toast.style.opacity = '0'; }
+}
+
+function hideInlinePrayerResult() {
+  var el = document.getElementById('prayerInlineResult');
+  if (el) el.style.display = 'none';
+  stopInlinePrayer();
+}
+
+async function saveInlinePrayer() {
+  if (!canUseTier('devotion')) { showTierModal('save'); return; }
+  var limit = getSavedLimit();
+  if (savedPrayers.length >= limit) { showTierModal('unlimitedsaves'); return; }
+  if (!expPrayerText) return;
+  var entry = { for: expPrayerSubject, scripture: '', prayer: expPrayerText, date: new Date().toLocaleDateString() };
+  var dbRow = await dbSavePrayer(expPrayerSubject, expPrayerText, '', expPrayerTone);
+  if (dbRow) entry.id = dbRow.id;
+  savedPrayers.unshift(entry);
+  var toast = document.getElementById('prayerInlineToast');
+  if (toast) { toast.textContent = 'Prayer saved ✨'; toast.style.opacity = '1'; setTimeout(function(){ toast.style.opacity = '0'; }, 2200); }
+}
+
+async function listenInlinePrayer() {
+  if (isPlaying || currentAudio) { stopInlinePrayer(); return; }
+  if (!canUseTier('devotion')) { showTierModal('listen'); return; }
+  if (!expPrayerText) return;
+  var lb = document.getElementById('pInlineListenBtn');
+  if (lb) { lb.disabled = true; lb.textContent = 'GIVE ME A MOMENT'; }
+  var voiceId = (expPrayerType === 2) ? TESS_ID : getVoiceForTone(expPrayerTone, defaultGender);
+  isPlaying = true;
+  try {
+    var resp = await fetch('/api/speak', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: expPrayerText, voiceId: voiceId })
+    });
+    if (!resp.ok) throw new Error('TTS failed');
+    var blob = await resp.blob();
+    var url = URL.createObjectURL(blob);
+    currentAudio = new Audio(url);
+    currentAudio.volume = 0.9;
+    currentAudio.onended = function() {
+      isPlaying = false;
+      URL.revokeObjectURL(url);
+      stopInlineProgressBar();
+      hideInlineAudioBar();
+    };
+    showInlineAudioBar();
+    startInlineProgressBar();
+    currentAudio.play().catch(function() {
+      var pb = document.getElementById('pInlinePauseBtn');
+      if (pb) pb.textContent = 'Play';
+    });
+  } catch(e) {
+    isPlaying = false;
+    if (lb) { lb.disabled = false; lb.textContent = 'LISTEN'; }
+    alert('Voice is resting. Please try again in a moment.');
+  }
+}
+
+function showInlineAudioBar() {
+  var ab = document.getElementById('prayerInlineAudio');
+  var lb = document.getElementById('pInlineListenBtn');
+  var pb = document.getElementById('pInlinePauseBtn');
+  if (ab) ab.style.display = 'flex';
+  if (lb) lb.style.display = 'none';
+  if (pb) pb.textContent = 'Pause';
+}
+
+function hideInlineAudioBar() {
+  var ab = document.getElementById('prayerInlineAudio');
+  var lb = document.getElementById('pInlineListenBtn');
+  if (ab) ab.style.display = 'none';
+  if (lb) { lb.style.display = ''; lb.disabled = false; lb.textContent = 'LISTEN'; }
+}
+
+function pauseInlinePrayer() {
+  if (!currentAudio) return;
+  var btn = document.getElementById('pInlinePauseBtn');
+  if (currentAudio.paused) { currentAudio.play(); if (btn) btn.textContent = 'Pause'; }
+  else { currentAudio.pause(); if (btn) btn.textContent = 'Resume'; }
+}
+
+function stopInlinePrayer() {
+  stopAudio();
+  stopInlineProgressBar();
+  hideInlineAudioBar();
+}
+
+function startInlineProgressBar() {
+  stopInlineProgressBar();
+  inlineProgressInterval = setInterval(function() {
+    if (!currentAudio || !currentAudio.duration) return;
+    var pct = (currentAudio.currentTime / currentAudio.duration) * 100;
+    var fill = document.getElementById('pInlineProgressFill');
+    if (fill) fill.style.width = pct + '%';
+  }, 400);
+}
+
+function stopInlineProgressBar() {
+  if (inlineProgressInterval) { clearInterval(inlineProgressInterval); inlineProgressInterval = null; }
+  var fill = document.getElementById('pInlineProgressFill');
+  if (fill) fill.style.width = '0%';
+}
 </script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
@@ -503,7 +627,7 @@ body{background:#1a1a1a;display:flex;justify-content:center;align-items:flex-sta
 .prayer-actions{display:flex;gap:8px;width:100%;}
 .prayer-action-btn{flex:1;padding:13px 4px;background:rgba(30,15,0,0.75);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:12px;letter-spacing:1.5px;border-radius:12px;cursor:pointer;transition:background 0.12s ease;touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
 .prayer-action-btn:active{background:rgba(30,15,0,0.55);}
-.copy-toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(30,15,0,0.88);color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:13px;letter-spacing:1px;padding:10px 24px;border-radius:50px;pointer-events:none;opacity:0;transition:opacity 0.3s;z-index:9999;}/* ===== PRAYER TYPE SELECTOR ===== */.prayer-type-btn{display:flex;align-items:center;background:rgba(255,248,210,0.68);border:none;border-radius:20px;padding:14px 18px;margin-bottom:10px;cursor:pointer;touch-action:manipulation;transition:background 0.12s ease;width:100%;text-align:left;box-sizing:border-box;}.prayer-type-btn.selected{background:rgba(255,248,210,0.92);box-shadow:0 0 0 1.5px rgba(61,31,0,0.22);}.prayer-type-btn:active{background:rgba(255,248,210,0.92);}.prayer-type-text{font-family:'Lato',sans-serif;font-size:13px;font-weight:600;color:rgba(0,0,0,0.82);line-height:1.4;flex:1;}.prayer-type-check{font-size:18px;color:rgba(61,31,0,0.7);margin-left:12px;opacity:0;transition:opacity 0.15s;flex-shrink:0;}.prayer-type-btn.selected .prayer-type-check{opacity:1;}/* ===== PRAYER EXPERIENCE OVERLAY ===== */#prayerExpOverlay{display:none;position:fixed;inset:0;z-index:200;overflow:hidden;}.prayer-exp-bg{position:absolute;inset:0;}.prayer-exp-grad-top{position:absolute;top:0;left:0;right:0;height:130px;background:linear-gradient(to bottom,rgba(0,0,0,0.62),transparent);z-index:1;pointer-events:none;}.prayer-exp-grad-bot{position:absolute;bottom:0;left:0;right:0;height:220px;background:linear-gradient(to top,rgba(0,0,0,0.78),transparent);z-index:1;pointer-events:none;}.prayer-exp-scroll{position:absolute;inset:0;overflow-y:auto;z-index:2;padding:100px 36px 230px;box-sizing:border-box;}.prayer-exp-lines{font-family:Georgia,'Times New Roman',serif;font-size:20px;line-height:1.95;color:#fff;text-align:center;text-shadow:0 2px 10px rgba(0,0,0,0.35);}.prayer-exp-lines p{margin:0 0 18px;opacity:0;transform:translateY(14px);transition:opacity 0.9s ease,transform 0.9s ease;}.prayer-exp-actions{position:absolute;bottom:0;left:0;right:0;z-index:3;padding:14px 24px 44px;display:flex;flex-direction:column;align-items:center;gap:10px;}.prayer-exp-audio-bar{display:none;width:100%;max-width:380px;background:rgba(0,0,0,0.42);border-radius:14px;padding:12px 16px;flex-direction:row;align-items:center;gap:10px;box-sizing:border-box;}.prayer-exp-btns{display:flex;gap:10px;width:100%;max-width:380px;}.prayer-exp-outline{flex:1;padding:14px;background:rgba(0,0,0,0.42);border:1.5px solid rgba(255,255,255,0.35);color:#fff;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;touch-action:manipulation;transition:background 0.12s ease;}.prayer-exp-outline:active{background:rgba(0,0,0,0.65);}.prayer-exp-save{flex:1;padding:14px;background:rgba(30,15,0,0.82);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;touch-action:manipulation;transition:background 0.12s ease;}.prayer-exp-save:active{background:rgba(30,15,0,0.60);}.prayer-exp-close{position:absolute;top:20px;right:20px;z-index:4;background:rgba(0,0,0,0.35);border:none;color:#fff;font-size:20px;width:40px;height:40px;border-radius:50%;cursor:pointer;touch-action:manipulation;display:flex;align-items:center;justify-content:center;}.prayer-exp-toast{position:absolute;bottom:120px;left:50%;transform:translateX(-50%);background:rgba(30,15,0,0.90);color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:13px;padding:10px 24px;border-radius:50px;pointer-events:none;opacity:0;transition:opacity 0.3s;z-index:5;white-space:nowrap;}
+.copy-toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(30,15,0,0.88);color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:13px;letter-spacing:1px;padding:10px 24px;border-radius:50px;pointer-events:none;opacity:0;transition:opacity 0.3s;z-index:9999;}/* ===== PRAYER TYPE SELECTOR ===== */.prayer-type-btn{display:flex;align-items:center;background:rgba(255,248,210,0.68);border:none;border-radius:20px;padding:14px 18px;margin-bottom:10px;cursor:pointer;touch-action:manipulation;transition:background 0.12s ease;width:100%;text-align:left;box-sizing:border-box;}.prayer-type-btn.selected{background:rgba(30,15,0,0.80);}.prayer-type-btn:active{background:rgba(255,248,210,0.92);}.prayer-type-text{font-family:'Lato',sans-serif;font-size:13px;font-weight:600;color:rgba(0,0,0,0.82);line-height:1.4;flex:1;}.prayer-type-btn.selected .prayer-type-text{color:#f5c830;}.prayer-type-check{display:none;}/* ===== PRAYER EXPERIENCE OVERLAY ===== */#prayerExpOverlay{display:none;position:fixed;inset:0;z-index:200;overflow:hidden;}.prayer-exp-bg{position:absolute;inset:0;}.prayer-exp-grad-top{position:absolute;top:0;left:0;right:0;height:130px;background:linear-gradient(to bottom,rgba(0,0,0,0.62),transparent);z-index:1;pointer-events:none;}.prayer-exp-grad-bot{position:absolute;bottom:0;left:0;right:0;height:220px;background:linear-gradient(to top,rgba(0,0,0,0.78),transparent);z-index:1;pointer-events:none;}.prayer-exp-scroll{position:absolute;inset:0;overflow-y:auto;z-index:2;padding:100px 36px 230px;box-sizing:border-box;}.prayer-exp-lines{font-family:Georgia,'Times New Roman',serif;font-size:20px;line-height:1.95;color:#fff;text-align:center;text-shadow:0 2px 10px rgba(0,0,0,0.35);}.prayer-exp-lines p{margin:0 0 18px;opacity:0;transform:translateY(14px);transition:opacity 0.9s ease,transform 0.9s ease;}.prayer-exp-actions{position:absolute;bottom:0;left:0;right:0;z-index:3;padding:14px 24px 44px;display:flex;flex-direction:column;align-items:center;gap:10px;}.prayer-exp-audio-bar{display:none;width:100%;max-width:380px;background:rgba(0,0,0,0.42);border-radius:14px;padding:12px 16px;flex-direction:row;align-items:center;gap:10px;box-sizing:border-box;}.prayer-exp-btns{display:flex;gap:10px;width:100%;max-width:380px;}.prayer-exp-outline{flex:1;padding:14px;background:rgba(0,0,0,0.42);border:1.5px solid rgba(255,255,255,0.35);color:#fff;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;touch-action:manipulation;transition:background 0.12s ease;}.prayer-exp-outline:active{background:rgba(0,0,0,0.65);}.prayer-exp-save{flex:1;padding:14px;background:rgba(30,15,0,0.82);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;touch-action:manipulation;transition:background 0.12s ease;}.prayer-exp-save:active{background:rgba(30,15,0,0.60);}.prayer-exp-close{position:absolute;top:20px;right:20px;z-index:4;background:rgba(0,0,0,0.35);border:none;color:#fff;font-size:20px;width:40px;height:40px;border-radius:50%;cursor:pointer;touch-action:manipulation;display:flex;align-items:center;justify-content:center;}.prayer-exp-toast{position:absolute;bottom:120px;left:50%;transform:translateX(-50%);background:rgba(30,15,0,0.90);color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:13px;padding:10px 24px;border-radius:50px;pointer-events:none;opacity:0;transition:opacity 0.3s;z-index:5;white-space:nowrap;}.prayer-inline-card{background:rgba(255,248,210,0.88);border-radius:18px;padding:20px 18px;font-family:'Lato',sans-serif;font-size:15px;line-height:1.85;color:#1a0a00;margin-bottom:14px;}.prayer-inline-audio{display:flex;align-items:center;gap:10px;background:rgba(30,15,0,0.75);border-radius:12px;padding:10px 14px;margin-bottom:10px;}.prayer-inline-actions{display:flex;gap:10px;margin-bottom:4px;}.prayer-inline-save{flex:1;padding:14px;background:rgba(30,15,0,0.80);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;touch-action:manipulation;transition:background 0.12s ease;}.prayer-inline-save:active{background:rgba(30,15,0,0.60);}.prayer-inline-btn{flex:1;padding:14px;background:rgba(255,248,210,0.68);border:1.5px solid rgba(61,31,0,0.20);color:rgba(30,15,0,0.82);font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;touch-action:manipulation;transition:background 0.12s ease;}.prayer-inline-btn:active{background:rgba(255,248,210,0.92);}.prayer-inline-toast{text-align:center;font-family:'Lato',sans-serif;font-size:13px;color:rgba(30,15,0,0.70);font-weight:700;padding:8px 0;opacity:0;transition:opacity 0.3s;}
 .prayer-tab-bar{display:flex;gap:0;padding:6px 16px 0;border-bottom:1.5px solid rgba(0,0,0,0.10);}
 .prayer-tab{flex:1;padding:9px 8px;background:none;border:none;border-bottom:2.5px solid transparent;font-family:'Lato',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.5px;color:rgba(0,0,0,0.42);cursor:pointer;transition:color 0.15s,border-color 0.15s;touch-action:manipulation;}
 .prayer-tab.active{color:rgba(61,31,0,0.88);border-bottom-color:rgba(61,31,0,0.75);}
@@ -822,15 +946,12 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
     <!-- ── Type selector ── -->
     <button class="prayer-type-btn" id="ptype1" onclick="selectPrayerType(1)">
       <span class="prayer-type-text">A prayer I will speak directly to God &mdash; written as my own words</span>
-      <span class="prayer-type-check">&#10003;</span>
     </button>
     <button class="prayer-type-btn" id="ptype2" onclick="selectPrayerType(2)">
       <span class="prayer-type-text">A prayer spoken over me by name &mdash; for what I&rsquo;m walking through today</span>
-      <span class="prayer-type-check">&#10003;</span>
     </button>
     <button class="prayer-type-btn" id="ptype3" onclick="selectPrayerType(3)">
       <span class="prayer-type-text">A prayer I will offer to God for a person, cause, or intention on my heart</span>
-      <span class="prayer-type-check">&#10003;</span>
     </button>
 
     <!-- ── Form 1: First Person ── -->
@@ -867,6 +988,25 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
       <button class="generate-btn" id="pGenBtn3" onclick="generatePrayerTyped(3)">Create This Prayer &#10022;</button>
     </div>
 
+
+    <!-- ── Inline Result ── -->
+    <div id="prayerInlineResult" style="display:none;margin-top:16px;">
+      <div class="prayer-inline-card" id="prayerInlineText"></div>
+      <div class="prayer-inline-audio" id="prayerInlineAudio" style="display:none;">
+        <button class="listen-player-btn" id="pInlinePauseBtn" onclick="pauseInlinePrayer()">Pause</button>
+        <div class="listen-progress-wrap" style="flex:1;"><div class="listen-progress-fill" id="pInlineProgressFill"></div></div>
+        <button class="listen-player-btn" onclick="stopInlinePrayer()">Stop</button>
+      </div>
+      <div class="prayer-inline-actions" id="prayerInlineActions1" style="display:none;">
+        <button class="prayer-inline-save" onclick="saveInlinePrayer()">SAVE</button>
+      </div>
+      <div class="prayer-inline-actions" id="prayerInlineActions23" style="display:none;">
+        <button class="prayer-inline-btn" id="pInlineListenBtn" onclick="listenInlinePrayer()">LISTEN</button>
+        <button class="prayer-inline-btn" onclick="shareExpPrayer()">SHARE</button>
+        <button class="prayer-inline-save" onclick="saveInlinePrayer()">SAVE</button>
+      </div>
+      <div class="prayer-inline-toast" id="prayerInlineToast"></div>
+    </div>
     <!-- ── Loading ── -->
     <div class="loading-wrap" id="prayerLoadingWrap">
       <img src="images/My_Prayer_Icon.png" alt="" style="width:72px;height:72px;object-fit:contain;margin-bottom:12px;opacity:0.85;">
