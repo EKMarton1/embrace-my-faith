@@ -271,7 +271,7 @@ function closeExpPrayer() {
 // ── TTS for experience overlay ──
 async function toggleExpListen() {
   if (isPlaying || currentAudio) { stopExpPrayer(); return; }
-  if (!canUseTier('devotion')) { showTierModal('listen'); return; }
+  if (!canUseTier('divine')) { showTierModal('listen'); return; }
   if (!expPrayerText) return;
   var listenBtn = document.getElementById('prayerExpListenBtn');
   if (listenBtn) {
@@ -359,7 +359,7 @@ function stopExpProgressBar() {
 
 // ── Save ──
 async function saveExpPrayer() {
-  if (!canUseTier('devotion')) { showTierModal('save'); return; }
+  if (!canUseTier('divine')) { showTierModal('save'); return; }
   var limit = getSavedLimit();
   if (savedPrayers.length >= limit) { showTierModal('unlimitedsaves'); return; }
   if (!expPrayerText) return;
@@ -417,7 +417,7 @@ function hideInlinePrayerResult() {
 }
 
 async function saveInlinePrayer() {
-  if (!canUseTier('devotion')) { showTierModal('save'); return; }
+  if (!canUseTier('divine')) { showTierModal('save'); return; }
   var limit = getSavedLimit();
   if (savedPrayers.length >= limit) { showTierModal('unlimitedsaves'); return; }
   if (!expPrayerText) return;
@@ -431,7 +431,7 @@ async function saveInlinePrayer() {
 
 async function listenInlinePrayer() {
   if (isPlaying || currentAudio) { stopInlinePrayer(); return; }
-  if (!canUseTier('devotion')) { showTierModal('listen'); return; }
+  if (!canUseTier('divine')) { showTierModal('listen'); return; }
   if (!expPrayerText) return;
   var lb = document.getElementById('pInlineListenBtn');
   if (lb) { lb.disabled = true; lb.textContent = 'GIVE ME A MOMENT'; }
@@ -1486,21 +1486,21 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
       <!-- State 1: Trial -->
       <div id="subStateTrial" style="display:none;">
         <div class="sub-plan-name">Divine Plan</div>
-        <div class="sub-plan-desc" id="subTrialDesc">Free trial &mdash; X days left, then $9.99/mo</div>
-        <button class="sub-upgrade-link" onclick="upgradeToAnnual()">Click here to save 2 months at $99.90/yr</button>
+        <div class="sub-plan-desc" id="subTrialDesc">Free trial &mdash; X days left, then $4.99/mo</div>
+        <button class="sub-upgrade-link" onclick="upgradeToAnnual()">Click here to save 2 months at $49.90/yr</button>
         <button class="settings-action-btn" onclick="openManageSubscription()">Manage Subscription</button>
       </div>
       <!-- State 2: Active paid -->
       <div id="subStatePaid" style="display:none;">
         <div class="sub-plan-name">Divine Plan</div>
-        <div class="sub-plan-desc">$9.99/mo</div>
-        <button class="sub-upgrade-link" onclick="upgradeToAnnual()">Click here to save 2 months at $99.90/yr</button>
+        <div class="sub-plan-desc">$4.99/mo</div>
+        <button class="sub-upgrade-link" onclick="upgradeToAnnual()">Click here to save 2 months at $49.90/yr</button>
         <button class="settings-action-btn" onclick="openManageSubscription()">Manage Subscription</button>
       </div>
       <!-- State 3: Grace free -->
       <div id="subStateGrace" style="display:none;">
         <div class="sub-plan-name">Grace Plan &mdash; Free</div>
-        <button class="settings-action-btn" onclick="showScreen('pricingScreen')">View Devotion and Divine Features</button>
+        <button class="settings-action-btn" onclick="showScreen('pricingScreen')">View Divine Plan Features</button>
       </div>
     </div>
 
@@ -1624,43 +1624,20 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
       <div class="accord-head" onclick="toggleAccordion('grace')">
         <div class="accord-left">
           <div class="accord-name">Grace</div>
+          <div class="accord-tagline">Always free</div>
         </div>
         <div style="display:flex;align-items:center;">
-          <div class="accord-right"><div class="accord-price">Free</div><div class="accord-period">always</div></div>
+          <div class="accord-right"><div class="accord-price">Free</div></div>
           <div class="accord-chevron">&#8964;</div>
         </div>
       </div>
       <div class="accord-body">
-        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>1 personal prayer per day</div>
-        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Share &amp; request prayer via text and email</div>
-        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Life moments &amp; milestones</div>
-        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Day-of moments reminder</div>
-        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Curated Rise &amp; Rest content</div>
+        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>30 Personalized Prayers created each month</div>
+        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Save up to 5 Prayers</div>
+        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Receive unique daily scriptures</div>
+        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Send and Request Prayers via text or email</div>
+        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Moments &mdash; enter dates and get daily notifications of special life moments and milestones</div>
         <button class="accord-cta current" id="graceBtn">Your Current Plan</button>
-      </div>
-    </div>
-
-    <!-- DEVOTION -->
-    <div class="accord-item" id="accord-devotion">
-      <div class="accord-head" onclick="toggleAccordion('devotion')">
-        <div class="accord-left">
-          <div class="accord-name">Devotion</div>
-        </div>
-        <div style="display:flex;align-items:center;">
-          <div class="accord-right"><div class="accord-price">$4.99<span style="font-size:12px;font-weight:400;">/mo</span></div><div class="accord-period">or $49.99/yr</div><div class="accord-period">Save 2 months at $49.90/year</div></div>
-          <div class="accord-chevron">&#8964;</div>
-        </div>
-      </div>
-      <div class="accord-body">
-        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>5 personal prayers per day</div>
-        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Live voice audio for every prayer</div>
-        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Send &amp; request prayer to someone you love</div>
-        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Prayer Circle</div>
-        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Save up to 30 prayers</div>
-        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Expanded Rise &amp; Rest &mdash; all voices &amp; ambients</div>
-        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Customizable moments reminders (7 days, 1 day, day of)</div>
-        <button class="accord-cta gold" id="devotionBtn" onclick="selectPlan('devotion')">Choose Devotion</button>
-        <div class="accord-fine">10-day free trial, then $4.99/mo. Cancel anytime.</div>
       </div>
     </div>
 
@@ -1668,24 +1645,27 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
     <div class="accord-item" id="accord-divine">
       <div class="accord-head" onclick="toggleAccordion('divine')">
         <div class="accord-left">
-          <div class="accord-name">Divine</div>
+          <div class="accord-name">Divine Plan</div>
         </div>
         <div style="display:flex;align-items:center;">
-          <div class="accord-right"><div class="accord-price">$9.99<span style="font-size:12px;font-weight:400;">/mo</span></div><div class="accord-period">or $99.99/yr</div><div class="accord-period">Save 2 months at $99.90/year</div></div>
+          <div class="accord-right">
+            <div class="accord-price">$4.99<span style="font-size:12px;font-weight:400;">/mo</span></div>
+            <div class="accord-period">Save 2 months at $49.90/yr</div>
+          </div>
           <div class="accord-chevron">&#8964;</div>
         </div>
       </div>
       <div class="accord-body">
-        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>15 personal prayers per day</div>
-        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>All available voices</div>
-        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Send &amp; request prayer to someone you love</div>
-        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Prayer Circle</div>
-        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Unlimited saved prayers</div>
-        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Full Rise &amp; Rest &mdash; preview &amp; choose all content</div>
-        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Customizable moments reminders (7 days, 1 day, day of)</div>
-        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Early access to new features</div>
-        <button class="accord-cta dark" id="divineBtn" onclick="selectPlan('divine')">Choose Divine</button>
-        <div class="accord-fine">10-day free trial, then $9.99/mo. Cancel anytime.</div>
+        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>10 Personalized Prayers created every day</div>
+        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Save and retrieve up to 50 Prayers</div>
+        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Receive unique daily scriptures</div>
+        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Your Circle &mdash; manage your circle and connect with Divine members</div>
+        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Send and Request Prayers in your Circle and via text or email to non-members</div>
+        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Moments &mdash; enter dates and get custom notifications of special life moments and milestones</div>
+        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Listen to your prayers with custom voices matching the tone of your prayer</div>
+        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Exclusive seasonal and holiday prayers</div>
+        <button class="accord-cta gold" id="divineBtn" onclick="selectPlan('divine')">Choose Divine Plan</button>
+        <div class="accord-fine">10 day free trial, then $4.99/mo. Cancel anytime.<br/>Save 2 months at $49.90/yr</div>
       </div>
     </div>
 
@@ -1699,7 +1679,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
     <div class="tier-modal-title" id="tierModalTitle"></div>
     <div class="tier-modal-msg" id="tierModalMsg"></div>
     <div class="tier-modal-verse" id="tierModalVerse"></div>
-    <button class="tier-modal-btn-primary" onclick="showScreen('pricingScreen');closeTierModal()">See Plans</button>
+    <button class="tier-modal-btn-primary" id="tierModalPrimary" onclick="showScreen('pricingScreen');closeTierModal()">See Plans</button>
     <button class="tier-modal-btn-secondary" onclick="closeTierModal()">Maybe Later</button>
   </div>
 </div>
@@ -1784,20 +1764,23 @@ async function loadUserData() {
     if (hn) hn.textContent = userName.split(' ')[0];
     saveGenderPref(defaultGender);
 
-    var today = new Date().toISOString().slice(0, 10);
-    var dailyLimit = getDailyLimit();
+    var isDivineUser = getEffectiveTier() === 'divine';
+    var prayerLimit = getPrayerLimit();
+    var resetKey = isDivineUser
+      ? new Date().toISOString().slice(0, 10)
+      : (function(){ var d = new Date(); d.setDate(1); return d.toISOString().slice(0, 10); })();
     var counters = await supaGet('/rest/v1/prayer_counters?user_id=eq.' + uid + '&limit=1');
     var counter = Array.isArray(counters) ? counters[0] : null;
     if (counter) {
-      if (counter.reset_date !== today) {
-        prayersLeft = dailyLimit;
-        await supaPost('/rest/v1/prayer_counters?user_id=eq.' + uid, { count: 0, reset_date: today }, 'PATCH');
+      if (counter.reset_date !== resetKey) {
+        prayersLeft = prayerLimit;
+        await supaPost('/rest/v1/prayer_counters?user_id=eq.' + uid, { count: 0, reset_date: resetKey }, 'PATCH');
       } else {
-        prayersLeft = Math.max(0, dailyLimit - counter.count);
+        prayersLeft = Math.max(0, prayerLimit - counter.count);
       }
     } else {
-      prayersLeft = dailyLimit;
-      await supaPost('/rest/v1/prayer_counters', { user_id: uid, count: 0, reset_date: today });
+      prayersLeft = prayerLimit;
+      await supaPost('/rest/v1/prayer_counters', { user_id: uid, count: 0, reset_date: resetKey });
     }
     updateCounterUI();
 
@@ -1914,7 +1897,7 @@ async function authSignUp() {
       currentAccessToken = session.access_token;
       localStorage.setItem('emf_returning', '1');
       userName = name;
-      prayersLeft = 15;
+      prayersLeft = getPrayerLimit();
       // Insert profile and counter in background — don't block navigation
       var trialEnd = new Date(); trialEnd.setDate(trialEnd.getDate() + 10);
       var trialEndStr = trialEnd.toISOString().slice(0, 10);
@@ -1938,7 +1921,7 @@ async function authSignOut() {
   }
   currentUser = null; currentAccessToken = null;
   moments = [{ name: 'Remy', date: '1999-07-13', category: 'Birthday', note: '' }];
-  savedPrayers = []; prayersLeft = 15; userName = 'Friend';
+  savedPrayers = []; prayersLeft = getPrayerLimit ? getPrayerLimit() : 30; userName = 'Friend';
   showScreen('loginScreen');
 }
 
@@ -1965,16 +1948,23 @@ async function dbSaveProfile(updates) {
 
 async function dbDecrementCounter() {
   if (!supaClient || !currentUser) return;
-  var today = new Date().toISOString().slice(0, 10);
+  var isDivineUser = getEffectiveTier() === 'divine';
+  var resetKey = isDivineUser
+    ? new Date().toISOString().slice(0, 10)
+    : (function(){ var d = new Date(); d.setDate(1); return d.toISOString().slice(0, 10); })();
   try {
     var { data } = await supaClient.from('prayer_counters').select('count,reset_date').eq('user_id', currentUser.id).single();
     if (data) {
-      var newCount = (data.reset_date === today) ? data.count + 1 : 1;
-      await supaClient.from('prayer_counters').update({ count: newCount, reset_date: today }).eq('user_id', currentUser.id);
+      var newCount = (data.reset_date === resetKey) ? data.count + 1 : 1;
+      await supaClient.from('prayer_counters').update({ count: newCount, reset_date: resetKey }).eq('user_id', currentUser.id);
     } else {
-      await supaClient.from('prayer_counters').insert({ user_id: currentUser.id, count: 1, reset_date: today });
+      await supaClient.from('prayer_counters').insert({ user_id: currentUser.id, count: 1, reset_date: resetKey });
     }
   } catch(e) {}
+}
+
+function purchaseAddon() {
+  alert('Add-on purchase coming soon! $0.99 for 10 more prayers — check back soon.');
 }
 
 async function dbSavePrayer(prayerFor, prayerText, scripture, tone) {
@@ -2017,7 +2007,7 @@ async function dbSaveRestPrefs(prefs) {
 
 // ========== STATE ==========
 var userName = 'Friend';
-var prayersLeft = 15;
+var prayersLeft = 30;
 var userTier = 'grace';       // 'grace' | 'devotion' | 'divine'
 var trialEndsAt = null;       // ISO date string e.g. '2026-05-30'
 
@@ -2034,26 +2024,21 @@ function getEffectiveTier() {
   if (isTrialing()) return 'divine';
   return userTier;
 }
-function getDailyLimit() {
-  var t = getEffectiveTier();
-  if (t === 'divine') return 15;
-  if (t === 'devotion') return 5;
-  return 1;
+function getPrayerLimit() {
+  return getEffectiveTier() === 'divine' ? 10 : 30;
 }
+function getDailyLimit() { return getPrayerLimit(); } // alias for backward compat
 function canUseTier(min) {
-  var rank = { grace: 0, devotion: 1, divine: 2 };
-  return (rank[getEffectiveTier()] || 0) >= (rank[min] || 0);
+  if (min === 'divine') return getEffectiveTier() === 'divine';
+  return true; // grace features always accessible
 }
 function getSavedLimit() {
-  var t = getEffectiveTier();
-  if (t === 'divine') return Infinity;
-  if (t === 'devotion') return 30;
-  return 0;
+  return getEffectiveTier() === 'divine' ? 50 : 5;
 }
 function showUpgradeWall(anchorId, feature, minTier) {
   var existing = document.getElementById('upgradeWall');
   if (existing) existing.remove();
-  var tierLabel = minTier === 'devotion' ? 'Devotion' : 'Divine';
+  var tierLabel = 'Divine';
   var verses = {
     listen: { icon: '&#127925;', title: 'Hear Your Prayer Spoken', verse: '&ldquo;Faith comes from hearing.&rdquo; &mdash; Romans 10:17' },
     save:   { icon: '&#128214;', title: 'Save Your Prayers', verse: '&ldquo;Write the vision; make it plain.&rdquo; &mdash; Habakkuk 2:2' },
@@ -2201,11 +2186,25 @@ var TIER_VERSES = {
   divine:   '”For in him we live and move and have our being.” — Acts 17:28'
 };
 function showTierModal(feature) {
+  if (feature === 'limit' && canUseTier('divine')) feature = 'addon';
   var f = TIER_FEATURES[feature] || TIER_FEATURES.limit;
   document.getElementById('tierModalIcon').innerHTML = f.icon;
   document.getElementById('tierModalTitle').textContent = f.title;
   document.getElementById('tierModalMsg').textContent = f.msg;
-  document.getElementById('tierModalVerse').innerHTML = TIER_VERSES[f.tier] || TIER_VERSES.devotion;
+  document.getElementById('tierModalVerse').innerHTML = TIER_VERSES[f.tier] || TIER_VERSES.divine;
+  var pb = document.getElementById('tierModalPrimary');
+  if (pb) {
+    if (feature === 'addon') {
+      pb.textContent = 'Get 10 More — $0.99';
+      pb.onclick = function(){ closeTierModal(); purchaseAddon(); };
+    } else if (feature === 'limit') {
+      pb.textContent = 'Choose Your Plan';
+      pb.onclick = function(){ showScreen('pricingScreen'); closeTierModal(); };
+    } else {
+      pb.textContent = 'See Plans';
+      pb.onclick = function(){ showScreen('pricingScreen'); closeTierModal(); };
+    }
+  }
   document.getElementById('tierModalOverlay').classList.add('open');
 }
 function closeTierModal() {
@@ -2216,17 +2215,16 @@ function closeTierModal() {
 function toggleAccordion(tier) {
   var clicked = document.getElementById('accord-' + tier);
   var isOpen = clicked && clicked.classList.contains('open');
-  ['grace','devotion','divine'].forEach(function(t) {
+  ['grace','divine'].forEach(function(t) {
     var el = document.getElementById('accord-' + t);
     if (el) el.classList.toggle('open', !isOpen && t === tier);
   });
 }
 function selectPlan(tier) {
-  var name = tier === 'devotion' ? 'Devotion' : 'Divine';
-  alert('Subscription payments coming soon! Thank you for your interest in the ' + name + ' plan.');
+  alert('Subscription payments coming soon! Thank you for your interest in the Divine Plan.');
 }
 function updatePricingButtons() {
-  var tiers = ['grace','devotion','divine'];
+  var tiers = ['grace','divine'];
   tiers.forEach(function(t) {
     var btn = document.getElementById(t + 'Btn');
     if (!btn) return;
@@ -2236,8 +2234,8 @@ function updatePricingButtons() {
       btn.className = 'accord-cta current';
       btn.onclick = null;
     } else {
-      btn.textContent = 'Select';
-      btn.className = t === 'devotion' ? 'accord-cta gold' : 'accord-cta dark';
+      btn.textContent = t === 'divine' ? 'Choose Divine Plan' : 'Select';
+      btn.className = t === 'divine' ? 'accord-cta gold' : 'accord-cta dark';
       btn.onclick = (function(tier){ return function(){ selectPlan(tier); }; })(t);
     }
   });
@@ -2263,7 +2261,7 @@ function showScreen(id, isBack) {
   if (id === 'loginScreen') { var le = document.getElementById('loginError'); if (le) { le.textContent = ''; le.style.display = 'none'; } var lb = document.getElementById('loginBtn'); if (lb) { lb.disabled = false; lb.textContent = 'SIGN IN'; } }
   if (id === 'signupScreen') { var se = document.getElementById('signupError'); if (se) { se.textContent = ''; se.style.display = 'none'; } var sb = document.getElementById('signupBtn'); if (sb) { sb.disabled = false; sb.textContent = 'CREATE ACCOUNT'; } }
   if (id === 'homeScreen') { var hn = document.getElementById('homeName'); if (hn) hn.textContent = userName.split(' ')[0]; playHomeAnimation(); }
-  if (id === 'circleScreen' && !canUseTier('devotion')) {
+  if (id === 'circleScreen' && !canUseTier('divine')) {
     showTierModal('circle');
     return;
   }
@@ -2280,9 +2278,9 @@ function showScreen(id, isBack) {
       ['subStateTrial','subStatePaid','subStateGrace'].forEach(function(id){ var el=document.getElementById(id); if(el) el.style.display='none'; });
       if (isTrialing()) {
         var td = document.getElementById('subTrialDesc');
-        if (td) td.textContent = 'Free trial — ' + trialDaysLeft() + ' day' + (trialDaysLeft() !== 1 ? 's' : '') + ' left, then $9.99/mo';
+        if (td) td.textContent = 'Free trial — ' + trialDaysLeft() + ' day' + (trialDaysLeft() !== 1 ? 's' : '') + ' left, then $4.99/mo';
         var el = document.getElementById('subStateTrial'); if (el) el.style.display = '';
-      } else if (canUseTier('devotion')) {
+      } else if (canUseTier('divine')) {
         var el = document.getElementById('subStatePaid'); if (el) el.style.display = '';
       } else {
         var el = document.getElementById('subStateGrace'); if (el) el.style.display = '';
@@ -2305,7 +2303,7 @@ function showScreen(id, isBack) {
     if (el) el.textContent = prayersLeft + ' of ' + getDailyLimit() + ' prayers remaining today';
   }
   if (id === 'pricingScreen') {
-    ['grace','devotion','divine'].forEach(function(t){
+    ['grace','divine'].forEach(function(t){
       var el = document.getElementById('accord-' + t);
       if (el) el.classList.remove('open');
     });
@@ -2476,7 +2474,7 @@ async function generatePrayer() {
 }
 
 function applyTierToScreen(id) {
-  var grace = !canUseTier('devotion');
+  var grace = !canUseTier('divine');
   if (id === 'riseScreen' || id === 'restScreen') {
     var prefix = id === 'riseScreen' ? 'rise' : 'rest';
     var opts = document.getElementById(prefix + 'Options');
@@ -2509,7 +2507,7 @@ function applyTierToScreen(id) {
 }
 
 function applyTierToGeneratedPrayer() {
-  var allowed = canUseTier('devotion');
+  var allowed = canUseTier('divine');
   var voiceRow = document.getElementById('voiceRow');
   var listenBtn = document.getElementById('listenBtn');
   var audioBar = document.getElementById('prayerAudioBar');
@@ -2551,7 +2549,7 @@ function fallbackCopy(text, cb) {
 }
 
 async function savePrayer() {
-  if (!canUseTier('devotion')) {
+  if (!canUseTier('divine')) {
     showTierModal('save');
     return;
   }
@@ -2593,7 +2591,7 @@ async function toggleListen() {
     resetListenButton();
     return;
   }
-  if (!canUseTier('devotion')) {
+  if (!canUseTier('divine')) {
     showTierModal('listen');
     return;
   }
@@ -2737,7 +2735,7 @@ function selectSendVoiceGender(gender) {
 }
 
 function applySendListenTier() {
-  var allowed = canUseTier('devotion');
+  var allowed = canUseTier('divine');
   var vr = document.getElementById('sendVoiceRow');
   var lb = document.getElementById('sendListenBtn');
   var ab = document.getElementById('sendAudioBar');
@@ -2754,7 +2752,7 @@ async function toggleSendListen() {
     resetSendListenButton();
     return;
   }
-  if (!canUseTier('devotion')) { showTierModal('listen'); return; }
+  if (!canUseTier('divine')) { showTierModal('listen'); return; }
   var prayer = document.getElementById('sendPrayerText').textContent;
   if (!prayer) { alert('Generate a prayer first!'); return; }
   var gender = (document.getElementById('sendVbMale') && document.getElementById('sendVbMale').style.color === 'rgb(245, 200, 48)') ? 'male' : 'female';
@@ -3633,6 +3631,12 @@ async function circleDoSearch() {
 async function circleSendInvite(userId, name, btn) {
   if (btn) { btn.disabled=true; btn.textContent='Sending...'; }
   try {
+    // Check recipient tier to show appropriate message
+    var recipientTier = 'grace';
+    try {
+      var rp = await supaGet('/rest/v1/profiles?id=eq.' + userId + '&select=tier&limit=1');
+      if (Array.isArray(rp) && rp[0] && rp[0].tier) recipientTier = rp[0].tier;
+    } catch(e2) {}
     var result = await supaPost('/rest/v1/circle_connections', { requester_id:currentUser.id, addressee_id:userId, status:'pending' });
     if (result && result.code) {
       if (btn) { btn.disabled=false; btn.textContent='+ Invite'; }
@@ -3640,13 +3644,25 @@ async function circleSendInvite(userId, name, btn) {
     }
     circlePendingOutgoing.push(userId);
     if (btn) {
-      btn.textContent = 'Sent';
-      btn.style.background = 'rgba(30,100,30,0.7)';
       var card = btn.parentElement;
-      setTimeout(function() {
-        if (card) { card.style.transition='opacity 0.4s'; card.style.opacity='0'; }
-        setTimeout(function() { if (card) card.style.display='none'; }, 400);
-      }, 900);
+      if (recipientTier !== 'divine') {
+        // Grace user — invite sent but show upgrade note
+        btn.textContent = 'Invited';
+        btn.disabled = true;
+        if (card) {
+          var note = document.createElement('div');
+          note.style.cssText = 'font-size:12px;color:rgba(0,0,0,0.55);margin-top:6px;line-height:1.45;font-family:Lato,sans-serif;padding:0 4px;';
+          note.textContent = name + " is on the Grace plan which doesn't include Circle. We've sent them an invitation with the option to upgrade to join your Circle.";
+          card.appendChild(note);
+        }
+      } else {
+        btn.textContent = 'Sent';
+        btn.style.background = 'rgba(30,100,30,0.7)';
+        setTimeout(function() {
+          if (card) { card.style.transition='opacity 0.4s'; card.style.opacity='0'; }
+          setTimeout(function() { if (card) card.style.display='none'; }, 400);
+        }, 900);
+      }
     }
   } catch(e) {
     if (btn) { btn.disabled=false; btn.textContent='+ Invite'; }
