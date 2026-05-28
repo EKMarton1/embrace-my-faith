@@ -7,6 +7,28 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+
+<!-- ── HAMBURGER MENU OVERLAY ── -->
+<div class="menu-overlay" id="menuOverlay" onclick="closeHamburgerMenu()">
+  <div class="menu-drawer" onclick="event.stopPropagation()">
+    <div class="menu-drawer-header">
+      <div class="menu-drawer-logo">Embrace My Faith</div>
+      <button class="menu-drawer-close" onclick="closeHamburgerMenu()">&#10005;</button>
+    </div>
+    <div class="menu-items">
+      <button class="menu-item" onclick="menuGo('settingsScreen')">&#9881;&ensp;Preferences</button>
+      <button class="menu-item" onclick="menuGo('pricingScreen')">&#10024;&ensp;View Plans</button>
+      <button class="menu-item" onclick="menuGo('savedScreen')">&#128214;&ensp;Saved Prayers</button>
+      <button class="menu-item" onclick="menuShowScripture()">&#128214;&ensp;Daily Scripture</button>
+      <div class="menu-divider"></div>
+      <button class="menu-item" onclick="menuShareApp()">&#128172;&ensp;Share Embrace My Faith</button>
+      <button class="menu-item" onclick="menuRateApp()">&#11088;&ensp;Rate the App</button>
+      <div class="menu-divider"></div>
+      <button class="menu-item menu-item-signout" onclick="menuSignOut()">&#10148;&ensp;Sign Out</button>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 // ── Preferences: inline pencil editing ──
@@ -568,7 +590,7 @@ body{background:#1a1a1a;display:flex;justify-content:center;align-items:flex-sta
 
 /* ========== HOME ========== */
 #homeScreen{padding:0;}
-.settings-cog{position:absolute;top:20px;right:20px;background:rgba(255,248,210,0.68);border:1px solid rgba(0,0,0,0.13);border-radius:50%;width:36px;height:36px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;transition:background 0.12s ease;}.settings-cog:active{background:rgba(255,248,210,0.92);}
+.hamburger-btn{position:absolute;top:18px;right:18px;background:rgba(255,248,210,0.68);border:1px solid rgba(0,0,0,0.13);border-radius:10px;width:40px;height:40px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;z-index:10;transition:background 0.12s ease;padding:0;}.hamburger-btn:active{background:rgba(255,248,210,0.92);}.hamburger-line{width:18px;height:2px;background:rgba(61,31,0,0.85);border-radius:2px;display:block;}.menu-overlay{position:fixed;inset:0;background:rgba(0,0,0,0);z-index:200;display:none;transition:background 0.25s ease;pointer-events:none;}.menu-overlay.open{background:rgba(0,0,0,0.45);pointer-events:all;}.menu-drawer{position:fixed;top:0;right:-280px;width:264px;height:100%;background:linear-gradient(170deg,#fff3c4 0%,#f5e080 100%);padding:0;z-index:201;transition:right 0.28s cubic-bezier(0.4,0,0.2,1);display:flex;flex-direction:column;box-shadow:-4px 0 28px rgba(0,0,0,0.22);}.menu-overlay.open .menu-drawer{right:0;}.menu-drawer-header{padding:52px 24px 18px;border-bottom:1px solid rgba(61,31,0,0.12);}.menu-drawer-logo{font-family:'Lato',sans-serif;font-size:15px;font-weight:900;color:rgba(61,31,0,0.75);letter-spacing:1px;text-transform:uppercase;}.menu-drawer-close{position:absolute;top:18px;right:16px;background:none;border:none;font-size:22px;color:rgba(61,31,0,0.55);cursor:pointer;padding:6px;line-height:1;}.menu-items{flex:1;overflow-y:auto;padding:8px 0;}.menu-item{width:100%;padding:16px 28px;background:none;border:none;text-align:left;font-family:'Lato',sans-serif;font-size:16px;font-weight:700;color:rgba(30,10,0,0.88);cursor:pointer;transition:background 0.12s ease;touch-action:manipulation;display:block;}.menu-item:active{background:rgba(0,0,0,0.07);}.menu-divider{height:1px;background:rgba(61,31,0,0.13);margin:4px 24px;}.menu-item-signout{color:rgba(160,0,0,0.80);}
 .home-header{padding:56px 28px 20px;text-align:center;position:relative;}
 .home-greeting-text{font-family:'Lato',sans-serif;font-size:36px;font-weight:700;color:rgba(0,0,0,0.82);line-height:1.2;}
 .daily-verse{max-width:300px;margin:0 auto;text-align:center;}
@@ -914,7 +936,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
 
 <!-- HOME -->
 <div class="screen" id="homeScreen">
-  <button class="settings-cog" onclick="showScreen('settingsScreen')">&#9881;</button>
+  <button class="hamburger-btn" onclick="openHamburgerMenu()" aria-label="Menu"><span class="hamburger-line"></span><span class="hamburger-line"></span><span class="hamburger-line"></span></button>
   <div class="home-header">
     <div class="home-greeting-text" id="timeGreeting">Good Morning</div>
     <div class="home-greeting-text" id="homeName">Friend</div>
@@ -1504,7 +1526,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
       </div>
     </div>
 
-    <div class="settings-card">
+    <div class="settings-card" id="subscriptionState">
       <div class="settings-card-title">Subscription</div>
       <!-- State 1: Trial -->
       <div id="subStateTrial" style="display:none;">
@@ -1516,7 +1538,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
       <!-- State 2: Active paid -->
       <div id="subStatePaid" style="display:none;">
         <div class="sub-plan-name">Divine Plan</div>
-        <div class="sub-plan-desc">$4.99/mo</div>
+        <div class="sub-plan-desc" id="subPaidDesc">$4.99/mo</div>
         <button class="sub-upgrade-link" onclick="upgradeToAnnual()">Click here to save 2 months at $49.90/yr</button>
         <button class="settings-action-btn" onclick="openManageSubscription()">Manage Subscription</button>
       </div>
@@ -1948,6 +1970,85 @@ async function authSignOut() {
   showScreen('loginScreen');
 }
 
+// ══════════════════════════════════════════════════════
+// HAMBURGER MENU
+// ══════════════════════════════════════════════════════
+function openHamburgerMenu() {
+  var ov = document.getElementById('menuOverlay');
+  if (ov) { ov.style.display = 'block'; requestAnimationFrame(function(){ ov.classList.add('open'); }); }
+}
+function closeHamburgerMenu() {
+  var ov = document.getElementById('menuOverlay');
+  if (!ov) return;
+  ov.classList.remove('open');
+  setTimeout(function(){ ov.style.display = 'none'; }, 280);
+}
+function menuGo(screen) {
+  closeHamburgerMenu();
+  setTimeout(function(){ showScreen(screen); }, 60);
+}
+function menuShowScripture() {
+  closeHamburgerMenu();
+  setTimeout(function(){
+    var vt = document.getElementById('dailyVerseText');
+    var vr = document.getElementById('dailyVerseRef');
+    var verse = (vt ? vt.textContent : '') || '“Be still, and know that I am God.”';
+    var ref   = (vr ? vr.textContent : '') || '— Psalm 46:10';
+    alert(verse + '\n\n' + ref);
+  }, 60);
+}
+function menuShareApp() {
+  closeHamburgerMenu();
+  var url = 'https://embracemyfaith.com';
+  var text = 'I’ve been using Embrace My Faith to pray — check it out! ' + url;
+  setTimeout(function(){
+    if (navigator.share) { navigator.share({ title: 'Embrace My Faith', text: text, url: url }).catch(function(){}); }
+    else if (navigator.clipboard) { navigator.clipboard.writeText(text).then(function(){ alert('Link copied! Share it anywhere.'); }); }
+    else { window.open(url, '_blank'); }
+  }, 60);
+}
+function menuRateApp() {
+  closeHamburgerMenu();
+  setTimeout(function(){ window.open(getEmfLink(), '_blank'); }, 60);
+}
+function menuSignOut() {
+  closeHamburgerMenu();
+  setTimeout(function(){ authSignOut(); }, 60);
+}
+
+// ══════════════════════════════════════════════════════
+// SUBSCRIPTION DISPLAY (fresh Supabase fetch)
+// ══════════════════════════════════════════════════════
+function renderSubscriptionState() {
+  ['subStateTrial','subStatePaid','subStateGrace'].forEach(function(sid){
+    var el = document.getElementById(sid); if (el) el.style.display = 'none';
+  });
+  if (isTrialing()) {
+    var days = trialDaysLeft();
+    var td = document.getElementById('subTrialDesc');
+    if (td) td.textContent = 'Free trial — ' + days + ' day' + (days !== 1 ? 's' : '') + ' left, then $4.99/mo';
+    var el = document.getElementById('subStateTrial'); if (el) el.style.display = '';
+  } else if (canUseTier('divine')) {
+    var el = document.getElementById('subStatePaid'); if (el) el.style.display = '';
+  } else {
+    var el = document.getElementById('subStateGrace'); if (el) el.style.display = '';
+  }
+}
+async function refreshSubscriptionDisplay() {
+  // Show immediately with cached data
+  renderSubscriptionState();
+  // Then fetch fresh profile and re-render
+  if (!currentUser) return;
+  try {
+    var data = await supaGet('/rest/v1/profiles?id=eq.' + currentUser.id + '&select=tier,trial_ends_at&limit=1');
+    if (data && data[0]) {
+      userTier     = data[0].tier || userTier;
+      trialEndsAt  = data[0].trial_ends_at || trialEndsAt;
+      renderSubscriptionState();
+    }
+  } catch(e) {}
+}
+
 function beginJourney() {
   showScreen(localStorage.getItem('emf_returning') ? 'loginScreen' : 'signupScreen');
 }
@@ -2294,23 +2395,10 @@ function showScreen(id, isBack) {
     var ev = document.getElementById('prefVal_email');
     if (nv) nv.textContent = userName || 'Friend';
     if (ev && currentUser) ev.textContent = currentUser.email || '';
-    // Subscription state
-    var subEl = document.getElementById('subscriptionState');
-    if (subEl) {
-      // Show correct subscription state
-      ['subStateTrial','subStatePaid','subStateGrace'].forEach(function(id){ var el=document.getElementById(id); if(el) el.style.display='none'; });
-      if (isTrialing()) {
-        var td = document.getElementById('subTrialDesc');
-        if (td) td.textContent = 'Free trial — ' + trialDaysLeft() + ' day' + (trialDaysLeft() !== 1 ? 's' : '') + ' left, then $4.99/mo';
-        var el = document.getElementById('subStateTrial'); if (el) el.style.display = '';
-      } else if (canUseTier('divine')) {
-        var el = document.getElementById('subStatePaid'); if (el) el.style.display = '';
-      } else {
-        var el = document.getElementById('subStateGrace'); if (el) el.style.display = '';
-      }
-    }
     var scEl = document.getElementById('settingsSavedCount');
     if (scEl) { var lim = getSavedLimit(); scEl.textContent = savedPrayers.length + ' prayer' + (savedPrayers.length !== 1 ? 's' : '') + ' saved' + (lim !== Infinity ? ' (max ' + lim + ')' : ''); }
+    // Fetch fresh profile from Supabase then render subscription state
+    refreshSubscriptionDisplay();
   }
   if (id === 'notificationsScreen') {
     var limit = getDailyLimit();
