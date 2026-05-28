@@ -948,11 +948,11 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
   <div class="signup-optin">
     <label class="signup-optin-row">
       <input type="checkbox" id="optInUpdates" class="signup-optin-check"/>
-      <span class="signup-optin-label"><strong>App Updates and New Features</strong> &mdash; we will only email when something worth knowing launches</span>
+      <span class="signup-optin-label"><strong>App Updates and New Features:</strong> we will only email when something worth knowing launches</span>
     </label>
     <label class="signup-optin-row">
       <input type="checkbox" id="optInNewsletter" class="signup-optin-check"/>
-      <span class="signup-optin-label"><strong>EMF Newsletter</strong> &mdash; faith encouragement, community news, and exclusive offers. No more than once a month.</span>
+      <span class="signup-optin-label"><strong>EMF Newsletter:</strong> faith encouragement, community news, and exclusive offers. No more than once a month.</span>
     </label>
   </div>
   <button class="auth-btn" id="signupBtn" onclick="authSignUp()">CREATE ACCOUNT</button>
@@ -1005,10 +1005,10 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
 </div>
   <div class="screen-body">
     <button class="prayer-type-btn" onclick="startPrayerType(1)">
-      <span class="prayer-type-text">A prayer I will speak directly to God &mdash; written as my own words</span>
+      <span class="prayer-type-text">A prayer I will speak directly to God, written in my own words</span>
     </button>
     <button class="prayer-type-btn" onclick="startPrayerType(2)">
-      <span class="prayer-type-text">A prayer spoken over me by name &mdash; for what I&rsquo;m walking through today</span>
+      <span class="prayer-type-text">A prayer spoken over me by name, for what I&rsquo;m walking through today</span>
     </button>
     <button class="prayer-type-btn" onclick="startPrayerType(3)">
       <span class="prayer-type-text">A prayer I will offer to God for a person, cause, or intention on my heart</span>
@@ -1556,7 +1556,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
       <!-- State 1: Trial -->
       <div id="subStateTrial" style="display:none;">
         <div class="sub-plan-name">Divine Plan</div>
-        <div class="sub-plan-desc" id="subTrialDesc">Free trial &mdash; X days left, then $4.99/mo</div>
+        <div class="sub-plan-desc" id="subTrialDesc">Free trial: X days left, then $4.99/mo</div>
         <button class="sub-upgrade-link" onclick="upgradeToAnnual()">Click here to save 2 months at $49.90/yr</button>
         <button class="settings-action-btn" onclick="openManageSubscription()">Manage Subscription</button>
       </div>
@@ -1706,7 +1706,7 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
         <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Save up to 5 Prayers</div>
         <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Receive unique daily scriptures</div>
         <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Send and Request Prayers via text or email</div>
-        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Moments &mdash; enter dates and get daily notifications of special life moments and milestones</div>
+        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Moments: enter dates and get daily notifications of special life moments and milestones</div>
         <button class="accord-cta current" id="graceBtn">Your Current Plan</button>
       </div>
     </div>
@@ -1729,9 +1729,9 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
         <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>10 Personalized Prayers created every day</div>
         <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Save and retrieve up to 50 Prayers</div>
         <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Receive unique daily scriptures</div>
-        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Your Circle &mdash; manage your circle and connect with Divine members</div>
+        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Your Circle: manage your circle and connect with Divine members</div>
         <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Send and Request Prayers in your Circle and via text or email to non-members</div>
-        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Moments &mdash; enter dates and get custom notifications of special life moments and milestones</div>
+        <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Moments: enter dates and get custom notifications of special life moments and milestones</div>
         <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Listen to your prayers with custom voices matching the tone of your prayer</div>
         <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>Exclusive seasonal and holiday prayers</div>
         <button class="accord-cta gold" id="divineBtn" onclick="selectPlan('divine')">Choose Divine Plan</button>
@@ -1883,7 +1883,7 @@ function updateCounterUI() {
   var bar = document.getElementById('prayersRemainingBar');
   if (bar) {
     if (prayersLeft <= 0) {
-      bar.innerHTML = prayersLeft + ' of ' + limit + ' prayers today &mdash; <span onclick="showScreen(\'pricingScreen\')" style="cursor:pointer;text-decoration:underline;color:#3d1f00;font-weight:700;">See plans</span>';
+      bar.innerHTML = prayersLeft + ' of ' + limit + ' prayers today. <span onclick="showScreen(\'pricingScreen\')" style="cursor:pointer;text-decoration:underline;color:#3d1f00;font-weight:700;">See plans</span>';
     } else {
       bar.innerHTML = prayersLeft + ' of ' + limit + ' prayers remaining today';
     }
@@ -2042,7 +2042,7 @@ function menuShowScripture() {
 function menuShareApp() {
   closeHamburgerMenu();
   var url = 'https://embracemyfaith.com';
-  var text = 'I’ve been using Embrace My Faith to pray — check it out! ' + url;
+  var text = 'I’ve been using Embrace My Faith to pray. Check it out! ' + url;
   setTimeout(function(){
     if (navigator.share) { navigator.share({ title: 'Embrace My Faith', text: text, url: url }).catch(function(){}); }
     else if (navigator.clipboard) { navigator.clipboard.writeText(text).then(function(){ alert('Link copied! Share it anywhere.'); }); }
@@ -2068,7 +2068,7 @@ function renderSubscriptionState() {
   if (isTrialing()) {
     var days = trialDaysLeft();
     var td = document.getElementById('subTrialDesc');
-    if (td) td.textContent = 'Free trial — ' + days + ' day' + (days !== 1 ? 's' : '') + ' left, then $4.99/mo';
+    if (td) td.textContent = 'Free trial: ' + days + ' day' + (days !== 1 ? 's' : '') + ' left, then $4.99/mo';
     var el = document.getElementById('subStateTrial'); if (el) el.style.display = '';
   } else if (canUseTier('divine')) {
     var el = document.getElementById('subStatePaid'); if (el) el.style.display = '';
@@ -2130,7 +2130,7 @@ async function dbDecrementCounter() {
 }
 
 function purchaseAddon() {
-  alert('Add-on purchase coming soon! $0.99 for 10 more prayers — check back soon.');
+  alert('Add-on purchase coming soon! $0.99 for 10 more prayers. Check back soon.');
 }
 
 async function dbSavePrayer(prayerFor, prayerText, scripture, tone) {
@@ -3669,7 +3669,7 @@ function getEmfLink() {
 
 function getSendPrayerBody() {
   var text = document.getElementById('sendPrayerText').textContent.trim();
-  return 'I wanted to send you this prayer:\n\n' + text + '\n\n—\nSent with love through Embrace My Faith';
+  return 'I wanted to send you this prayer:\n\n' + text + '\n\nSent with love through Embrace My Faith';
 }
 
 function sendPrayerViaText() {
