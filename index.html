@@ -691,7 +691,7 @@ input::placeholder,textarea::placeholder{color:rgba(61,31,0,0.20);}
 .auth-btn:disabled{opacity:0.55;cursor:default;}
 .auth-error{color:#b03a2e;font-size:13px;text-align:center;margin-bottom:10px;display:none;line-height:1.4;}
 .auth-link{font-family:'Lato',sans-serif;font-size:14px;color:rgba(0,0,0,0.55);text-align:center;}
-.auth-link span{color:#3d1f00;font-weight:700;cursor:pointer;text-decoration:underline;}
+.auth-link span{color:#3d1f00;font-weight:700;cursor:pointer;text-decoration:underline;}.verify-msg{font-family:'Lato',sans-serif;font-size:15px;color:rgba(0,0,0,0.72);text-align:center;line-height:1.7;margin:12px 0 28px;padding:0 8px;}
 .signup-privacy{font-family:'Lato',sans-serif;font-size:12px;color:rgba(0,0,0,0.52);text-align:center;line-height:1.6;margin:14px 0 10px;padding:0 4px;}
 .signup-optin{width:100%;margin-bottom:14px;}
 .signup-optin-row{display:flex;align-items:flex-start;gap:10px;padding:10px 0;cursor:pointer;border-bottom:1px solid rgba(0,0,0,0.07);}
@@ -907,6 +907,14 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
   <div class="notify-sub">May we send you prayer reminders and updates to keep your spirit anchored throughout the day?</div>
   <button class="notify-yes" onclick="showScreen('homeScreen')">Yes Please</button>
   <button class="notify-no" onclick="showScreen('homeScreen')">Not right now</button>
+</div>
+
+<!-- VERIFY EMAIL -->
+<div class="screen auth-screen" id="verifyEmailScreen">
+  <img src="images/EMF_logo.png" alt="Embrace My Faith" class="auth-logo"/>
+  <div class="auth-title">Check Your Email</div>
+  <p class="verify-msg">Please check your email and click the verification link to continue.<br/><br/>Your email is safe and secure in our private database and will never be shared with anyone.<br/><br/>Once verified you&rsquo;ll be taken straight to your home page.</p>
+  <button class="auth-btn" onclick="showScreen('signupScreen')">Go Back</button>
 </div>
 
 <!-- LOGIN -->
@@ -1910,7 +1918,17 @@ async function authSignIn() {
       supaTimeout(12000)
     ]);
     var errMsg = data.error_description || data.error || data.message || data.msg;
-    if (errMsg) { btn.disabled = false; btn.textContent = 'SIGN IN'; showAuthMsg('login', errMsg); return; }
+    if (errMsg) {
+      btn.disabled = false; btn.textContent = 'SIGN IN';
+      // Unverified email — route to the verification pending screen
+      var lowerErr = (errMsg + '').toLowerCase();
+      if (lowerErr.indexOf('not confirmed') !== -1 || lowerErr.indexOf('email_not_confirmed') !== -1 || lowerErr.indexOf('confirm') !== -1) {
+        showScreen('verifyEmailScreen');
+      } else {
+        showAuthMsg('login', errMsg);
+      }
+      return;
+    }
     if (data.access_token && data.user) {
       currentUser = data.user;
       currentAccessToken = data.access_token;
@@ -1954,7 +1972,12 @@ async function authSignUp() {
       var userId = user.id;
       var today = new Date().toISOString().slice(0, 10);
       if (!session || !session.access_token) {
-        showAuthMsg('signup', 'Account created! Check your email to confirm, then sign in.');
+        // Save pending profile data so the verification callback can create the profile
+        localStorage.setItem('emf_pending', JSON.stringify({
+          id: userId, name: name, email: email,
+          opt_in_updates: optInUpdates, opt_in_newsletter: optInNewsletter
+        }));
+        showScreen('verifyEmailScreen');
         return;
       }
       currentUser = user;
@@ -4317,6 +4340,89 @@ function selectRestGender(g) {
 setTimeGreeting();
 initDateDropdowns();
 initTimeSelects();
+
+// ══════════════════════════════════════════════════════
+// EMAIL VERIFICATION CALLBACK
+// Handles the redirect back from Supabase after the user
+// clicks the verification link in their email.
+// URL hash format: #access_token=…&type=signup
+// ══════════════════════════════════════════════════════
+(function handleVerificationHash() {
+  var hash = window.location.hash;
+  if (!hash || hash.indexOf('access_token=') === -1) return;
+
+  // Parse hash params
+  var params = {};
+  hash.substring(1).split('&').forEach(function(part) {
+    var eq = part.indexOf('=');
+    if (eq > -1) {
+      try { params[decodeURIComponent(part.slice(0, eq))] = decodeURIComponent(part.slice(eq + 1)); }
+      catch(e) {}
+    }
+  });
+
+  if (!params.access_token) return;
+
+  // Clean the URL immediately so tokens are not exposed in history
+  window.history.replaceState(null, '', window.location.pathname + window.location.search);
+
+  // Show the splash in a loading state while we resolve the session
+  var splashBtn = document.querySelector('#splashScreen .splash-btn');
+  var splashSub = document.querySelector('#splashScreen .splash-sub');
+  if (splashBtn) splashBtn.style.display = 'none';
+  if (splashSub) splashSub.textContent = 'Verifying your email…';
+
+  (async function() {
+    try {
+      // Fetch the verified user object using the access token
+      var resp = await fetch(SUPA_URL + '/auth/v1/user', {
+        headers: {
+          'apikey': SUPA_KEY,
+          'Authorization': 'Bearer ' + params.access_token,
+          'Content-Type': 'application/json'
+        }
+      });
+      var user = await resp.json();
+      if (!user || !user.id) throw new Error('no user');
+
+      currentUser = user;
+      currentAccessToken = params.access_token;
+      localStorage.setItem('emf_returning', '1');
+
+      // Recover pending profile data saved during sign-up
+      var pending = {};
+      try { pending = JSON.parse(localStorage.getItem('emf_pending') || '{}'); } catch(e) {}
+      var profileName = pending.name || (user.user_metadata && user.user_metadata.name) || 'Friend';
+
+      // Create profile + counter if they don't exist yet
+      try {
+        var existing = await supaGet('/rest/v1/profiles?id=eq.' + user.id + '&select=id&limit=1');
+        if (!existing || !existing[0]) {
+          var today = new Date().toISOString().slice(0, 10);
+          var trialEnd = new Date(); trialEnd.setDate(trialEnd.getDate() + 10);
+          var trialEndStr = trialEnd.toISOString().slice(0, 10);
+          await supaPost('/rest/v1/profiles', {
+            id: user.id, name: profileName, email: user.email,
+            gender: 'female', tier: 'grace', trial_ends_at: trialEndStr,
+            opt_in_updates: pending.opt_in_updates || false,
+            opt_in_newsletter: pending.opt_in_newsletter || false
+          });
+          await supaPost('/rest/v1/prayer_counters', { user_id: user.id, count: 0, reset_date: today });
+        }
+      } catch(e) {}
+
+      localStorage.removeItem('emf_pending');
+      await loadUserData();
+      showScreen('homeScreen');
+    } catch(e) {
+      // Token exchange failed — fall back to login screen
+      if (splashBtn) splashBtn.style.display = '';
+      if (splashSub) splashSub.textContent = 'Walk in His Light';
+      showScreen('loginScreen');
+    }
+  })();
+})();
+
 </script>
 </body>
 </html>
