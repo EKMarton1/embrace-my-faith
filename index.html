@@ -690,8 +690,14 @@ input::placeholder,textarea::placeholder{color:rgba(61,31,0,0.20);}
 .auth-btn{width:100%;padding:16px;background:rgba(30,15,0,0.8);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:16px;letter-spacing:2px;border-radius:14px;cursor:pointer;margin-top:4px;margin-bottom:18px;transition:background 0.12s ease;}.auth-btn:active{background:rgba(30,15,0,0.60);}
 .auth-btn:disabled{opacity:0.55;cursor:default;}
 .auth-error{color:#b03a2e;font-size:13px;text-align:center;margin-bottom:10px;display:none;line-height:1.4;}
-.auth-link{font-size:14px;color:rgba(0,0,0,0.55);text-align:center;}
+.auth-link{font-family:'Lato',sans-serif;font-size:14px;color:rgba(0,0,0,0.55);text-align:center;}
 .auth-link span{color:#3d1f00;font-weight:700;cursor:pointer;text-decoration:underline;}
+.signup-privacy{font-family:'Lato',sans-serif;font-size:12px;color:rgba(0,0,0,0.52);text-align:center;line-height:1.6;margin:14px 0 10px;padding:0 4px;}
+.signup-optin{width:100%;margin-bottom:14px;}
+.signup-optin-row{display:flex;align-items:flex-start;gap:10px;padding:10px 0;cursor:pointer;border-bottom:1px solid rgba(0,0,0,0.07);}
+.signup-optin-row:last-child{border-bottom:none;}
+.signup-optin-check{width:18px;height:18px;flex-shrink:0;margin-top:2px;accent-color:rgba(61,31,0,0.85);cursor:pointer;}
+.signup-optin-label{font-family:'Lato',sans-serif;font-size:13px;color:rgba(0,0,0,0.72);line-height:1.5;}
 .auth-pw-wrap{position:relative;width:100%;margin-bottom:12px;}
 .auth-pw-wrap .auth-input{margin-bottom:0;padding-right:48px;width:100%;}
 .auth-pw-toggle{position:absolute;right:14px;top:50%;transform:translateY(-50%);appearance:none;-webkit-appearance:none;width:18px;height:18px;border:2px solid rgba(61,31,0,0.35);border-radius:50%;cursor:pointer;background:transparent;transition:background 0.15s,border-color 0.15s;flex-shrink:0;}
@@ -930,6 +936,17 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
     <input type="checkbox" class="auth-pw-toggle" onchange="document.getElementById('signupPassword').type=this.checked?'text':'password'"/>
   </div>
   <div class="auth-error" id="signupError"></div>
+  <p class="signup-privacy">Your email is yours. We will never sell or share your contact information. Ever. You can unsubscribe anytime.</p>
+  <div class="signup-optin">
+    <label class="signup-optin-row">
+      <input type="checkbox" id="optInUpdates" class="signup-optin-check"/>
+      <span class="signup-optin-label"><strong>App Updates and New Features</strong> &mdash; we will only email when something worth knowing launches</span>
+    </label>
+    <label class="signup-optin-row">
+      <input type="checkbox" id="optInNewsletter" class="signup-optin-check"/>
+      <span class="signup-optin-label"><strong>EMF Newsletter</strong> &mdash; faith encouragement, community news, and exclusive offers. No more than once a month.</span>
+    </label>
+  </div>
   <button class="auth-btn" id="signupBtn" onclick="authSignUp()">CREATE ACCOUNT</button>
   <div class="auth-link">Already have an account? <span onclick="showScreen('loginScreen')">Sign in</span></div>
 </div>
@@ -1915,6 +1932,8 @@ async function authSignUp() {
   var name = (document.getElementById('signupName').value || '').trim();
   var email = (document.getElementById('signupEmail').value || '').trim();
   var pw = document.getElementById('signupPassword').value || '';
+  var optInUpdates    = !!(document.getElementById('optInUpdates')    || {}).checked;
+  var optInNewsletter = !!(document.getElementById('optInNewsletter') || {}).checked;
   if (!name) { showAuthMsg('signup', 'Please enter your name.'); return; }
   if (!email || !pw) { showAuthMsg('signup', 'Please enter your email and password.'); return; }
   if (pw.length < 6) { showAuthMsg('signup', 'Password must be at least 6 characters.'); return; }
@@ -1947,7 +1966,7 @@ async function authSignUp() {
       var trialEnd = new Date(); trialEnd.setDate(trialEnd.getDate() + 10);
       var trialEndStr = trialEnd.toISOString().slice(0, 10);
       trialEndsAt = trialEndStr; userTier = 'grace';
-      supaPost('/rest/v1/profiles', { id: userId, name: name, email: email, gender: 'female', tier: 'grace', trial_ends_at: trialEndStr }).catch(function(){});
+      supaPost('/rest/v1/profiles', { id: userId, name: name, email: email, gender: 'female', tier: 'grace', trial_ends_at: trialEndStr, opt_in_updates: optInUpdates, opt_in_newsletter: optInNewsletter }).catch(function(){});
       supaPost('/rest/v1/prayer_counters', { user_id: userId, count: 0, reset_date: today }).catch(function(){});
       var ni = document.getElementById('userNameInput'); if (ni) ni.value = userName.split(' ')[0];
       showScreen('nameScreen');
