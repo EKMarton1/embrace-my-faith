@@ -1297,8 +1297,17 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
       <label class="form-label">What do you want to pray over them?</label>
       <textarea class="form-textarea" id="sendPrayerSituation" placeholder="Their situation, need, or a blessing you want to speak over them..." maxlength="150" oninput="document.getElementById('sendCharCount').textContent=this.value.length+'/150'"></textarea>
       <div id="sendCharCount" style="text-align:right;font-size:12px;color:rgba(0,0,0,0.5);margin-top:4px;font-family:'Lato',sans-serif;">0/150</div>
+      <label class="form-label" style="margin-top:12px;">Prayer tone</label>
+      <select class="form-select" id="sendPrayerTone" onchange="document.getElementById('sendGenerateBtn').disabled=!this.value;">
+        <option value="">Select a tone&hellip;</option>
+        <option value="hopeful and uplifting">Hopeful &amp; Uplifting</option>
+        <option value="comforting and peaceful">Comforting &amp; Peaceful</option>
+        <option value="bold and courageous">Bold &amp; Courageous</option>
+        <option value="grateful and thankful">Grateful &amp; Thankful</option>
+        <option value="healing and restoration">Healing &amp; Restoration</option>
+      </select>
       <div id="sendPrayersRemaining" style="text-align:center;margin-top:16px;font-size:13px;color:rgba(0,0,0,0.65);"></div>
-      <button class="generate-btn" id="sendGenerateBtn" onclick="generateSendPrayer()" style="margin-top:12px;">Craft Their Prayer</button>
+      <button class="generate-btn" id="sendGenerateBtn" onclick="generateSendPrayer()" style="margin-top:12px;" disabled>Craft Their Prayer</button>
     </div>
 
     <!-- LOADING -->
@@ -3451,6 +3460,7 @@ async function generateSendPrayer() {
   if (prayersLeft <= 0) { showTierModal('limit'); return; }
   var forWho = document.getElementById('sendPrayerFor').value.trim();
   var situation = document.getElementById('sendPrayerSituation').value.trim();
+  var tone = (document.getElementById('sendPrayerTone') || {}).value || 'hopeful and uplifting';
   if (!forWho) { alert('Please enter who you are praying for.'); return; }
   if (!situation) { alert('Please share what you want to pray over them.'); return; }
 
@@ -3463,6 +3473,7 @@ async function generateSendPrayer() {
     'Generate a personal prayer of 100-120 words for:',
     'PERSON: ' + forWho,
     'SITUATION: ' + situation,
+    'TONE: ' + tone,
     'Use ' + forWho + "'s name naturally at least 3 times. Be specific. No filler phrases.",
     'End with Amen. Respond ONLY with the prayer — no labels, no intro. Start with Heavenly Father or Dear Lord.'
   ].join('\n');
@@ -3499,6 +3510,10 @@ function resetSendPrayer() {
   document.getElementById('sendPrayerResult').style.display = 'none';
   document.getElementById('sendLoadingWrap').style.display = 'none';
   document.getElementById('sendPrayerForm').style.display = 'block';
+  var toneEl = document.getElementById('sendPrayerTone');
+  if (toneEl) toneEl.value = '';
+  var genBtn = document.getElementById('sendGenerateBtn');
+  if (genBtn) genBtn.disabled = true;
 }
 
 function getEmfLink() {
