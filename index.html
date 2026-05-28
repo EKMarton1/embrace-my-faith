@@ -554,8 +554,8 @@ body{background:#1a1a1a;display:flex;justify-content:center;align-items:flex-sta
 .name-icon{font-size:52px;margin-bottom:24px;}
 .name-title{font-family:'Lato',sans-serif;font-size:32px;color:#111111;font-weight:600;margin-bottom:10px;}
 .name-sub{font-size:14px;color:rgba(0,0,0,0.72);margin-bottom:40px;line-height:1.6;}
-.name-input{width:100%;padding:16px 20px;border-radius:16px;border:2px solid rgba(61,31,0,0.3);background:rgba(255,255,255,0.4);color:#111111;font-family:'Lato',sans-serif;font-size:18px;text-align:center;outline:none;margin-bottom:24px;}
-.name-input::placeholder{color:rgba(0,0,0,0.5);}
+.name-input{width:100%;padding:16px 20px;border-radius:16px;border:2px solid rgba(61,31,0,0.3);background:rgba(255,255,255,0.5);color:#111111;font-family:'Lato',sans-serif;font-size:18px;text-align:center;outline:none;margin-bottom:24px;}
+.name-input::placeholder{color:rgba(61,31,0,0.20);}
 .name-btn{background:rgba(61,31,0,0.85);color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:17.6px;letter-spacing:1px;border:none;padding:17.6px 52.8px;border-radius:50px;cursor:pointer;box-shadow:0 6px 24px rgba(200,144,10,0.5);transition:background 0.12s ease;touch-action:manipulation;}.name-btn:active{background:rgba(61,31,0,0.65);}.name-btn
 
 #notifyScreen{background:url('https://fubmjytqfucnudpupynw.supabase.co/storage/v1/object/public/images/EMF_BG_fnl.webp') center top/cover no-repeat;align-items:center;justify-content:flex-start;padding:180px 40px 60px;text-align:center;}
@@ -604,12 +604,13 @@ body{background:#1a1a1a;display:flex;justify-content:center;align-items:flex-sta
 .form-label{font-size:12px;font-weight:600;color:rgba(0,0,0,0.75);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;display:block;margin-top:16px;}
 .form-input,.form-textarea,.form-select{
   width:100%;padding:14px 16px;border-radius:14px;
-  background:rgba(255,255,255,0.1);border:1.5px solid rgba(255,255,255,0.2);
+  background:rgba(255,255,255,0.5);border:1.5px solid rgba(255,255,255,0.2);
   color:#111111;font-family:'Lato',sans-serif;font-size:15px;outline:none;
 }
 .form-textarea{resize:none;height:90px;line-height:1.5;}
 .form-select{cursor:pointer;color:#111111;}
-.form-input::placeholder,.form-textarea::placeholder{color:rgba(0,0,0,0.5);}
+.form-input::placeholder,.form-textarea::placeholder{color:rgba(61,31,0,0.20);}
+input::placeholder,textarea::placeholder{color:rgba(61,31,0,0.20);}
 .form-select option{background:#7a4e00;color:#fff;}
 .generate-btn{
   width:100%;margin-top:20px;padding:16px;
@@ -634,7 +635,7 @@ body{background:#1a1a1a;display:flex;justify-content:center;align-items:flex-sta
 .story-seek{flex:1;-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:rgba(255,255,255,0.2);outline:none;cursor:pointer;}
 .story-seek::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:#f5c830;cursor:pointer;box-shadow:0 0 4px rgba(245,200,48,0.6);}
 .story-seek::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:#f5c830;cursor:pointer;border:none;}
-#prayerScreen .form-input,#prayerScreen .form-textarea,#prayerScreen .form-select,#requestPrayerScreen .form-input,#requestPrayerScreen .form-textarea,#requestPrayerScreen .form-select,#sendPrayerScreen .form-input,#sendPrayerScreen .form-textarea{background:rgba(255,255,255,0.3);font-size:16.5px;font-weight:700;}
+#prayerScreen .form-input,#prayerScreen .form-textarea,#prayerScreen .form-select,#requestPrayerScreen .form-input,#requestPrayerScreen .form-textarea,#requestPrayerScreen .form-select,#sendPrayerScreen .form-input,#sendPrayerScreen .form-textarea{background:rgba(255,255,255,0.5);font-size:16.5px;font-weight:700;}
 .prayers-remaining{text-align:center;margin-top:12px;font-size:12px;color:rgba(0,0,0,0.65);}
 .prayers-remaining span{text-decoration:underline;cursor:pointer;color:#111111;}
 .loading-wrap{display:none;text-align:center;padding:40px 20px;}
@@ -661,8 +662,9 @@ body{background:#1a1a1a;display:flex;justify-content:center;align-items:flex-sta
 .auth-logo{height:64px;object-fit:contain;margin-bottom:20px;}
 .auth-title{font-family:'Lato',sans-serif;font-size:28px;font-weight:600;color:#111;margin-bottom:6px;text-align:center;}
 .auth-sub{font-size:14px;color:rgba(0,0,0,0.55);margin-bottom:28px;text-align:center;}
-.auth-input{width:100%;padding:14px 16px;border-radius:12px;background:rgba(255,255,255,0.65);border:1.5px solid rgba(0,0,0,0.12);font-family:'Lato',sans-serif;font-size:15px;color:#111;margin-bottom:12px;outline:none;box-sizing:border-box;}
+.auth-input{width:100%;padding:14px 16px;border-radius:12px;background:rgba(255,255,255,0.5);border:1.5px solid rgba(0,0,0,0.12);font-family:'Lato',sans-serif;font-size:15px;color:#111;margin-bottom:12px;outline:none;box-sizing:border-box;}
 .auth-input:focus{border-color:rgba(30,15,0,0.35);}
+.auth-input::placeholder{color:rgba(61,31,0,0.20);}
 .auth-btn{width:100%;padding:16px;background:rgba(30,15,0,0.8);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:16px;letter-spacing:2px;border-radius:14px;cursor:pointer;margin-top:4px;margin-bottom:18px;transition:background 0.12s ease;}.auth-btn:active{background:rgba(30,15,0,0.60);}
 .auth-btn:disabled{opacity:0.55;cursor:default;}
 .auth-error{color:#b03a2e;font-size:13px;text-align:center;margin-bottom:10px;display:none;line-height:1.4;}
@@ -786,8 +788,9 @@ input[type=range]{flex:1;accent-color:#f5c830;}
 .modal-overlay.open{display:flex;}
 .modal-box{width:390px;background:linear-gradient(160deg,#b87a08,#e6b020);border-radius:28px 28px 0 0;padding:28px 24px 40px;}
 .modal-title{font-family:'Lato',sans-serif;font-size:20px;color:#fff;margin-bottom:20px;}
-.modal-input,.modal-textarea{width:100%;padding:14px;border-radius:12px;background:rgba(255,255,255,0.15);border:1.5px solid rgba(255,255,255,0.3);color:#fff;font-family:'Lato',sans-serif;font-size:15px;outline:none;margin-bottom:12px;}
+.modal-input,.modal-textarea{width:100%;padding:14px;border-radius:12px;background:rgba(255,255,255,0.5);border:1.5px solid rgba(255,255,255,0.3);color:#111;font-family:'Lato',sans-serif;font-size:15px;outline:none;margin-bottom:12px;}
 .modal-textarea{resize:none;height:80px;}
+.modal-input::placeholder,.modal-textarea::placeholder{color:rgba(61,31,0,0.20);}
 .modal-input[type=date]{color-scheme:dark;}
 select.modal-input{background:rgba(30,15,0,0.85);color:#f5f0e8;}
 select.modal-input option{background:#1e0f00;color:#f5f0e8;}
