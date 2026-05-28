@@ -106,16 +106,36 @@ var TONE_BG = {
   'default':                 'linear-gradient(160deg,#c8900a 0%,#3d1f00 100%)'
 };
 
-function selectPrayerType(n) {
+function startPrayerType(n) {
   activePrayerType = n;
   hideInlinePrayerResult();
-  [1,2,3].forEach(function(i) {
-    var btn = document.getElementById('ptype'+i);
-    var form = document.getElementById('prayerForm'+i);
-    if (btn) btn.classList.toggle('selected', i === n);
-    if (form) form.style.display = (i === n) ? '' : 'none';
-  });
-  document.getElementById('prayerLoadingWrap').classList.remove('visible');
+  // Show the correct form on prayerPromptScreen
+  var f12 = document.getElementById('ppForm12');
+  var f3  = document.getElementById('ppForm3');
+  if (f12) f12.style.display = (n !== 3) ? '' : 'none';
+  if (f3)  f3.style.display  = (n === 3) ? '' : 'none';
+  // Reset field values
+  var ppSit = document.getElementById('ppSituation');
+  if (ppSit) ppSit.value = '';
+  var ppCnt = document.getElementById('ppCount');
+  if (ppCnt) ppCnt.textContent = '0/150';
+  var ppSit3 = document.getElementById('ppSituation3');
+  if (ppSit3) ppSit3.value = '';
+  var ppSub3 = document.getElementById('ppSubject3');
+  if (ppSub3) ppSub3.value = '';
+  var ppCnt3 = document.getElementById('ppCount3');
+  if (ppCnt3) ppCnt3.textContent = '0/150';
+  // Reset loading and gen buttons
+  var lw = document.getElementById('prayerLoadingWrap');
+  if (lw) lw.classList.remove('visible');
+  var gb = document.getElementById('ppGenBtn');
+  if (gb) gb.disabled = false;
+  var gb3 = document.getElementById('ppGenBtn3');
+  if (gb3) gb3.disabled = false;
+  // Update remaining counter on prompt screen
+  var pr = document.getElementById('prayerPromptRemaining');
+  if (pr) pr.textContent = prayersLeft + ' of ' + getDailyLimit() + ' prayers remaining today';
+  showScreen('prayerPromptScreen');
 }
 
 async function generatePrayerTyped(type) {
@@ -124,20 +144,17 @@ async function generatePrayerTyped(type) {
   var subject = '';
   var tone = 'hopeful and uplifting';
 
-  if (type === 1) {
-    situation = (document.getElementById('pSituation1') || {}).value || '';
-    if (!situation.trim()) { alert('Please share what is on your heart.'); return; }
-  } else if (type === 2) {
-    situation = (document.getElementById('pSituation2') || {}).value || '';
+  if (type === 1 || type === 2) {
+    situation = (document.getElementById('ppSituation') || {}).value || '';
     if (!situation.trim()) { alert('Please share what is on your heart.'); return; }
   } else if (type === 3) {
-    subject = (document.getElementById('pSubject3') || {}).value || '';
-    situation = (document.getElementById('pSituation3') || {}).value || '';
-    tone = (document.getElementById('pTone3') || {}).value || 'hopeful and uplifting';
+    subject = (document.getElementById('ppSubject3') || {}).value || '';
+    situation = (document.getElementById('ppSituation3') || {}).value || '';
+    tone = (document.getElementById('ppTone3') || {}).value || 'hopeful and uplifting';
     if (!subject.trim()) { alert('Please enter who or what you are lifting up.'); return; }
   }
 
-  var genBtn = document.getElementById('pGenBtn'+type);
+  var genBtn = (type === 3) ? document.getElementById('ppGenBtn3') : document.getElementById('ppGenBtn');
   if (genBtn) genBtn.disabled = true;
   document.getElementById('prayerLoadingWrap').classList.add('visible');
   stopAudio();
@@ -936,60 +953,66 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
   </div>
 </div>
 
-<!-- PRAYER -->
+<!-- PRAYER TYPE SELECTOR -->
 <div class="screen" id="prayerScreen">
 <div class="screen-top">
   <div class="screen-title-row"><button class="back-arrow-btn" onclick="goBack()">&lt;</button><div class="screen-title">Personal Prayer</div></div>
 </div>
   <div class="screen-body">
-
-    <!-- ── Type selector ── -->
-    <button class="prayer-type-btn" id="ptype1" onclick="selectPrayerType(1)">
+    <button class="prayer-type-btn" onclick="startPrayerType(1)">
       <span class="prayer-type-text">A prayer I will speak directly to God &mdash; written as my own words</span>
     </button>
-    <button class="prayer-type-btn" id="ptype2" onclick="selectPrayerType(2)">
+    <button class="prayer-type-btn" onclick="startPrayerType(2)">
       <span class="prayer-type-text">A prayer spoken over me by name &mdash; for what I&rsquo;m walking through today</span>
     </button>
-    <button class="prayer-type-btn" id="ptype3" onclick="selectPrayerType(3)">
+    <button class="prayer-type-btn" onclick="startPrayerType(3)">
       <span class="prayer-type-text">A prayer I will offer to God for a person, cause, or intention on my heart</span>
     </button>
+    <div class="prayers-remaining" id="prayersRemainingBar">15 of 15 prayers remaining today</div>
+    <div class="screen-footer"><div class="emf-copyright">&copy; 2026 Embrace My Faith LLC</div></div>
+  </div>
+</div>
 
-    <!-- ── Form 1: First Person ── -->
-    <div id="prayerForm1" style="display:none;margin-top:6px;">
+<!-- PRAYER CREATOR -->
+<div class="screen" id="prayerPromptScreen">
+<div class="screen-top">
+  <div class="screen-title-row"><button class="back-arrow-btn" onclick="goBack()">&lt;</button><div class="screen-title">Personal Prayer</div></div>
+</div>
+  <div class="screen-body">
+
+    <!-- Form for types 1 & 2 -->
+    <div id="ppForm12" style="display:none;">
       <label class="form-label">What is on your heart?</label>
-      <textarea class="form-textarea" id="pSituation1" placeholder="Share what your prayer is about" maxlength="150" oninput="document.getElementById('pCount1').textContent=this.value.length+'/150'"></textarea>
-      <div id="pCount1" style="text-align:right;font-size:12px;color:rgba(0,0,0,0.5);margin-top:4px;font-family:'Lato',sans-serif;">0/150</div>
-      <button class="generate-btn" id="pGenBtn1" onclick="generatePrayerTyped(1)">Create My Prayer &#10022;</button>
+      <textarea class="form-textarea" id="ppSituation" placeholder="Share what your prayer is about" maxlength="150" oninput="document.getElementById('ppCount').textContent=this.value.length+'/150'"></textarea>
+      <div id="ppCount" style="text-align:right;font-size:12px;color:rgba(0,0,0,0.5);margin-top:4px;font-family:'Lato',sans-serif;">0/150</div>
+      <button class="generate-btn" id="ppGenBtn" onclick="generatePrayerTyped(activePrayerType)">Create My Prayer &#10022;</button>
     </div>
 
-    <!-- ── Form 2: Named Blessing ── -->
-    <div id="prayerForm2" style="display:none;margin-top:6px;">
-      <label class="form-label">What is on your heart?</label>
-      <textarea class="form-textarea" id="pSituation2" placeholder="Share what your prayer is about" maxlength="150" oninput="document.getElementById('pCount2').textContent=this.value.length+'/150'"></textarea>
-      <div id="pCount2" style="text-align:right;font-size:12px;color:rgba(0,0,0,0.5);margin-top:4px;font-family:'Lato',sans-serif;">0/150</div>
-      <button class="generate-btn" id="pGenBtn2" onclick="generatePrayerTyped(2)">Create My Prayer &#10022;</button>
-    </div>
-
-    <!-- ── Form 3: Intercession ── -->
-    <div id="prayerForm3" style="display:none;margin-top:6px;">
+    <!-- Form for type 3 -->
+    <div id="ppForm3" style="display:none;">
       <label class="form-label">Who or what are you lifting up?</label>
-      <input class="form-input" id="pSubject3" type="text" placeholder="Name, cause, or intention" style="margin-bottom:12px;"/>
+      <input class="form-input" id="ppSubject3" type="text" placeholder="Name, cause, or intention" style="margin-bottom:12px;"/>
       <label class="form-label">Share more if you&rsquo;d like</label>
-      <textarea class="form-textarea" id="pSituation3" placeholder="What is on your heart for them?" maxlength="150" oninput="document.getElementById('pCount3').textContent=this.value.length+'/150'"></textarea>
-      <div id="pCount3" style="text-align:right;font-size:12px;color:rgba(0,0,0,0.5);margin-top:4px;font-family:'Lato',sans-serif;">0/150</div>
+      <textarea class="form-textarea" id="ppSituation3" placeholder="What is on your heart for them?" maxlength="150" oninput="document.getElementById('ppCount3').textContent=this.value.length+'/150'"></textarea>
+      <div id="ppCount3" style="text-align:right;font-size:12px;color:rgba(0,0,0,0.5);margin-top:4px;font-family:'Lato',sans-serif;">0/150</div>
       <label class="form-label" style="margin-top:12px;">Prayer tone</label>
-      <select class="form-select" id="pTone3">
+      <select class="form-select" id="ppTone3">
         <option value="hopeful and uplifting">Hopeful &amp; Uplifting</option>
         <option value="comforting and peaceful">Comforting &amp; Peaceful</option>
         <option value="bold and courageous">Bold &amp; Courageous</option>
         <option value="grateful and thankful">Grateful &amp; Thankful</option>
         <option value="healing and restoration">Healing &amp; Restoration</option>
       </select>
-      <button class="generate-btn" id="pGenBtn3" onclick="generatePrayerTyped(3)">Create This Prayer &#10022;</button>
+      <button class="generate-btn" id="ppGenBtn3" onclick="generatePrayerTyped(3)">Create This Prayer &#10022;</button>
     </div>
 
+    <!-- Loading -->
+    <div class="loading-wrap" id="prayerLoadingWrap">
+      <img src="images/My_Prayer_Icon.png" alt="" style="width:72px;height:72px;object-fit:contain;margin-bottom:12px;opacity:0.85;">
+      <div class="loading-dots">Lifting your prayer heavenward...</div>
+    </div>
 
-    <!-- ── Inline Result ── -->
+    <!-- Inline Result -->
     <div id="prayerInlineResult" style="display:none;margin-top:16px;">
       <div class="prayer-inline-card" id="prayerInlineText"></div>
       <div class="prayer-inline-audio" id="prayerInlineAudio" style="display:none;">
@@ -1007,13 +1030,8 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
       </div>
       <div class="prayer-inline-toast" id="prayerInlineToast"></div>
     </div>
-    <!-- ── Loading ── -->
-    <div class="loading-wrap" id="prayerLoadingWrap">
-      <img src="images/My_Prayer_Icon.png" alt="" style="width:72px;height:72px;object-fit:contain;margin-bottom:12px;opacity:0.85;">
-      <div class="loading-dots">Lifting your prayer heavenward...</div>
-    </div>
 
-    <div class="prayers-remaining" id="prayersRemainingBar">15 of 15 prayers remaining today</div>
+    <div class="prayers-remaining" id="prayerPromptRemaining">15 of 15 prayers remaining today</div>
     <div class="screen-footer"><div class="emf-copyright">&copy; 2026 Embrace My Faith LLC</div></div>
   </div>
 </div>
