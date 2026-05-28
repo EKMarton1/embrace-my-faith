@@ -877,6 +877,18 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
 .accord-cta.gold{background:linear-gradient(135deg,#f5c830,#c8900a);color:#111;}
 .accord-cta.current{background:rgba(255,255,255,0.45);color:#3d1f00;border:1.5px solid rgba(61,31,0,0.3);pointer-events:none;}
 .accord-fine{font-size:11px;color:rgba(0,0,0,0.45);text-align:center;margin-top:8px;}
+/* ── Pricing screen: always-open compact layout ── */
+#pricingScreen .screen-body{padding:10px 16px 12px;}
+#pricingScreen .accord-item{margin-bottom:8px;border-radius:16px;}
+#pricingScreen .accord-head{padding:11px 14px;cursor:default;}
+#pricingScreen .accord-body{display:block;padding:0 14px 12px;}
+#pricingScreen .accord-name{font-size:17px;}
+#pricingScreen .accord-tagline{font-size:10.5px;}
+#pricingScreen .accord-price{font-size:15px;}
+#pricingScreen .accord-period{font-size:10px;}
+#pricingScreen .accord-feat{font-size:12px;padding:3px 0;}
+#pricingScreen .accord-cta{margin-top:10px;padding:11px;}
+#pricingScreen .accord-fine{margin-top:5px;font-size:10.5px;}
 </style>
 </head>
 <body>
@@ -1690,16 +1702,13 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
   <div class="screen-body">
 
     <!-- GRACE -->
-    <div class="accord-item" id="accord-grace">
-      <div class="accord-head" onclick="toggleAccordion('grace')">
+    <div class="accord-item open" id="accord-grace">
+      <div class="accord-head">
         <div class="accord-left">
           <div class="accord-name">Grace</div>
           <div class="accord-tagline">Always free</div>
         </div>
-        <div style="display:flex;align-items:center;">
-          <div class="accord-right"><div class="accord-price">Free</div></div>
-          <div class="accord-chevron">&#8964;</div>
-        </div>
+        <div class="accord-right"><div class="accord-price">Free</div></div>
       </div>
       <div class="accord-body">
         <div class="accord-feat"><span class="accord-feat-yes">&#10003;</span>30 Personalized Prayers created each month</div>
@@ -1712,17 +1721,14 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
     </div>
 
     <!-- DIVINE -->
-    <div class="accord-item" id="accord-divine">
-      <div class="accord-head" onclick="toggleAccordion('divine')">
+    <div class="accord-item open" id="accord-divine">
+      <div class="accord-head">
         <div class="accord-left">
           <div class="accord-name">Divine Plan</div>
         </div>
-        <div style="display:flex;align-items:center;">
-          <div class="accord-right">
-            <div class="accord-price">$4.99<span style="font-size:12px;font-weight:400;">/mo</span></div>
-            <div class="accord-period">Save 2 months at $49.90/yr</div>
-          </div>
-          <div class="accord-chevron">&#8964;</div>
+        <div class="accord-right">
+          <div class="accord-price">$4.99<span style="font-size:12px;font-weight:400;">/mo</span></div>
+          <div class="accord-period">Save 2 months at $49.90/yr</div>
         </div>
       </div>
       <div class="accord-body">
@@ -2456,10 +2462,6 @@ function showScreen(id, isBack) {
     if (el) el.textContent = prayersLeft + ' of ' + getDailyLimit() + ' prayers remaining today';
   }
   if (id === 'pricingScreen') {
-    ['grace','divine'].forEach(function(t){
-      var el = document.getElementById('accord-' + t);
-      if (el) el.classList.remove('open');
-    });
     updatePricingButtons();
   }
   var screens = document.querySelectorAll('.screen');
