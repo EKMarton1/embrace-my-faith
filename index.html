@@ -3346,7 +3346,7 @@ function openModal() {
   document.getElementById('mDay').value = '';
   document.getElementById('mYear').value = '';
   document.getElementById('mCategory').value = '';
-  document.getElementById('mNote').value = '';
+  var mNoteEl = document.getElementById('mNote'); if (mNoteEl) mNoteEl.value = '';
   document.getElementById('modalOverlay').classList.add('open');
 }
 
