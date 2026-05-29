@@ -129,6 +129,26 @@ var TONE_BG = {
   'default':                 'linear-gradient(160deg,#c8900a 0%,#3d1f00 100%)'
 };
 
+function selectPpLength(btn, groupId) {
+  var group = document.getElementById(groupId);
+  if (!group) return;
+  group.querySelectorAll('.pp-length-btn').forEach(function(b) { b.classList.remove('selected'); });
+  btn.classList.add('selected');
+}
+function getActivePpLength(groupId) {
+  var group = document.getElementById(groupId);
+  if (!group) return '125-150';
+  var sel = group.querySelector('.pp-length-btn.selected');
+  return sel ? (sel.getAttribute('data-range') || '125-150') : '125-150';
+}
+function resetPpLength(groupId) {
+  var group = document.getElementById(groupId);
+  if (!group) return;
+  group.querySelectorAll('.pp-length-btn').forEach(function(b) { b.classList.remove('selected'); });
+  var faithful = group.querySelector('[data-range="125-150"]');
+  if (faithful) faithful.classList.add('selected');
+}
+
 function startPrayerType(n) {
   activePrayerType = n;
   hideInlinePrayerResult();
@@ -144,6 +164,8 @@ function startPrayerType(n) {
   if (ppCnt) ppCnt.textContent = '0/150';
   var ppTone12 = document.getElementById('ppTone12');
   if (ppTone12) ppTone12.selectedIndex = 0;
+  resetPpLength('ppLength12');
+  resetPpLength('ppLength3');
   var ppSit3 = document.getElementById('ppSituation3');
   if (ppSit3) ppSit3.value = '';
   var ppSub3 = document.getElementById('ppSubject3');
@@ -168,15 +190,18 @@ async function generatePrayerTyped(type) {
   var situation = '';
   var subject = '';
   var tone = 'hopeful and uplifting';
+  var wordRange = '125-150';
 
   if (type === 1 || type === 2) {
     situation = (document.getElementById('ppSituation') || {}).value || '';
     tone = (document.getElementById('ppTone12') || {}).value || 'hopeful and uplifting';
+    wordRange = getActivePpLength('ppLength12');
     if (!situation.trim()) { alert('Please share what is on your heart.'); return; }
   } else if (type === 3) {
     subject = (document.getElementById('ppSubject3') || {}).value || '';
     situation = (document.getElementById('ppSituation3') || {}).value || '';
     tone = (document.getElementById('ppTone3') || {}).value || 'hopeful and uplifting';
+    wordRange = getActivePpLength('ppLength3');
     if (!subject.trim()) { alert('Please enter who or what you are lifting up.'); return; }
   }
 
@@ -185,29 +210,32 @@ async function generatePrayerTyped(type) {
   document.getElementById('prayerLoadingWrap').classList.add('visible');
   stopAudio();
 
-  var systemMsg = 'You are a heartfelt Christian prayer minister. Write prayers that are warm, specific, and concise. Every word must count. Hard limit: 120 words maximum.';
+  var maxWords = parseInt(wordRange.split('-')[1]) || 150;
+  var maxTokens = maxWords <= 100 ? 280 : (maxWords <= 150 ? 400 : 520);
+  var systemMsg = 'You are a heartfelt Christian prayer minister. Write prayers that are warm, specific, and concise. Every word must count. Hard limit: ' + maxWords + ' words maximum.';
   var userMsg = '';
   var firstName = userName ? userName.split(' ')[0] : 'Friend';
 
   if (type === 1) {
     userMsg = [
-      'Write a heartfelt personal prayer of 100-120 words that I can speak directly to God.',
+      'Write a heartfelt personal prayer of ' + wordRange + ' words that I can speak directly to God.',
       'SITUATION: ' + situation.trim(),
-      'TONE: hopeful and uplifting',
+      'TONE: ' + tone,
       'Write entirely in first person using I, me, my throughout. Never use any name.',
       'Start with Heavenly Father or Dear Lord. End with Amen. Respond ONLY with the prayer.'
     ].join('\n');
   } else if (type === 2) {
     userMsg = [
-      'Write a blessing prayer of 100-120 words spoken over ' + firstName + ' by name.',
+      'Write a blessing prayer of ' + wordRange + ' words spoken over ' + firstName + ' by name.',
       'SITUATION: ' + situation.trim(),
+      'TONE: ' + tone,
       'Use ' + firstName + ' naturally throughout, at least 3 times.',
-      'Write as a blessing spoken over the person — warm, affirming, personal.',
+      'Write as a blessing spoken over the person, warm, affirming, personal.',
       'Start with Heavenly Father or Dear Lord. End with Amen. Respond ONLY with the prayer.'
     ].join('\n');
   } else {
     userMsg = [
-      'Write an intercessory prayer of 100-120 words for ' + subject.trim() + '.',
+      'Write an intercessory prayer of ' + wordRange + ' words for ' + subject.trim() + '.',
       situation.trim() ? 'SITUATION: ' + situation.trim() : '',
       'TONE: ' + tone,
       'Write in third person for ' + subject.trim() + '. Be specific to any details provided.',
@@ -220,7 +248,7 @@ async function generatePrayerTyped(type) {
     var resp = await fetch('/api/claude', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ system: systemMsg, messages: [{ role: 'user', content: userMsg }], max_tokens: 350 })
+      body: JSON.stringify({ system: systemMsg, messages: [{ role: 'user', content: userMsg }], max_tokens: maxTokens })
     });
     var data = await resp.json();
     prayerText = (data.content && data.content[0] && data.content[0].text) ? data.content[0].text.trim() : '';
@@ -672,6 +700,11 @@ input::placeholder,textarea::placeholder{color:rgba(61,31,0,0.20);}
 .prayer-action-btn{flex:1;padding:13px 4px;background:rgba(30,15,0,0.75);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:12px;letter-spacing:1.5px;border-radius:12px;cursor:pointer;transition:background 0.12s ease;touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
 .prayer-action-btn:active{background:rgba(30,15,0,0.55);}
 .copy-toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(30,15,0,0.88);color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:13px;letter-spacing:1px;padding:10px 24px;border-radius:50px;pointer-events:none;opacity:0;transition:opacity 0.3s;z-index:9999;}/* ===== PRAYER TYPE SELECTOR ===== */.prayer-type-btn{display:flex;align-items:center;background:rgba(255,248,210,0.68);border:none;border-radius:20px;padding:14px 18px;margin-bottom:10px;cursor:pointer;touch-action:manipulation;transition:background 0.12s ease;width:100%;text-align:left;box-sizing:border-box;}.prayer-type-btn.selected{background:rgba(30,15,0,0.80);}.prayer-type-btn:active{background:rgba(255,248,210,0.92);}.prayer-type-text{font-family:'Lato',sans-serif;font-size:13px;font-weight:600;color:rgba(0,0,0,0.82);line-height:1.4;flex:1;}.prayer-type-btn.selected .prayer-type-text{color:#f5c830;}.prayer-type-check{display:none;}/* ===== PRAYER EXPERIENCE OVERLAY ===== */#prayerExpOverlay{display:none;position:fixed;inset:0;z-index:200;overflow:hidden;}.prayer-exp-bg{position:absolute;inset:0;}.prayer-exp-grad-top{position:absolute;top:0;left:0;right:0;height:130px;background:linear-gradient(to bottom,rgba(0,0,0,0.62),transparent);z-index:1;pointer-events:none;}.prayer-exp-grad-bot{position:absolute;bottom:0;left:0;right:0;height:220px;background:linear-gradient(to top,rgba(0,0,0,0.78),transparent);z-index:1;pointer-events:none;}.prayer-exp-scroll{position:absolute;inset:0;overflow-y:auto;z-index:2;padding:100px 36px 230px;box-sizing:border-box;}.prayer-exp-lines{font-family:Georgia,'Times New Roman',serif;font-size:20px;line-height:1.95;color:#fff;text-align:center;text-shadow:0 2px 10px rgba(0,0,0,0.35);}.prayer-exp-lines p{margin:0 0 18px;opacity:0;transform:translateY(14px);transition:opacity 0.9s ease,transform 0.9s ease;}.prayer-exp-actions{position:absolute;bottom:0;left:0;right:0;z-index:3;padding:14px 24px 44px;display:flex;flex-direction:column;align-items:center;gap:10px;}.prayer-exp-audio-bar{display:none;width:100%;max-width:380px;background:rgba(0,0,0,0.42);border-radius:14px;padding:12px 16px;flex-direction:row;align-items:center;gap:10px;box-sizing:border-box;}.prayer-exp-btns{display:flex;gap:10px;width:100%;max-width:380px;}.prayer-exp-outline{flex:1;padding:14px;background:rgba(0,0,0,0.42);border:1.5px solid rgba(255,255,255,0.35);color:#fff;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;touch-action:manipulation;transition:background 0.12s ease;}.prayer-exp-outline:active{background:rgba(0,0,0,0.65);}.prayer-exp-save{flex:1;padding:14px;background:rgba(30,15,0,0.82);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;touch-action:manipulation;transition:background 0.12s ease;}.prayer-exp-save:active{background:rgba(30,15,0,0.60);}.prayer-exp-close{position:absolute;top:20px;right:20px;z-index:4;background:rgba(0,0,0,0.35);border:none;color:#fff;font-size:20px;width:40px;height:40px;border-radius:50%;cursor:pointer;touch-action:manipulation;display:flex;align-items:center;justify-content:center;}.prayer-exp-toast{position:absolute;bottom:120px;left:50%;transform:translateX(-50%);background:rgba(30,15,0,0.90);color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:13px;padding:10px 24px;border-radius:50px;pointer-events:none;opacity:0;transition:opacity 0.3s;z-index:5;white-space:nowrap;}.prayer-inline-card{background:rgba(255,248,210,0.88);border-radius:18px;padding:20px 18px;font-family:'Lato',sans-serif;font-size:15px;line-height:1.85;color:#1a0a00;margin-bottom:14px;}.prayer-inline-audio{display:flex;align-items:center;gap:10px;background:rgba(30,15,0,0.75);border-radius:12px;padding:10px 14px;margin-bottom:10px;}.prayer-inline-actions{display:flex;gap:10px;margin-bottom:4px;}.prayer-inline-save{flex:1;padding:14px;background:rgba(30,15,0,0.80);border:none;color:#f5c830;font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;touch-action:manipulation;transition:background 0.12s ease;}.prayer-inline-save:active{background:rgba(30,15,0,0.60);}.prayer-inline-btn{flex:1;padding:14px;background:rgba(255,248,210,0.68);border:1.5px solid rgba(61,31,0,0.20);color:rgba(30,15,0,0.82);font-family:'Lato',sans-serif;font-weight:700;font-size:14px;border-radius:50px;cursor:pointer;touch-action:manipulation;transition:background 0.12s ease;}.prayer-inline-btn:active{background:rgba(255,248,210,0.92);}.prayer-inline-toast{text-align:center;font-family:'Lato',sans-serif;font-size:13px;color:rgba(30,15,0,0.70);font-weight:700;padding:8px 0;opacity:0;transition:opacity 0.3s;}
+.pp-length-row{display:flex;gap:7px;margin-top:4px;}
+.pp-length-btn{flex:1;padding:10px 4px;background:rgba(255,255,255,0.5);border:1.5px solid rgba(61,31,0,0.18);border-radius:50px;font-family:'Lato',sans-serif;font-size:13px;font-weight:700;color:rgba(30,10,0,0.75);cursor:pointer;touch-action:manipulation;transition:background 0.12s,border-color 0.12s,color 0.12s;text-align:center;line-height:1.25;}
+.pp-length-btn.selected{background:rgba(30,15,0,0.82);border-color:rgba(30,15,0,0.82);color:#f5c830;}
+.pp-length-btn:active{opacity:0.75;}
+.pp-length-sub{font-size:10px;font-weight:400;display:block;margin-top:2px;opacity:0.8;}
 .prayer-tab-bar{display:flex;gap:0;padding:6px 16px 0;border-bottom:1.5px solid rgba(0,0,0,0.10);}
 .prayer-tab{flex:1;padding:9px 8px;background:none;border:none;border-bottom:2.5px solid transparent;font-family:'Lato',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.5px;color:rgba(0,0,0,0.42);cursor:pointer;transition:color 0.15s,border-color 0.15s;touch-action:manipulation;}
 .prayer-tab.active{color:rgba(61,31,0,0.88);border-bottom-color:rgba(61,31,0,0.75);}
@@ -1050,6 +1083,12 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
         <option value="grateful and thankful">Grateful &amp; Thankful</option>
         <option value="healing and restoration">Healing &amp; Restoration</option>
       </select>
+      <label class="form-label" style="margin-top:12px;">Prayer length</label>
+      <div class="pp-length-row" id="ppLength12">
+        <button class="pp-length-btn" data-range="75-100" onclick="selectPpLength(this,'ppLength12')">Still<span class="pp-length-sub">75–100 words</span></button>
+        <button class="pp-length-btn selected" data-range="125-150" onclick="selectPpLength(this,'ppLength12')">Faithful<span class="pp-length-sub">125–150 words</span></button>
+        <button class="pp-length-btn" data-range="175-200" onclick="selectPpLength(this,'ppLength12')">Abundant<span class="pp-length-sub">175–200 words</span></button>
+      </div>
       <button class="generate-btn" id="ppGenBtn" onclick="generatePrayerTyped(activePrayerType)">Create My Prayer &#10022;</button>
     </div>
 
@@ -1068,6 +1107,12 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
         <option value="grateful and thankful">Grateful &amp; Thankful</option>
         <option value="healing and restoration">Healing &amp; Restoration</option>
       </select>
+      <label class="form-label" style="margin-top:12px;">Prayer length</label>
+      <div class="pp-length-row" id="ppLength3">
+        <button class="pp-length-btn" data-range="75-100" onclick="selectPpLength(this,'ppLength3')">Still<span class="pp-length-sub">75–100 words</span></button>
+        <button class="pp-length-btn selected" data-range="125-150" onclick="selectPpLength(this,'ppLength3')">Faithful<span class="pp-length-sub">125–150 words</span></button>
+        <button class="pp-length-btn" data-range="175-200" onclick="selectPpLength(this,'ppLength3')">Abundant<span class="pp-length-sub">175–200 words</span></button>
+      </div>
       <button class="generate-btn" id="ppGenBtn3" onclick="generatePrayerTyped(3)">Create This Prayer &#10022;</button>
     </div>
 
