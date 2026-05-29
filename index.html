@@ -1424,6 +1424,12 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
         <option value="grateful and thankful">Grateful &amp; Thankful</option>
         <option value="healing and restoration">Healing &amp; Restoration</option>
       </select>
+      <label class="form-label" style="margin-top:12px;">Prayer length</label>
+      <div class="pp-length-row" id="sendLength">
+        <button class="pp-length-btn" data-range="75-100" onclick="selectPpLength(this,'sendLength')">Still<span class="pp-length-sub">75–100 words</span></button>
+        <button class="pp-length-btn selected" data-range="125-150" onclick="selectPpLength(this,'sendLength')">Faithful<span class="pp-length-sub">125–150 words</span></button>
+        <button class="pp-length-btn" data-range="175-200" onclick="selectPpLength(this,'sendLength')">Abundant<span class="pp-length-sub">175–200 words</span></button>
+      </div>
       <div id="sendPrayersRemaining" style="text-align:center;margin-top:16px;font-size:13px;color:rgba(0,0,0,0.65);"></div>
       <button class="generate-btn" id="sendGenerateBtn" onclick="generateSendPrayer()" style="margin-top:12px;" disabled>Craft Their Prayer</button>
     </div>
@@ -3659,9 +3665,12 @@ async function generateSendPrayer() {
   document.getElementById('sendPrayerResult').style.display = 'none';
   document.getElementById('sendLoadingWrap').style.display = 'block';
 
-  var systemMsg = 'You are a heartfelt Christian prayer minister. Write prayers that are warm, specific, and concise. Hard limit: 120 words maximum.';
+  var wordRange = getActivePpLength('sendLength');
+  var maxWords = parseInt(wordRange.split('-')[1]) || 150;
+  var maxTokens = maxWords <= 100 ? 280 : (maxWords <= 150 ? 400 : 520);
+  var systemMsg = 'You are a heartfelt Christian prayer minister. Write prayers that are warm, specific, and concise. Every word must count. Hard limit: ' + maxWords + ' words maximum.';
   var userMsg = [
-    'Generate a personal prayer of 100-120 words for:',
+    'Generate a personal prayer of ' + wordRange + ' words for:',
     'PERSON: ' + forWho,
     'SITUATION: ' + situation,
     'TONE: ' + tone,
@@ -3674,7 +3683,7 @@ async function generateSendPrayer() {
     var resp = await fetch('/api/claude', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ system: systemMsg, messages: [{ role: 'user', content: userMsg }], max_tokens: 350 })
+      body: JSON.stringify({ system: systemMsg, messages: [{ role: 'user', content: userMsg }], max_tokens: maxTokens })
     });
     var data = await resp.json();
     prayerText = (data.content && data.content[0] && data.content[0].text) ? data.content[0].text.trim() : '';
@@ -3703,6 +3712,7 @@ function resetSendPrayer() {
   document.getElementById('sendPrayerForm').style.display = 'block';
   var toneEl = document.getElementById('sendPrayerTone');
   if (toneEl) toneEl.value = '';
+  resetPpLength('sendLength');
   var genBtn = document.getElementById('sendGenerateBtn');
   if (genBtn) genBtn.disabled = true;
 }
@@ -4170,8 +4180,9 @@ function switchPrayerTab(tab) {
 function renderAudienceButtons() {
   var wrap = document.getElementById('audienceButtonsWrap');
   if (!wrap) return;
-  // Remove old group buttons, keep the static CIRCLE button
+  // Remove old group + member buttons, keep the static CIRCLE button
   wrap.querySelectorAll('.aud-btn:not(#audAll)').forEach(function(b){ b.remove(); });
+  // Group buttons
   circleGroups.forEach(function(g){
     var b = document.createElement('button');
     b.className = 'action-btn aud-btn';
@@ -4180,28 +4191,49 @@ function renderAudienceButtons() {
     b.onclick = function(){ selectAudienceGroup(g.id, b); };
     wrap.appendChild(b);
   });
-  // Re-apply the persisted selection (selectedGroupId) after rebuilding buttons.
-  // undefined = nothing selected yet (default); null = CIRCLE; uuid = group.
+  // Individual member buttons
+  if (circleData && circleData.length) {
+    circleData.forEach(function(m){
+      var b = document.createElement('button');
+      b.className = 'action-btn aud-btn';
+      b.textContent = m.name;
+      b.dataset.mid = m.userId;
+      b.onclick = function(){ selectAudienceMember(m.userId, b); };
+      wrap.appendChild(b);
+    });
+  }
+  // Re-apply the persisted selection after rebuilding buttons.
+  // selectedMemberId takes priority; else selectedGroupId (undefined/null/uuid).
   wrap.querySelectorAll('.aud-btn').forEach(function(b){ b.classList.remove('selected'); });
-  if (selectedGroupId === undefined) {
-    // Nothing selected — leave all buttons unlit (fresh default state)
+  if (selectedMemberId) {
+    var sel = wrap.querySelector('[data-mid="' + selectedMemberId + '"]');
+    if (sel) sel.classList.add('selected');
   } else if (selectedGroupId === null) {
     var all = document.getElementById('audAll');
     if (all) all.classList.add('selected');
-  } else {
+  } else if (selectedGroupId) {
     var sel = wrap.querySelector('[data-gid="' + selectedGroupId + '"]');
     if (sel) sel.classList.add('selected');
   }
 }
 
 // ========== PRAYER REQUESTS ==========
-// undefined = nothing selected yet (default, no button lit)
-// null      = CIRCLE / send to whole circle
-// 'uuid'    = specific group
+// selectedGroupId: undefined=nothing, null=whole circle, 'uuid'=group
+// selectedMemberId: undefined=no individual selected, 'uuid'=specific member
 var selectedGroupId = undefined;
+var selectedMemberId = undefined;
 
 function selectAudienceGroup(groupId, btn) {
   selectedGroupId = groupId;
+  selectedMemberId = undefined;
+  var wrap = document.getElementById('audienceButtonsWrap');
+  if (wrap) wrap.querySelectorAll('.aud-btn').forEach(function(b){ b.classList.remove('selected'); });
+  if (btn) btn.classList.add('selected');
+}
+
+function selectAudienceMember(userId, btn) {
+  selectedMemberId = userId;
+  selectedGroupId = undefined;
   var wrap = document.getElementById('audienceButtonsWrap');
   if (wrap) wrap.querySelectorAll('.aud-btn').forEach(function(b){ b.classList.remove('selected'); });
   if (btn) btn.classList.add('selected');
@@ -4211,7 +4243,10 @@ async function submitPrayerRequest() {
   if (!currentUser) { alert('Please sign in to send prayer requests.'); return; }
   var text = document.getElementById('requestPrayerText').value.trim();
   if (!text) { alert('Please share what you would like prayer for.'); return; }
+  if (selectedGroupId === undefined && !selectedMemberId) { alert('Please select who to send your request to.'); return; }
   var payload = { user_id: currentUser.id, request_text: text };
+  if (selectedMemberId) { payload.target_user_id = selectedMemberId; }
+  else if (selectedGroupId) { payload.group_id = selectedGroupId; }
   var result = await supaPost('/rest/v1/prayer_requests', payload);
   if (result && result.code) { alert('Could not send: ' + (result.message||result.code)); return; }
   document.getElementById('requestPrayerText').value = '';
