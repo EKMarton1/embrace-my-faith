@@ -646,7 +646,7 @@ body{background:#1a1a1a;display:flex;justify-content:center;align-items:flex-sta
 .screen-footer{margin-top:32px;padding:0 20px 24px;text-align:center;}
 .emf-copyright{font-size:12px;color:rgba(0,0,0,0.55);margin-top:6px;letter-spacing:0.5px;}
 .screen-title{font-family:'Lato',sans-serif;font-size:24px;font-weight:700;color:rgba(0,0,0,0.75);letter-spacing:1px;text-transform:uppercase;white-space:nowrap;}
-.screen-body{padding:20px 20px 40px;flex:1;}
+.screen-body{padding:20px 20px 40px;flex:1;}.member-check-row{display:flex;align-items:center;background:rgba(255,255,255,0.5);border-radius:14px;padding:14px 16px;margin-bottom:9px;gap:14px;cursor:pointer;touch-action:manipulation;}.member-check-row:active{background:rgba(255,255,255,0.78);}.member-check-box{width:22px;height:22px;border-radius:6px;border:2px solid rgba(61,31,0,0.30);background:rgba(255,255,255,0.55);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:background 0.12s,border-color 0.12s;}.member-check-box.checked{background:rgba(30,15,0,0.82);border-color:rgba(30,15,0,0.82);}.member-check-tick{color:#f5c830;font-size:14px;font-weight:900;line-height:1;display:none;}.member-check-box.checked .member-check-tick{display:block;}.member-check-name{font-family:'Lato',sans-serif;font-size:15px;font-weight:700;color:rgba(30,10,0,0.88);}.member-done-bar{position:sticky;bottom:0;padding:10px 0 20px;background:linear-gradient(to bottom,rgba(255,248,210,0) 0%,rgba(255,248,210,1) 36%);}
 
 /* ========== PRAYER ========== */
 .section-label{font-family:'Lato',sans-serif;font-size:22px;color:#111111;font-weight:700;margin-bottom:6px;text-shadow:0 1px 2px rgba(255,255,255,0.4);}
@@ -1549,6 +1549,19 @@ select.modal-input option{background:#1e0f00;color:#f5f0e8;}
     </div>
 
     <div class="screen-footer"><div class="emf-copyright">&copy; 2026 Embrace My Faith LLC</div></div>
+  </div>
+</div>
+
+<!-- MEMBER SELECT SUBPAGE -->
+<div class="screen" id="memberSelectScreen">
+<div class="screen-top">
+  <div class="screen-title-row"><button class="back-arrow-btn" onclick="showScreen('requestPrayerScreen')">&lt;</button><div class="screen-title">Select Members</div></div>
+</div>
+  <div class="screen-body">
+    <div id="memberSelectList"></div>
+    <div class="member-done-bar">
+      <button class="generate-btn" onclick="doneMemberSelect()">Done</button>
+    </div>
   </div>
 </div>
 
@@ -4180,7 +4193,7 @@ function switchPrayerTab(tab) {
 function renderAudienceButtons() {
   var wrap = document.getElementById('audienceButtonsWrap');
   if (!wrap) return;
-  // Remove old group + member buttons, keep the static CIRCLE button
+  // Remove all dynamic buttons (groups + MEMBERS), keep static CIRCLE
   wrap.querySelectorAll('.aud-btn:not(#audAll)').forEach(function(b){ b.remove(); });
   // Group buttons
   circleGroups.forEach(function(g){
@@ -4191,23 +4204,21 @@ function renderAudienceButtons() {
     b.onclick = function(){ selectAudienceGroup(g.id, b); };
     wrap.appendChild(b);
   });
-  // Individual member buttons
+  // Single MEMBERS button (only when circle has members)
   if (circleData && circleData.length) {
-    circleData.forEach(function(m){
-      var b = document.createElement('button');
-      b.className = 'action-btn aud-btn';
-      b.textContent = m.name;
-      b.dataset.mid = m.userId;
-      b.onclick = function(){ selectAudienceMember(m.userId, b); };
-      wrap.appendChild(b);
-    });
+    var mb = document.createElement('button');
+    mb.className = 'action-btn aud-btn';
+    mb.id = 'audMembers';
+    var cnt = selectedMemberIds.length;
+    mb.textContent = cnt > 0 ? 'MEMBERS (' + cnt + ')' : 'MEMBERS';
+    mb.onclick = function(){ openMemberSelectScreen(); };
+    wrap.appendChild(mb);
   }
-  // Re-apply the persisted selection after rebuilding buttons.
-  // selectedMemberId takes priority; else selectedGroupId (undefined/null/uuid).
+  // Re-apply selection highlighting
   wrap.querySelectorAll('.aud-btn').forEach(function(b){ b.classList.remove('selected'); });
-  if (selectedMemberId) {
-    var sel = wrap.querySelector('[data-mid="' + selectedMemberId + '"]');
-    if (sel) sel.classList.add('selected');
+  if (selectedMemberIds.length > 0) {
+    var mb = document.getElementById('audMembers');
+    if (mb) mb.classList.add('selected');
   } else if (selectedGroupId === null) {
     var all = document.getElementById('audAll');
     if (all) all.classList.add('selected');
@@ -4218,38 +4229,74 @@ function renderAudienceButtons() {
 }
 
 // ========== PRAYER REQUESTS ==========
-// selectedGroupId: undefined=nothing, null=whole circle, 'uuid'=group
-// selectedMemberId: undefined=no individual selected, 'uuid'=specific member
+// selectedGroupId: undefined=nothing selected, null=whole circle, 'uuid'=group
+// selectedMemberIds: array of userId strings for individual member selection
 var selectedGroupId = undefined;
-var selectedMemberId = undefined;
+var selectedMemberIds = [];
 
 function selectAudienceGroup(groupId, btn) {
   selectedGroupId = groupId;
-  selectedMemberId = undefined;
+  selectedMemberIds = [];
   var wrap = document.getElementById('audienceButtonsWrap');
   if (wrap) wrap.querySelectorAll('.aud-btn').forEach(function(b){ b.classList.remove('selected'); });
   if (btn) btn.classList.add('selected');
 }
 
-function selectAudienceMember(userId, btn) {
-  selectedMemberId = userId;
-  selectedGroupId = undefined;
-  var wrap = document.getElementById('audienceButtonsWrap');
-  if (wrap) wrap.querySelectorAll('.aud-btn').forEach(function(b){ b.classList.remove('selected'); });
-  if (btn) btn.classList.add('selected');
+// ── MEMBER SELECT SUBPAGE ──────────────────────────────────────────────
+function openMemberSelectScreen() {
+  renderMemberSelectList();
+  showScreen('memberSelectScreen');
+}
+
+function doneMemberSelect() {
+  // If members are checked, switch to member-mode (clear circle/group choice)
+  if (selectedMemberIds.length > 0) { selectedGroupId = undefined; }
+  showScreen('requestPrayerScreen'); // triggers renderAudienceButtons()
+}
+
+function renderMemberSelectList() {
+  var list = document.getElementById('memberSelectList');
+  if (!list) return;
+  if (!circleData || !circleData.length) {
+    list.innerHTML = '<div style="text-align:center;padding:32px 16px;font-family:Lato,sans-serif;font-size:14px;color:rgba(0,0,0,0.45);">No circle members yet.</div>';
+    return;
+  }
+  list.innerHTML = circleData.map(function(m) {
+    var checked = selectedMemberIds.indexOf(m.userId) !== -1;
+    return '<div class="member-check-row" onclick="toggleMemberCheck(\'' + m.userId + '\')">' +
+      '<div class="member-check-box' + (checked ? ' checked' : '') + '" id="mbox_' + m.userId + '"><span class="member-check-tick">&#10003;</span></div>' +
+      '<div class="member-check-name">' + escHtml(m.name) + '</div>' +
+      '</div>';
+  }).join('');
+}
+
+function toggleMemberCheck(userId) {
+  var idx = selectedMemberIds.indexOf(userId);
+  var box = document.getElementById('mbox_' + userId);
+  if (idx === -1) {
+    selectedMemberIds.push(userId);
+    if (box) box.classList.add('checked');
+  } else {
+    selectedMemberIds.splice(idx, 1);
+    if (box) box.classList.remove('checked');
+  }
 }
 
 async function submitPrayerRequest() {
   if (!currentUser) { alert('Please sign in to send prayer requests.'); return; }
   var text = document.getElementById('requestPrayerText').value.trim();
   if (!text) { alert('Please share what you would like prayer for.'); return; }
-  if (selectedGroupId === undefined && !selectedMemberId) { alert('Please select who to send your request to.'); return; }
+  if (selectedGroupId === undefined && selectedMemberIds.length === 0) { alert('Please select who to send your request to.'); return; }
   var payload = { user_id: currentUser.id, request_text: text };
-  if (selectedMemberId) { payload.target_user_id = selectedMemberId; }
+  if (selectedMemberIds.length > 0) { payload.target_user_ids = selectedMemberIds; }
   else if (selectedGroupId) { payload.group_id = selectedGroupId; }
   var result = await supaPost('/rest/v1/prayer_requests', payload);
   if (result && result.code) { alert('Could not send: ' + (result.message||result.code)); return; }
   document.getElementById('requestPrayerText').value = '';
+  // Reset member selections after a successful send
+  selectedMemberIds = [];
+  selectedGroupId = undefined;
+  renderAudienceButtons();
   var btn = document.querySelector('#requestPrayerScreen .generate-btn');
   if (btn) { var t=btn.textContent; btn.textContent='Sent to your circle!'; setTimeout(function(){ btn.textContent=t; }, 2200); }
   loadPrayerRequests();
