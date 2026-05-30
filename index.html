@@ -2543,9 +2543,14 @@ function showScreen(id, isBack) {
     circlePollingTimer = setInterval(loadCircleData, 15000);
   }
   if (id === 'requestPrayerScreen') {
-    // Always land on the form tab; circle requests only load when explicitly selected
     switchPrayerTab('request');
     renderAudienceButtons();
+    // Ensure circle data is loaded (first visit won't have it yet)
+    if (currentUser && (!circleData || !circleData.length) && (!circleGroups || !circleGroups.length)) {
+      loadCircleData();
+    } else if (currentUser) {
+      renderAudienceButtons(); // re-render with fresh cached data
+    }
   }
 }
 
@@ -4195,7 +4200,18 @@ function renderAudienceButtons() {
   if (!wrap) return;
   // Remove all dynamic buttons (groups + MEMBERS), keep static CIRCLE
   wrap.querySelectorAll('.aud-btn:not(#audAll)').forEach(function(b){ b.remove(); });
-  // Group buttons
+  // MEMBERS button — full-width row at top (only when circle has members)
+  if (circleData && circleData.length) {
+    var mb = document.createElement('button');
+    mb.className = 'action-btn aud-btn';
+    mb.id = 'audMembers';
+    mb.style.cssText = 'width:100%;';
+    var cnt = selectedMemberIds.length;
+    mb.textContent = cnt > 0 ? 'SELECT INDIVIDUAL MEMBERS (' + cnt + ')' : 'SELECT INDIVIDUAL MEMBERS';
+    mb.onclick = function(){ openMemberSelectScreen(); };
+    wrap.insertBefore(mb, wrap.firstChild);
+  }
+  // Group buttons (sit below MEMBERS in the flex-wrap row with CIRCLE)
   circleGroups.forEach(function(g){
     var b = document.createElement('button');
     b.className = 'action-btn aud-btn';
@@ -4204,16 +4220,6 @@ function renderAudienceButtons() {
     b.onclick = function(){ selectAudienceGroup(g.id, b); };
     wrap.appendChild(b);
   });
-  // Single MEMBERS button (only when circle has members)
-  if (circleData && circleData.length) {
-    var mb = document.createElement('button');
-    mb.className = 'action-btn aud-btn';
-    mb.id = 'audMembers';
-    var cnt = selectedMemberIds.length;
-    mb.textContent = cnt > 0 ? 'MEMBERS (' + cnt + ')' : 'MEMBERS';
-    mb.onclick = function(){ openMemberSelectScreen(); };
-    wrap.appendChild(mb);
-  }
   // Re-apply selection highlighting
   wrap.querySelectorAll('.aud-btn').forEach(function(b){ b.classList.remove('selected'); });
   if (selectedMemberIds.length > 0) {
